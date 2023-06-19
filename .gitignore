@@ -1,0 +1,52 @@
+# Ignore compiled DSelector files
+*.d
+*.so
+*.pcm
+
+# Ignore compiles python code
+*.pyc
+__pycache__/
+__init__/
+
+# Ignore root files
+*.root
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Ignore json files
+*.json
+
+# 
+.nfs*
+
+# Ignore config and log files used for bootstrap
+bootstrap_*.cfg
+bootstrap_*.log
+
+# Ignore pdf and png 
+*.pdf
+*.png
+
+# Maybe I change my mind later but lets ignore all .txt, .cfg, .log, .fit and .ni files for now
+*.cfg
+*.log
+*.fit
+*.ni
+*.txt
+
+# Ignore tmp files
+*tmp*
+
+# Ignore directories
+sdme/fits/

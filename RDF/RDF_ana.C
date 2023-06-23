@@ -58,7 +58,7 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto im_kskl = rdf_cut.Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 60 , 1.00, 2.20}, "mkskl", "accidental_weight");
+	auto im_kskl = rdf_cut.Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 50 , 1.00, 2.00}, "mkskl", "accidental_weight");
 	auto im_kskl2 = rdf_cut.Filter("missing_energy > 2").Histo1D({"im_kskl2", ";M(K_{S}K_{L});Counts", 60 , 1.00, 2.20}, "mkskl", "accidental_weight");
 	auto im_ksp = rdf_cut.Histo1D({"im_ksp", ";M(K_{S}p);Counts", 100, 1.00, 4.00}, "mksp", "accidental_weight");
 	auto im_klp = rdf_cut.Histo1D({"im_klp", ";M(K_{L}p);Counts", 100, 1.00, 4.00}, "mklp", "accidental_weight");
@@ -70,7 +70,7 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	auto miss_energy = rdf_cut.Histo1D({"miss_energy", ";Missing Energy (GeV);Counts", 100, 0.00, 10.00}, "missing_energy", "accidental_weight");
 	auto miss_energy_sb = rdf_cut_sb.Histo1D({"miss_energy_sb", ";Missing Energy (GeV);Counts", 100 , 0.00, 10.0}, "missing_energy", "accidental_weight");
 
-	auto im_kskl_sb = rdf_cut_sb.Histo1D({"im_kskl_sb", ";M(K_{S}p);Counts", 60 , 1.00, 2.20}, "mkskl", "accidental_weight");
+	auto im_kskl_sb = rdf_cut_sb.Histo1D({"im_kskl_sb", ";M(K_{S}p);Counts", 50 , 1.00, 2.00}, "mkskl", "accidental_weight");
 	auto im_ksp_sb = rdf_cut_sb.Histo1D({"im_ksp_sb", ";M(K_{S}p);Counts", 100, 1.00, 4.00}, "mksp", "accidental_weight");
 	auto im_klp_sb = rdf_cut_sb.Histo1D({"im_klp_sb", ";M(K_{L}p);Counts", 100, 1.00, 4.00}, "mklp", "accidental_weight");
 	auto im_pipp_sb = rdf_cut_sb.Histo1D({"im_pipp_sb", ";M(#pi^{+}p);Counts", 100, 1.00, 4.00}, "mpipp", "accidental_weight");

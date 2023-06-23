@@ -585,7 +585,7 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		} 
 
 		//FILL FLAT TREE
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && chisq_ndf < 5.0 && locPathLengthSignificance > 3.0 && t < 1.5 && dComboWrapper->Get_NumUnusedTracks() < 3 && dComboWrapper->Get_NumUnusedShowers() < 5)
+		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && chisq_ndf < 4.0 && locPathLengthSignificance > 4.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 2 && dComboWrapper->Get_NumUnusedShowers() < 4)
 			Fill_FlatTree();
 		else {
 			dComboWrapper->Set_IsComboCut(true);

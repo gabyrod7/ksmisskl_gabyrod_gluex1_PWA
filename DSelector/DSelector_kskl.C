@@ -156,6 +156,7 @@ void DSelector_kskl::Init(TTree *locTree)
 	h1_mandelt = new TH1F("h1_mandelt", ";-t (GeV^{2});Counts", 150, 0, 1.5);
 	im_pipi = new TH1F("im_pipi", ";M(#pi^{+}#pi^{-}) (GeV);Counts", 300, 0.3, 0.6);
 	im_miss = new TH1F("im_miss", ";Missing Mass (GeV);Counts", 100, 0, 1);
+	h1_MissingEnergy = new TH1F("h1_MissingEnergy", ";Missing Energy (GeV);Counts", 100, 0, 10);
 	im_kskl = new TH1F("im_kskl", ";M(K_{S}K_{L}) (GeV);Counts", 120, 1.00, 2.20);
 	im_ksp = new TH1F("im_ksp", ";M(K_{S}p) (GeV);Counts", 110, 2.50, 3.40);
 	im_klp = new TH1F("im_klp", ";M(K_{L}p) (GeV);Counts", 110, 2.50, 3.40);
@@ -481,8 +482,6 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 
 		bool Ks_Criteria = locDecayingKShortP4.M() > 0.48 && locDecayingKShortP4.M() < 0.52;
 		bool Ks_Sideband = (locDecayingKShortP4.M() > 0.44 && locDecayingKShortP4.M() < 0.46) || (locDecayingKShortP4.M() > 0.54 && locDecayingKShortP4.M() < 0.56);
-		//bool Ks_Sideband = (locDecayingKShortP4.M() > 0.43 && locDecayingKShortP4.M() < 0.46) || (locDecayingKShortP4.M() > 0.54 && locDecayingKShortP4.M() < 0.55);
-		//bool Ks_Sideband = (locDecayingKShortP4.M() > 0.44 && locDecayingKShortP4.M() < 0.46) || (locDecayingKShortP4.M() > 0.54 && locDecayingKShortP4.M() < 0.56);
 
 		if(Ks_Criteria && fabs(locDeltaT_RF) < 2)	event_weight = 1;
 		else if(Ks_Criteria && fabs(locDeltaT_RF) > 2)	event_weight = locHistAccidWeightFactor;
@@ -573,8 +572,10 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 //		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && locKSKL_P4.M() < 2.10 && chisq_ndf < 4.0 && locPathLengthSignificance > 4.0 && t < 1.5 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && mpipi > 0.48 && mpipi < 0.52)
 //			h1_RFTime->Fill(locDeltaT_RF);
 
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && mpipi > 0.48 && mpipi < 0.52)
+		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && mpipi > 0.48 && mpipi < 0.52) {
 			im_kskl->Fill(mkskl, locHistAccidWeightFactor);
+			h1_MissingEnergy->Fill(locMissingP4_Measured.E(), locHistAccidWeightFactor);
+		}
 		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && Ks_Sideband)
 			im_kskl_sb->Fill(mkskl, locHistAccidWeightFactor);
 
@@ -584,7 +585,7 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		} 
 
 		//FILL FLAT TREE
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && chisq_ndf < 5.1 && locPathLengthSignificance > 2.9 && t < 1.5 && dComboWrapper->Get_NumUnusedTracks() < 3 && dComboWrapper->Get_NumUnusedShowers() < 5)
+		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && chisq_ndf < 5.0 && locPathLengthSignificance > 3.0 && t < 1.5 && dComboWrapper->Get_NumUnusedTracks() < 3 && dComboWrapper->Get_NumUnusedShowers() < 5)
 			Fill_FlatTree();
 		else {
 			dComboWrapper->Set_IsComboCut(true);

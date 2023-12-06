@@ -45,8 +45,9 @@ bootstrap_*.log
 *.ni
 *.txt
 
-# Ignore tmp files
+# Ignore tmp and foo files files
 *tmp*
+*foo*
 
 # Ignore directories
 sdme/fits/

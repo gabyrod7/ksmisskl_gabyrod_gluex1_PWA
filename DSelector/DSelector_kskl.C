@@ -235,6 +235,8 @@ void DSelector_kskl::Init(TTree *locTree)
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("vanHove_x");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("vanHove_y");
 
+	dFlatTreeInterface->Create_Branch_Fundamental<double>("proton_z_vertex");
+
 //	dFlatTreeInterface->Create_Branch_NoSplitTObject<TLorentzVector>("pip_p4");
 //	dFlatTreeInterface->Create_Branch_NoSplitTObject<TLorentzVector>("pim_p4");
 	dFlatTreeInterface->Create_Branch_NoSplitTObject<TLorentzVector>("ks_p4");
@@ -407,7 +409,7 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		if(locSkipNearestOutOfTimeBunch && abs(locRelBeamBucket)==1) { // Skip nearest out-of-time bunch: tails of in-time distribution also leak in
 			dComboWrapper->Set_IsComboCut(true); 
 			continue; 
-		} 
+		}
 
 		/********************************************* COMBINE FOUR-MOMENTUM ********************************************/
 
@@ -483,17 +485,25 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		bool Ks_Criteria = locDecayingKShortP4.M() > 0.48 && locDecayingKShortP4.M() < 0.52;
 		bool Ks_Sideband = (locDecayingKShortP4.M() > 0.44 && locDecayingKShortP4.M() < 0.46) || (locDecayingKShortP4.M() > 0.54 && locDecayingKShortP4.M() < 0.56);
 
-		if(Ks_Criteria && fabs(locDeltaT_RF) < 2)	event_weight = 1;
-		else if(Ks_Criteria && fabs(locDeltaT_RF) > 2)	event_weight = locHistAccidWeightFactor;
-		else if(Ks_Sideband && fabs(locDeltaT_RF) < 2)	event_weight = sideband_w;
-		else if(Ks_Sideband && fabs(locDeltaT_RF) > 2)	event_weight = sideband_w*locHistAccidWeightFactor;
+		bool in_time = fabs(locDeltaT_RF) < 2;
+
+		if(Ks_Criteria && in_time)	event_weight = 1;
+		else if(Ks_Criteria && !in_time)	event_weight = locHistAccidWeightFactor;
+		else if(Ks_Sideband && in_time)		event_weight = sideband_w;
+		else if(Ks_Sideband && !in_time)	event_weight = sideband_w*locHistAccidWeightFactor;
 
 		// The likelihood in AmpTools is calculated as dat - bkg
 		// so the background weights need to be corrected by -1
-		if(Ks_Criteria && fabs(locDeltaT_RF) < 2)	Weight = 1;
-		else if(Ks_Criteria && fabs(locDeltaT_RF) > 2)	Weight = -locHistAccidWeightFactor;
-		else if(Ks_Sideband && fabs(locDeltaT_RF) < 2)	Weight = -sideband_w;
+		if(Ks_Criteria && in_time)	Weight = 1;
+		else if(Ks_Criteria && !in_time)	Weight = -locHistAccidWeightFactor;
+		else if(Ks_Sideband && in_time)		Weight = -sideband_w;
+		else if(Ks_Sideband && !in_time)	Weight = -1*locHistAccidWeightFactor*sideband_w;
 
+		if(mkskl < 1.1) {
+			dComboWrapper->Set_IsComboCut(true);
+			continue;
+		}
+		
 		if(dIsMC)	dFlatTreeInterface->Fill_Fundamental<bool>("dIsMC", dIsMC);
 
 		dFlatTreeInterface->Fill_Fundamental<double>("event_weight", event_weight);
@@ -524,6 +534,8 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		dFlatTreeInterface->Fill_Fundamental<double>("vanHove_x", vanHove_x);
 		dFlatTreeInterface->Fill_Fundamental<double>("vanHove_y", vanHove_y);
 
+		dFlatTreeInterface->Fill_Fundamental<double>("proton_z_vertex", locProtonX4.Z());
+
 //		dFlatTreeInterface->Fill_TObject<TLorentzVector>("pip_p4", locPiPlusP4);
 //		dFlatTreeInterface->Fill_TObject<TLorentzVector>("pim_p4", locPiMinusP4);
 		dFlatTreeInterface->Fill_TObject<TLorentzVector>("ks_p4", locDecayingKShortP4);
@@ -551,15 +563,16 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 			dFlatTreeInterface->Fill_Fundamental<bool>("amptools_dat", false);
 
 		if((Ks_Criteria && fabs(locDeltaT_RF) > 2) || (Ks_Sideband && fabs(locDeltaT_RF) < 2))
-		//if((Ks_Criteria && fabs(locDeltaT_RF) > 2) || (Ks_Sideband && fabs(locDeltaT_RF) > 2) || (Ks_Sideband && fabs(locDeltaT_RF) < 2))
+		// if((Ks_Criteria && fabs(locDeltaT_RF) > 2) || (Ks_Sideband && fabs(locDeltaT_RF) > 2) || (Ks_Sideband && fabs(locDeltaT_RF) < 2))
 			dFlatTreeInterface->Fill_Fundamental<bool>("amptools_bkg", true);
 		else
 			dFlatTreeInterface->Fill_Fundamental<bool>("amptools_bkg", false);
 
-		if(fabs(locDeltaT_RF) < 2)
-			dFlatTreeInterface->Fill_Fundamental<bool>("is_in_time", true);
-		else
-			dFlatTreeInterface->Fill_Fundamental<bool>("is_in_time", false);
+		// if(fabs(locDeltaT_RF) < 2)
+		// 	dFlatTreeInterface->Fill_Fundamental<bool>("is_in_time", true);
+		// else
+		// 	dFlatTreeInterface->Fill_Fundamental<bool>("is_in_time", false);
+		dFlatTreeInterface->Fill_Fundamental<bool>("is_in_time", in_time);
 
 		dFlatTreeInterface->Fill_Fundamental<float>("Weight", Weight);
 		dFlatTreeInterface->Fill_Fundamental<int>("pol_angle", locPolarizationAngle);
@@ -579,22 +592,22 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && Ks_Sideband)
 			im_kskl_sb->Fill(mkskl, locHistAccidWeightFactor);
 
-		if(locSkipNearestOutOfTimeBunch && abs(locRelBeamBucket)==1) { // Skip nearest out-of-time bunch: tails of in-time distribution also leak in
-			dComboWrapper->Set_IsComboCut(true); 
-			continue; 
-		} 
+		// if(locSkipNearestOutOfTimeBunch && abs(locRelBeamBucket)==1) { // Skip nearest out-of-time bunch: tails of in-time distribution also leak in
+		// 	dComboWrapper->Set_IsComboCut(true); 
+		// 	continue; 
+		// } 
 
 		//FILL FLAT TREE
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && chisq_ndf < 4.0 && locPathLengthSignificance > 4.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 2 && dComboWrapper->Get_NumUnusedShowers() < 4)
+		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && locKSKL_P4.M() < 2.05 && chisq_ndf < 6.0 && t < 1.0 && mmiss > 0.0 && mmiss < 1.0)
 			Fill_FlatTree();
 		else {
 			dComboWrapper->Set_IsComboCut(true);
 			continue;
 		}
 
-		if(Ks_Criteria && fabs(locDeltaT_RF) < 2)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
-		else if(Ks_Criteria && fabs(locDeltaT_RF) > 2)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
-		else if(Ks_Sideband && fabs(locDeltaT_RF) < 2)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
+		if(Ks_Criteria && in_time)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
+		else if(Ks_Criteria && !in_time)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
+		else if(Ks_Sideband && in_time)		h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
 //		else if(Ks_Sideband && fabs(locDeltaT_RF) > 2)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
 
 		if(mmiss > 0.3 && mmiss < 0.7)

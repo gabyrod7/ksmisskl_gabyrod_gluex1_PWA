@@ -41,7 +41,7 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	// 3.2) Make list of nominal cuts
 	std::map<std::string, std::string> cuts_list = {{"mkskl", "mkskl > 1.10 && mkskl < 2.00"},
-													{"mmiss", "missing_mass > 0.4 && missing_mass < 0.6"},
+													{"mmiss", "missing_mass > 0.3 && missing_mass < 0.7"},
 													{"mandel_t", "mandel_t > 0.20 && mandel_t < 0.5"},
 													{"flight_significance", "flight_significance > 6"},
 													{"chisq", "chisq_ndf < 2"},
@@ -89,8 +89,8 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 90, 1.10, 2.00}, "mkskl", "accidental_weight");
-	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 90, 1.10, 2.00}, "mkskl", "accidental_weight");
+	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 45, 1.10, 2.00}, "mkskl", "accidental_weight");
+	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 45, 1.10, 2.00}, "mkskl", "accidental_weight");
 
 	auto tmp = rdf_variables.Histo1D({"tmp", ";M(K_{S}K_{L});Counts", 90, 1.10, 2.00}, "mkskl", "accidental_weight");
 

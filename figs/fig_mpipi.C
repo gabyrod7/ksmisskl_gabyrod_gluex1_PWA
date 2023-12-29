@@ -24,13 +24,19 @@ void fig_mpipi() {
 	TH1F *h1 = (TH1F*)inf1->Get("h1_Mpipi");
 	TH1F *h2 = (TH1F*)inf2->Get("h1_Mpipi");
 	TH1F *h3 = (TH1F*)h1->Clone();
+	TH1F *h4 = (TH1F*)h1->Clone();
+	TH1F *h5 = (TH1F*)h1->Clone();
 
 	h2->Scale(h1->GetMaximum()/h2->GetMaximum());
 	h3->GetXaxis()->SetRangeUser(0.48, 0.52);
+	h4->GetXaxis()->SetRangeUser(0.44, 0.46);
+	h5->GetXaxis()->SetRangeUser(0.54, 0.56);
 
 	h1->SetMarkerColor(kBlack);
 	h2->SetMarkerColor(kRed);
 	h3->SetFillColorAlpha(kGreen, 0.2);
+	h4->SetFillColorAlpha(kViolet, 0.2);
+	h5->SetFillColorAlpha(kViolet, 0.2);
 
 	h1->SetMarkerStyle(8);
 	h2->SetMarkerStyle(35);
@@ -40,6 +46,8 @@ void fig_mpipi() {
 	TCanvas *c = new TCanvas();
 	h1->Draw();
 	h3->Draw("SAME HIST");
+	h4->Draw("SAME HIST");
+	h5->Draw("SAME HIST");
 	h1->Draw("SAME");
 	h2->Draw("SAME");
 
@@ -54,7 +62,13 @@ void fig_mpipi() {
 	line->DrawLine(0.48, 0, 0.48, 0.5*h1->GetMaximum());
 	line->DrawLine(0.52, 0, 0.52, 0.5*h1->GetMaximum());
 
-	c->SaveAs("figs/mpipi.pdf");
+	TLine *line2 = new TLine(0.3, 0, 0.7, 0.5*h1->GetMaximum());
+	line2->SetLineWidth(2);
+	line2->SetLineStyle(2);
+	line2->DrawLine(0.44, 0, 0.44, 0.5*h1->GetMaximum());
+	line2->DrawLine(0.46, 0, 0.46, 0.5*h1->GetMaximum());
+	line2->DrawLine(0.54, 0, 0.54, 0.5*h1->GetMaximum());
+	line2->DrawLine(0.56, 0, 0.56, 0.5*h1->GetMaximum());
 
-	cout << h3->Integral()/h1->Integral() << endl;
+	c->SaveAs("figs/mpipi.pdf");
 }

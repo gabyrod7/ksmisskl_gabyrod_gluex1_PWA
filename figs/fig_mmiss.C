@@ -29,7 +29,7 @@ void fig_mmiss() {
 	TH1F *h3 = (TH1F*)h1->Clone();
 
 	h2->Scale(h1->GetMaximum()/h2->GetMaximum());
-	h3->GetXaxis()->SetRangeUser(0.35, 0.60);
+	h3->GetXaxis()->SetRangeUser(0.30, 0.70);
 
 	h1->SetMarkerColor(kBlack);
 	h2->SetMarkerColor(kRed);
@@ -58,6 +58,4 @@ void fig_mmiss() {
 	line->DrawLine(0.7, 0, 0.7, 0.5*h1->GetMaximum());
 
 	c->SaveAs("figs/missing_mass.pdf");
-
-	cout << h3->Integral()/h1->Integral() << endl;
 }

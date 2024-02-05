@@ -64,6 +64,18 @@ double calc_vanHove_Y(double p1, double p2, double p3) {
 
 }
 
+std::string set_cuts(std::map<std::string, std::string> cuts_list, std::pair<std::string, std::string> change_cut = {"", ""}) {
+	std::string cuts = "";
+
+	for(auto it = cuts_list.begin(); it != cuts_list.end(); ++it) {
+		if(it->first == change_cut.first)	cuts += change_cut.second + " && ";
+		else								cuts += it->second + " && ";
+	}
+	cuts.erase(cuts.size()-4, 4); // remove last " && "
+
+	return cuts;
+}
+
 void DSelector_kskl::Init(TTree *locTree)
 {
 	// USERS: IN THIS FUNCTION, ONLY MODIFY SECTIONS WITH A "USER" OR "EXAMPLE" LABEL. LEAVE THE REST ALONE.
@@ -208,7 +220,7 @@ void DSelector_kskl::Init(TTree *locTree)
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("event_weight");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("accidental_weight");
 
-	dFlatTreeInterface->Create_Branch_Fundamental<bool>("is_in_time");
+	dFlatTreeInterface->Create_Branch_Fundamental<bool>("in_time");
 
 	dFlatTreeInterface->Create_Branch_Fundamental<int>("num_unused_tracks");
 	dFlatTreeInterface->Create_Branch_Fundamental<int>("num_unused_showers");
@@ -482,8 +494,8 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		double chisq = dComboWrapper->Get_ChiSq_KinFit("");
 		double chisq_ndf = chisq / dComboWrapper->Get_NDF_KinFit("");
 
-		bool Ks_Criteria = locDecayingKShortP4.M() > 0.48 && locDecayingKShortP4.M() < 0.52;
-		bool Ks_Sideband = (locDecayingKShortP4.M() > 0.44 && locDecayingKShortP4.M() < 0.46) || (locDecayingKShortP4.M() > 0.54 && locDecayingKShortP4.M() < 0.56);
+		bool Ks_Criteria = (locDecayingKShortP4.M() > 0.48 && locDecayingKShortP4.M() < 0.52);
+		bool Ks_Sideband = (locDecayingKShortP4.M() > 0.43 && locDecayingKShortP4.M() < 0.45) || (locDecayingKShortP4.M() > 0.55 && locDecayingKShortP4.M() < 0.57);
 
 		bool in_time = fabs(locDeltaT_RF) < 2;
 
@@ -562,7 +574,7 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		else
 			dFlatTreeInterface->Fill_Fundamental<bool>("amptools_dat", false);
 
-		if((Ks_Criteria && fabs(locDeltaT_RF) > 2) || (Ks_Sideband && fabs(locDeltaT_RF) < 2))
+		if((Ks_Criteria && !in_time) || (Ks_Sideband && in_time) || (Ks_Sideband && !in_time))
 		// if((Ks_Criteria && fabs(locDeltaT_RF) > 2) || (Ks_Sideband && fabs(locDeltaT_RF) > 2) || (Ks_Sideband && fabs(locDeltaT_RF) < 2))
 			dFlatTreeInterface->Fill_Fundamental<bool>("amptools_bkg", true);
 		else
@@ -572,7 +584,7 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		// 	dFlatTreeInterface->Fill_Fundamental<bool>("is_in_time", true);
 		// else
 		// 	dFlatTreeInterface->Fill_Fundamental<bool>("is_in_time", false);
-		dFlatTreeInterface->Fill_Fundamental<bool>("is_in_time", in_time);
+		dFlatTreeInterface->Fill_Fundamental<bool>("in_time", in_time);
 
 		dFlatTreeInterface->Fill_Fundamental<float>("Weight", Weight);
 		dFlatTreeInterface->Fill_Fundamental<int>("pol_angle", locPolarizationAngle);
@@ -598,8 +610,11 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		// } 
 
 		//FILL FLAT TREE
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && locKSKL_P4.M() < 2.05 && chisq_ndf < 6.0 && t < 1.0 && mmiss > 0.0 && mmiss < 1.0)
-			Fill_FlatTree();
+		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && locKSKL_P4.M() < 2.05 
+			&& chisq_ndf < 6.0 && t < 1.0 && mmiss > 0.0 && mmiss < 1.0 
+			&& dComboWrapper->Get_NumUnusedTracks() < 2 && dComboWrapper->Get_NumUnusedShowers() < 5) {
+				Fill_FlatTree();
+			}
 		else {
 			dComboWrapper->Set_IsComboCut(true);
 			continue;

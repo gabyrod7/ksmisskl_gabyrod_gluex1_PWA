@@ -1,19 +1,18 @@
-// Script for making histograms of data that will be used in SDME fits.
-// This script is meant to be copied to the directory where the data one
-// is interested in is located.
-
 #include <iostream>
 #include <fstream>
 #include "TLorentzRotation.h"
 
-void plot() {
+void plot(string dir = "gluex1", string run = "") {
 	TFile *inf;
+	string fname = "";
 	vector<string> datasets = {"dat", "acc", "gen", "bkg"};
 	vector<string> pols = {"000", "045", "090", "135"};
 
-	int nBins = 50;
+	// if((dir == "sp17" || dir == "sp18" || dir == "fa18" || dir == "gluex1") && run == "")	run = dir;
+
+	int nBins = 100;
 	char s[50];
-	double lmass = 1.00, umass = 2.00;
+	double lmass = 1.1, umass = 2.0;
 	TH1F *hist[4], *hist_all[4], *h1_be, *h1_mandelt, *mpipi;
 	TH2F *cosHX[4], *coshx[4], *Phi[4], *phi[4];
 
@@ -28,7 +27,7 @@ void plot() {
 	hist_all[3] = new TH1F("h_bkg_all", ";M(K_{S}K_{L});Counts", nBins, lmass, umass),
 
 	h1_be = new TH1F("h1_be", ";Beam energy (GeV);Counts", 100, 8, 9);
-	h1_mandelt= new TH1F("h1_mandelt", ";-t (GeV^{2});Counts", 7, 0.15, 1.55);
+	h1_mandelt= new TH1F("h1_mandelt", ";-t (GeV^{2});Counts", 150, 0.0, 1.50);
 	mpipi = new TH1F("mpipi", ";M(#pi#pi);Counts", 400, 0.3, 0.7);
 
 	cosHX[0] = new TH2F("cosHX_dat", ";M(K_{S}K_{L});cos(#theta_{HX})", nBins, lmass, umass, 30, -1, 1), 
@@ -51,13 +50,19 @@ void plot() {
 	phi[2] = new TH2F("phi_gen_all", ";M(K_{S}K_{L});#phi_{HX}", nBins, lmass, umass, 40, -3.14, 3.14);
 	phi[3] = new TH2F("phi_bkg_all", ";M(K_{S}K_{L});#phi_{HX}", nBins, lmass, umass, 40, -3.14, 3.14);
 
-	TFile	*opf = TFile::Open("histograms.root", "RECREATE");
+	TFile	*opf = TFile::Open( (dir+"/histograms.root").c_str(), "RECREATE");
 
 	// Loop through data sets
 	for(int i = 0; i < pols.size(); i++) {
 		for(int j = 0; j < datasets.size(); j++) {
-			cout << "Running over file: " << datasets[j]+pols[i]+".root" << endl;
-			inf = TFile::Open( (datasets[j]+pols[i]+".root").c_str() );
+			fname = dir+"/"+datasets[j]+pols[i]+".root";
+			if(gSystem->AccessPathName(fname.c_str())) {
+				std::cout << "File does not exists:  "+fname << std::endl;
+				continue;
+			}
+			else 
+				cout << "Running over file: " << fname << endl;
+			inf = TFile::Open( fname.c_str() );
 
 			TTree* tree;
 			inf->GetObject("kin",tree);
@@ -94,7 +99,7 @@ void plot() {
 
 			// Fill histograms
 			for(int k = 0; k < nentries; k++) {
-//				if(k > 1000) break;
+				// if(k > 1000) break;
 				tree->GetEntry(k);
 
 				beam_p4.SetPxPyPzE(beam_px,beam_py,beam_pz,beam_e);
@@ -120,10 +125,8 @@ void plot() {
 				double ks1_phi_hx = angles.Phi();
 				double cos1_hx = angles.CosTheta();
 
-				//cosHX[j]->Fill(resonance.M(), cos1_hx, weight);
-				//Phi[j]->Fill(resonance.M(), ks1_phi_hx, weight);
-				cosHX[j]->Fill(-(target_p4 - recoil_p4).M2(), cos1_hx, weight);
-				Phi[j]->Fill(-(target_p4 - recoil_p4).M2(), ks1_phi_hx, weight);
+				cosHX[j]->Fill(resonance.M(), cos1_hx, weight);
+				Phi[j]->Fill(resonance.M(), ks1_phi_hx, weight);
 
 				if(datasets[j] == "dat") {
 					h1_be->Fill(beam_p4.E(), weight);
@@ -185,7 +188,8 @@ void plot() {
 	hist_all[1]->Write("hist_acc");
 	hist_all[2]->Write("hist_gen");
 	hist_all[3]->Write("hist_bkg");
-//	hist_all[1]->Divide(hist_all[2]);
+
+	hist_all[1]->Divide(hist_all[2]);
 	hist_all[1]->Write("hist_eff");
 
 	hist_all[0]->Add(hist_all[3], -1);

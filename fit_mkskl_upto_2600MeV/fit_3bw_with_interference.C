@@ -11,7 +11,7 @@ void fit_3bw_with_interference() {
 	gStyle->SetPadTopMargin(0.03);
 	gStyle->SetPadRightMargin(0.03);
 	gStyle->SetPadBottomMargin(0.13);
-	gStyle->SetPadLeftMargin(0.14);
+	gStyle->SetPadLeftMargin(0.16);
 
 	gStyle->SetTitleBorderSize(0);
 
@@ -51,14 +51,16 @@ void fit_3bw_with_interference() {
 
 	h_acc->Divide(h_gen);
 	h->Divide(h_acc);
+	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
+	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
-	TF1 *fit = new TF1("fit", myfit, min, max, 14);
+	TF1 *fit = new TF1("fit", myfit, min, max, 13);
 	fit->SetParameters(28, 1.46, 0.22, 32, 1.77, 0.13, 0.96, 10, 2.2, 0.14, 4.82);
 	// fit->FixParameter(6, 2.63);
 	// fit->SetParLimits(10, 0, 2*TMath::Pi());
 	// fit->FixParameter(9, 10);
-	fit->SetParameter(11, 3e+04);
-	fit->SetParameter(12, -2.e+04);
+	fit->SetParameter(11, 1);
+	fit->SetParameter(12, -1);
 	fit->SetParameter(13, 5.e+03);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "#Delta#phi_{12}", "N3", "M3", "#Gamma3", "#Delta#phi_{13}");
 	fit->SetLineWidth(3);
@@ -118,13 +120,13 @@ void fit_3bw_with_interference() {
 
 	char s[100];
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
 	lg->AddEntry(bw1, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(4), fit->GetParameter(4), fit->GetParError(4), fit->GetParName(5), fit->GetParameter(5), fit->GetParError(5));
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(4), fit->GetParameter(4), fit->GetParError(4), fit->GetParName(5), fit->GetParameter(5), fit->GetParError(5));
 	lg->AddEntry(bw2, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(8), fit->GetParameter(8), fit->GetParError(8), fit->GetParName(9), fit->GetParameter(9), fit->GetParError(9));
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(8), fit->GetParameter(8), fit->GetParError(8), fit->GetParName(9), fit->GetParameter(9), fit->GetParError(9));
 	lg->AddEntry(bw3, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
 	sprintf(s, "%s = %.3f #pm %.3f", fit->GetParName(6), fit->GetParameter(6), fit->GetParError(6));
@@ -135,8 +137,8 @@ void fit_3bw_with_interference() {
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
 
-	sprintf(s, "Counts / %.0f MeV", h->GetBinWidth(10)*1000);
-	h->GetYaxis()->SetTitle(s);
+	// sprintf(s, "Counts / %.0f MeV", h->GetBinWidth(10)*1000);
+	// h->GetYaxis()->SetTitle(s);
 
 	c->SaveAs("pdfs/kskl_3bw_with_interference.pdf");
 
@@ -214,7 +216,7 @@ Double_t mybw(Double_t* x, Double_t* par) {
 }
 
 Double_t mybkg(Double_t* x, Double_t* par) {
-	return par[0] + par[1]*x[0] + par[2]*x[0]*x[0];
+	return par[0] + par[1]*x[0];// + par[2]*x[0]*x[0];
 }
 
 Double_t mysig(Double_t* x, Double_t* par) {

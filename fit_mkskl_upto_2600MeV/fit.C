@@ -3,15 +3,14 @@ double breakupMomentum( double mass0, double mass1, double mass2 );
 complex<double> BreitWigner(double m, double m0, double width0, int spin, double m_daughter1, double m_daughter2); 
 Double_t myfit(Double_t* x, Double_t* par); 
 Double_t mysig(Double_t* x, Double_t* par);
-Double_t mybkg(Double_t* x, Double_t* par);
 Double_t mybw(Double_t* x, Double_t* par);
 
-void fit_2bw_with_interference() {
+void fit() {
 	gStyle->SetOptStat(0);
 	gStyle->SetPadTopMargin(0.03);
 	gStyle->SetPadRightMargin(0.03);
 	gStyle->SetPadBottomMargin(0.13);
-	gStyle->SetPadLeftMargin(0.16);
+	gStyle->SetPadLeftMargin(0.14);
 
 	gStyle->SetTitleBorderSize(0);
 
@@ -33,8 +32,9 @@ void fit_2bw_with_interference() {
 	TCanvas *c;
 
 	TFile *inf = TFile::Open("hist_dat.root");
+	// TFile *inf = TFile::Open("hist.root");
 
-	double min = 1.15, max = 2.60;
+	double min = 1.2, max = 2.70;
 	TH1F *h = (TH1F*)inf->Get("im_kskl");
 	h->GetXaxis()->SetRangeUser(min, max);
 
@@ -49,35 +49,39 @@ void fit_2bw_with_interference() {
 
 	h_acc->Divide(h_gen);
 	h->Divide(h_acc);
-	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
-	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
-	TF1 *fit = new TF1("fit", myfit, min, max, 9);
-	fit->SetParameters(10, 1.50, 0.22, 10, 1.78, 0.13, 1.0, 280, -170, 25);
-	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "#Delta#phi", "a0", "a1", "a2");
+	TF1 *fit = new TF1("fit", myfit, min, max, 11);
+	fit->SetParameters(110, 1.50, 0.25, 130, 1.75, 0.13, 50, 2.24, 0.135);
+	fit->SetParameter(9, 1e+04);
+	fit->SetParameter(10, -4+03);
+	// fit->SetParameter(11, 5.e+03);
+	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "N3", "M3", "#Gamma3");
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);
 
-	TF1 *sig= new TF1("sig", mysig, min, max, 7);
+	fit->SetParLimits(8, 0, 1);
+
+	// fit->FixParameter(8, 0.14);
+
+	TF1 *sig= new TF1("sig", mysig, min, max, 9);
 	sig->SetLineColor(kBlue);
 	sig->SetFillStyle(3002);
 	sig->SetLineWidth(0);
 	sig->SetFillColor(kAzure+8);
 	sig->SetNpx(1000);
 
-	TF1 *bkg = new TF1("bkg", mybkg, min, max, 3);
+	TF1 *bkg = new TF1("bkg", "pol1", min, max);
 	bkg->SetLineColor(kBlack);
 	bkg->SetLineWidth(3);
-	bkg->SetNpx(1000);
 
 	c = new TCanvas();
 	h->Fit(fit, "RE");
-	//h->Draw();
+	// h->Draw();
 	// fit->Draw("SAME");
 	h->GetYaxis()->SetRangeUser(0.0, 1.05*h->GetMaximum());
-	sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5), fit->GetParameter(6));
+	sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5), fit->GetParameter(6), fit->GetParameter(7), fit->GetParameter(8));
 	sig->Draw("same");
-	bkg->SetParameters(fit->GetParameter(7), fit->GetParameter(8), fit->GetParameter(9));
+	bkg->SetParameters(fit->GetParameter(9), fit->GetParameter(10));
 	bkg->Draw("SAME");
 
 	TF1 *bw1= new TF1("bw1", mybw, min, max, 3);
@@ -94,7 +98,14 @@ void fit_2bw_with_interference() {
 	bw2->SetParameters(fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5));
 	bw2->Draw("SAME");
 
-	TLegend *lg = new TLegend(0.6, 0.42, 0.96, 0.97);
+	TF1 *bw3= new TF1("bw3", mybw, min, max, 3);
+	bw3->SetLineColor(kGreen+2);
+	bw3->SetLineWidth(3);
+	bw3->SetNpx(1000);
+	bw3->SetParameters(fit->GetParameter(6), fit->GetParameter(7), fit->GetParameter(8));
+	bw3->Draw("SAME");
+
+	TLegend *lg = new TLegend(0.6, 0.4, 0.95, 0.95);
 	lg->SetFillStyle(0);
 	lg->SetBorderSize(0);
 
@@ -105,22 +116,25 @@ void fit_2bw_with_interference() {
 
 	char s[100];
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
 	lg->AddEntry(bw1, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(4), fit->GetParameter(4), fit->GetParError(4), fit->GetParName(5), fit->GetParameter(5), fit->GetParError(5));
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(4), fit->GetParameter(4), fit->GetParError(4), fit->GetParName(5), fit->GetParameter(5), fit->GetParError(5));
 	lg->AddEntry(bw2, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "%s = %.2f #pm %.2f", fit->GetParName(6), fit->GetParameter(6), fit->GetParError(6));
-	lg->AddEntry((TObject*)0, s, "");
-	sprintf(s, "#chi^{2}/ndf = %.0f/%d = %.2f", fit->GetChisquare(), fit->GetNDF(), fit->GetChisquare()/fit->GetNDF());
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(7), fit->GetParameter(7), fit->GetParError(7), fit->GetParName(8), fit->GetParameter(8), fit->GetParError(8));
+	lg->AddEntry(bw3, s, "l");
+	lg->AddEntry((TObject*)0, "", "");
+	sprintf(s, "#chi^{2}/ndf = %.2f/%d = %.2f", fit->GetChisquare(), fit->GetNDF(), fit->GetChisquare()/fit->GetNDF());
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
 
-	// sprintf(s, "Counts / %.0f MeV", h->GetBinWidth(10)*1000);
-	// h->GetYaxis()->SetTitle(s);
+	sprintf(s, "Counts / %.0f MeV", h->GetBinWidth(10)*1000);
+	h->GetYaxis()->SetTitle(s);
 
-	c->SaveAs("pdfs/kskl_2bw_with_interference.pdf");
+	cout << fit->GetChisquare() << endl;
+
+	c->SaveAs("pdfs/tmp.pdf");
 
 	//c = new TCanvas();
 	//auto rp = new TRatioPlot(h);
@@ -195,8 +209,19 @@ Double_t mybw(Double_t* x, Double_t* par) {
 	return norm(N*bw);
 }
 
-Double_t mybkg(Double_t* x, Double_t* par) {
-	return par[0] + par[1]*x[0];// + par[2]*x[0]*x[0];
+Double_t myfit(Double_t* x, Double_t* par) {
+	double N1 = par[0];
+	complex<double> bw1 = BreitWigner(x[0], par[1], par[2], 1, 0.497, 0.497);
+
+	double N2 = par[3];
+	complex<double> bw2 = BreitWigner(x[0], par[4], par[5], 1, 0.497, 0.497);
+
+	double N3 = par[6];
+	complex<double> bw3 = BreitWigner(x[0], par[7], par[8], 1, 0.497, 0.497);
+
+	return norm(N1*bw1) + norm(N2*bw2) + norm(N3*bw3) //+ par[9] + par[10]*x[0] + par[11]*x[0]*x[0];
+		// + exp(par[9] + par[10]*x[0]);
+		+ par[9] + par[10]*x[0];
 }
 
 Double_t mysig(Double_t* x, Double_t* par) {
@@ -204,13 +229,11 @@ Double_t mysig(Double_t* x, Double_t* par) {
 	complex<double> bw1 = BreitWigner(x[0], par[1], par[2], 1, 0.497, 0.497);
 
 	double N2 = par[3];
-	complex<double> phase(cos(par[6]), sin(par[6]));
 	complex<double> bw2 = BreitWigner(x[0], par[4], par[5], 1, 0.497, 0.497);
 
-	return norm(N1*bw1 + N2*phase*bw2);
-}
+	double N3 = par[6];
+	complex<double> bw3 = BreitWigner(x[0], par[7], par[8], 1, 0.497, 0.497);
 
-Double_t myfit(Double_t* x, Double_t* par) {
-	return mysig(&x[0], &par[0]) + mybkg(&x[0], &par[7]);
+	return norm(N1*bw1) + norm(N2*bw2) + norm(N3*bw3);
 }
 

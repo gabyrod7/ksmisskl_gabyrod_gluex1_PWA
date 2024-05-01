@@ -10,7 +10,7 @@ void fit_3bw_no_interference() {
 	gStyle->SetPadTopMargin(0.03);
 	gStyle->SetPadRightMargin(0.03);
 	gStyle->SetPadBottomMargin(0.13);
-	gStyle->SetPadLeftMargin(0.14);
+	gStyle->SetPadLeftMargin(0.16);
 
 	gStyle->SetTitleBorderSize(0);
 
@@ -49,11 +49,13 @@ void fit_3bw_no_interference() {
 
 	h_acc->Divide(h_gen);
 	h->Divide(h_acc);
+	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
+	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
-	TF1 *fit = new TF1("fit", myfit, min, max, 12);
+	TF1 *fit = new TF1("fit", myfit, min, max, 11);
 	fit->SetParameters(100, 1.50, 0.20, 100, 1.78, 0.12, 50, 2.2, 0.15);
-	fit->SetParameter(9, 3e+04);
-	fit->SetParameter(10, -2.e+04);
+	fit->SetParameter(9, 1);
+	fit->SetParameter(10, -1);
 	fit->SetParameter(11, 5.e+03);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "N3", "M3", "#Gamma3");
 	fit->SetLineWidth(3);
@@ -112,21 +114,21 @@ void fit_3bw_no_interference() {
 
 	char s[100];
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
 	lg->AddEntry(bw1, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(4), fit->GetParameter(4), fit->GetParError(4), fit->GetParName(5), fit->GetParameter(5), fit->GetParError(5));
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(4), fit->GetParameter(4), fit->GetParError(4), fit->GetParName(5), fit->GetParameter(5), fit->GetParError(5));
 	lg->AddEntry(bw2, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "#splitline{%s = %.3f #pm %.3f}{%s = %.3f #pm %.3f}", fit->GetParName(7), fit->GetParameter(7), fit->GetParError(7), fit->GetParName(8), fit->GetParameter(8), fit->GetParError(8));
+	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(7), fit->GetParameter(7), fit->GetParError(7), fit->GetParName(8), fit->GetParameter(8), fit->GetParError(8));
 	lg->AddEntry(bw3, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
 	sprintf(s, "#chi^{2}/ndf = %.2f/%d = %.2f", fit->GetChisquare(), fit->GetNDF(), fit->GetChisquare()/fit->GetNDF());
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
 
-	sprintf(s, "Counts / %.0f MeV", h->GetBinWidth(10)*1000);
-	h->GetYaxis()->SetTitle(s);
+	// sprintf(s, "Counts / %.0f MeV", h->GetBinWidth(10)*1000);
+	// h->GetYaxis()->SetTitle(s);
 
 	cout << fit->GetChisquare() << endl;
 
@@ -215,7 +217,7 @@ Double_t myfit(Double_t* x, Double_t* par) {
 	double N3 = par[6];
 	complex<double> bw3 = BreitWigner(x[0], par[7], par[8], 1, 0.497, 0.497);
 
-	return norm(N1*bw1) + norm(N2*bw2) + norm(N3*bw3) + par[9] + par[10]*x[0] + par[11]*x[0]*x[0];
+	return norm(N1*bw1) + norm(N2*bw2) + norm(N3*bw3) + par[9] + par[10]*x[0];// + par[11]*x[0]*x[0];
 }
 
 Double_t mysig(Double_t* x, Double_t* par) {

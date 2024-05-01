@@ -36,13 +36,14 @@ void fig_mkskl() {
 	h2->SetMarkerColor(kRed);
 
 	h1->SetMarkerStyle(8);
+	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
+	h1->GetXaxis()->SetRangeUser(1.1, 2.6);
+	h1->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
+
 	h2->SetMarkerStyle(35);
 	h2->SetMarkerSize(0.0);
 	h2->GetYaxis()->SetTitle("Efficiency");
-
-	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
-	// h1->GetXaxis()->SetRangeUser(1.1, 2.0);
-	h2->GetYaxis()->SetRangeUser(0, 0.1);
+	h2->GetYaxis()->SetRangeUser(0.0, 0.1);
 
 	TCanvas *c = twoscales(h1, h2);
 
@@ -64,7 +65,7 @@ TCanvas* twoscales(TH1F* h1, TH1F* h2) {
 	// h2->SetFillStyle(3002);
 	// h2->SetMarkerColor(kRed);
 	h2->Scale(scale);
-	h2->Draw("hist l same");
+	h2->Draw("hist same");
 	// h2->Draw("E3 same");
 	//draw an axis on the right side
 	TGaxis*axis = new TGaxis(gPad->GetUxmax(),gPad->GetUymin(),

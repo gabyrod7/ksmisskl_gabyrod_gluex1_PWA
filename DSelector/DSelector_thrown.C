@@ -1,5 +1,30 @@
 #include "DSelector_thrown.h"
-//
+
+TVector3 calc_helicity_angles(TLorentzVector beam, TLorentzVector recoil, TLorentzVector p1, TLorentzVector p2) {
+	TLorentzVector resonance = p1 + p2;
+	
+	TLorentzRotation resRestBoost( -resonance.BoostVector() );
+	
+	TLorentzVector beam_res   = resRestBoost * beam;
+	TLorentzVector recoil_res = resRestBoost * recoil;
+	TLorentzVector p1_res = resRestBoost * p1;
+
+	// Helicity frame
+	TVector3 z = -1. * recoil_res.Vect().Unit();
+	
+	// normal to the production plane
+	TVector3 y = (beam.Vect().Unit().Cross(-recoil.Vect().Unit())).Unit();
+	
+	TVector3 x = y.Cross(z);
+	
+	TVector3 angles( (p1_res.Vect()).Dot(x),
+	(p1_res.Vect()).Dot(y),
+	(p1_res.Vect()).Dot(z) );
+	
+
+	return angles;
+}
+
 void DSelector_thrown::Init(TTree *locTree)
 {
 	// USERS: IN THIS FUNCTION, ONLY MODIFY SECTIONS WITH A "USER" OR "EXAMPLE" LABEL. LEAVE THE REST ALONE.
@@ -31,7 +56,7 @@ void DSelector_thrown::Init(TTree *locTree)
 
 	/******************************** EXAMPLE USER INITIALIZATION: STAND-ALONE HISTOGRAMS *******************************/
 
-	im_kskl = new TH1F("im_kskl", ";M(K_{S}K_{L});Counts", 100, 1.00, 2.00);
+	im_kskl = new TH1F("im_kskl", ";M(K_{S}K_{L});Counts", 110, 1.00, 2.10);
 
 	/************************************* ADVANCED EXAMPLE: CHOOSE BRANCHES TO READ ************************************/
 
@@ -55,6 +80,9 @@ void DSelector_thrown::Init(TTree *locTree)
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("mkskl");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("mandel_t");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("ks_proper_time");
+
+	dFlatTreeInterface->Create_Branch_Fundamental<double>("cos_hel_ks");
+	dFlatTreeInterface->Create_Branch_Fundamental<double>("phi_hel_ks");
 
 	dFlatTreeInterface->Create_Branch_Fundamental<bool>("amptools_dat");
 }
@@ -160,11 +188,18 @@ Bool_t DSelector_thrown::Process(Long64_t locEntry)
 	double t = -(locProtonP4_Thrown - dTargetP4).M2();
 	double ks_proper_time = -(1./locDecayingKShortP4_Thrown.Gamma())*locDecayingKShortX4_Thrown.T();
 
+	TVector3 angles_hel = calc_helicity_angles(dThrownBeam->Get_P4(), locProtonP4_Thrown, locDecayingKShortP4_Thrown, locMissingKLongP4_Thrown);
+	double cos_hel_ks = angles_hel.CosTheta();
+	double phi_hel_ks = angles_hel.Phi();
+
 	im_kskl->Fill((locDecayingKShortP4_Thrown + locMissingKLongP4_Thrown).M());
 	dFlatTreeInterface->Fill_Fundamental<double>("mkskl", (locDecayingKShortP4_Thrown + locMissingKLongP4_Thrown).M());
 
 	dFlatTreeInterface->Fill_Fundamental<double>("mandel_t", t);
 	dFlatTreeInterface->Fill_Fundamental<double>("ks_proper_time", ks_proper_time);
+
+	dFlatTreeInterface->Fill_Fundamental<double>("cos_hel_ks", cos_hel_ks);
+	dFlatTreeInterface->Fill_Fundamental<double>("phi_hel_ks", phi_hel_ks);
 
 	// AmpTools step 3
 	// set ordering of pions for amplitude analysis

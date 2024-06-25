@@ -64,6 +64,8 @@ class DSelector_kskl : public DSelector
 		TH1I* dHist_BeamEnergy;
 
 		TH1F *h1_RFTime;
+		TH1F *h1_RFTime_sb;
+
 		TH1F *h1_ChiSqNdf;
 		TH1F *h1_FS;
 		TH1F *h1_KsProperTime;

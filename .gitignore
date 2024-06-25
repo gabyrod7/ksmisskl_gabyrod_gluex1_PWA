@@ -51,4 +51,4 @@ bootstrap_*.log
 *foo*
 
 # Ignore directories
-sdme/fits/
+pwa/fits/

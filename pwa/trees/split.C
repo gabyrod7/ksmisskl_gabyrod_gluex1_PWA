@@ -37,18 +37,41 @@ void split() {
 	// // Spring 2017 data for SDME
 	inf_names = {"ftree_dat_sp17.root", "ftree_acc_sp17.root", "ftree_gen_sp17.root"};
 	dir = "sp17";
-	runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
+	// runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
 	// Spring 2018 data for SDME
 	inf_names = {"ftree_dat_sp18.root", "ftree_acc_sp18.root", "ftree_gen_sp18.root"};	
 	dir = "sp18";
-	runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
+	// runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
 	// // Fall 2018 data for SDME
 	inf_names = {"ftree_dat_fa18.root", "ftree_acc_fa18.root", "ftree_gen_fa18.root"};	
 	dir = "fa18";
-	runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
+	// runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
 	// GlueX-I data for SDME
 	inf_names = {"ftree_dat_gluex1.root", "ftree_acc_gluex1.root", "ftree_gen_gluex1.root"};	
 	dir = "gluex1";
+	// runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
+
+	// cut cos_hel_ks > 0.9
+	cuts = cuts+" && cos_hel_ks < 0.9";
+	dir = "gluex1_cosHX_0.9";
+	run = "gluex1";
+	runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts, true);
+
+	cuts = set_cuts(cuts_list, {"mandel_t", "mandel_t > 0.2 && mandel_t < 0.3"});
+	dir = "gluex1_t_0.20_0.30";
+	run = "gluex1";
+	// runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
+	cuts = set_cuts(cuts_list, {"mandel_t", "mandel_t > 0.3 && mandel_t < 0.4"});
+	dir = "gluex1_t_0.30_0.40";
+	run = "gluex1";
+	// runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
+	cuts = set_cuts(cuts_list, {"mandel_t", "mandel_t > 0.4 && mandel_t < 0.6"});
+	dir = "gluex1_t_0.40_0.60";
+	run = "gluex1";
+	// runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
+	cuts = set_cuts(cuts_list, {"mandel_t", "mandel_t > 0.6 && mandel_t < 1.0"});
+	dir = "gluex1_t_0.60_1.00";
+	run = "gluex1";
 	// runSplit(inf_names, dir, n_threads, run, cuts, gen_cuts);
 }
 

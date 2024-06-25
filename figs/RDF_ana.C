@@ -40,22 +40,31 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 				.Define("mpipp", "(pip_p4_kin + p_p4_kin).M()").Define("mpimp", "(pim_p4_kin + p_p4_kin).M()");
 
 	// 3.2) Make list of nominal cuts
-	std::map<std::string, std::string> cuts_list = {{"mkskl", "mkskl > 1.10 && mkskl < 2.00"},
-													{"mmiss", "missing_mass > 0.3 && missing_mass < 0.7"},
-													{"mandel_t", "mandel_t > 0.20 && mandel_t < 0.5"},
-													{"flight_significance", "flight_significance > 6"},
-													{"chisq", "chisq_ndf < 2"},
-													{"ntracks", "num_unused_tracks == 0"},
-													{"nshowers", "num_unused_showers < 3"},
-													{"proton_z_vertex", "proton_z_vertex > 52 && proton_z_vertex < 78"},
-													{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"}};
+	std::map<std::string, std::string> cuts_list = {
+		{"mkskl", "mkskl > 1.10 && mkskl < 2.00"},
+		{"mmiss", "missing_mass > 0.3 && missing_mass < 0.7"},
+		{"mandel_t", "mandel_t > 0.20 && mandel_t < 0.5"},
+		{"flight_significance", "flight_significance > 6"},
+		{"chisq", "chisq_ndf < 2"},
+		{"ntracks", "num_unused_tracks == 0"},
+		{"nshowers", "num_unused_showers < 3"},
+		{"proton_z_vertex", "proton_z_vertex > 52 && proton_z_vertex < 78"},
+		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"} };
+	
 	string cuts = "";
-	string signal = "mpipi > 0.48 && mpipi < 0.52";
-	string sideband = "(mpipi > 0.44 && mpipi < 0.46) || (mpipi > 0.54 && mpipi < 0.56)";
+	string signal = "(mpipi > 0.48 && mpipi < 0.52)";
+	string sideband = "((mpipi > 0.44 && mpipi < 0.46) || (mpipi > 0.54 && mpipi < 0.56))";
+	// string sideband = "((mpipi > 0.44 && mpipi < 0.45) || (mpipi > 0.55 && mpipi < 0.56))";
 
 	//3.3)Now apply cuts on the newly defined variables:
 	cuts = set_cuts(cuts_list, {"mkskl", ""});
 	auto rdf_cut = rdf_variables.Filter(cuts);
+
+	cuts = set_cuts(cuts_list, {"mandel_t", "mandel_t > 0.2 && mandel_t < 1"});
+	auto rdf_cut2 = rdf_variables.Filter(cuts);
+
+	cuts = set_cuts(cuts_list, {"mandel_t", "mandel_t > 0.20 && mandel_t < 0.5"});
+	auto rdfBaryons = rdf_variables.Filter(cuts);
 
 	cuts = set_cuts(cuts_list, {"mandel_t", ""});
 	auto rdfMandelt = rdf_variables.Filter(cuts);
@@ -89,13 +98,41 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 45, 1.10, 2.00}, "mkskl", "accidental_weight");
-	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 45, 1.10, 2.00}, "mkskl", "accidental_weight");
+	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 50, 1.10, 2.10}, "mkskl", "accidental_weight");
+	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 50, 1.10, 2.10}, "mkskl", "accidental_weight");
 
-	auto tmp = rdf_variables.Histo1D({"tmp", ";M(K_{S}K_{L});Counts", 90, 1.10, 2.00}, "mkskl", "accidental_weight");
+	auto im_kskl_BaryonCut1 = rdf_cut.Filter(signal+"&& mklp < 2.0").Histo1D({"im_kskl_BaryonCut1", ";M(K_{S}K_{L});Counts", 50, 1.10, 2.10}, "mkskl", "accidental_weight");
+	auto im_kskl_BaryonCut1_sb = rdf_cut.Filter(sideband+"&& mklp < 2.0").Histo1D({"im_kskl_BaryonCut1_sb", ";M(K_{S}K_{L});Counts", 50, 1.10, 2.10}, "mkskl", "accidental_weight");
 
 	auto h1_mandelt = rdfMandelt.Filter(signal).Histo1D({"h1_mandelt", ";-t (GeV^{2});Counts", 100, 0, 1.0}, "mandel_t", "accidental_weight");
 	auto h1_mandelt_sb = rdfMandelt.Filter(sideband).Histo1D({"h1_mandelt_sb", ";-t (GeV^{2});Counts", 100, 0, 1.0}, "mandel_t", "accidental_weight");
+	
+	auto h1_mandeltp = rdfMandelt.Filter(signal).Histo1D({"h1_mandeltp", ";-t' (GeV^{2});Counts", 100, 0, 1.0}, "mandel_tp", "accidental_weight");
+	auto h1_mandeltp_sb = rdfMandelt.Filter(sideband).Histo1D({"h1_mandeltp_sb", ";-t' (GeV^{2});Counts", 100, 0, 1.0}, "mandel_tp", "accidental_weight");
+
+	auto h1_Mksp = rdfBaryons.Filter(signal).Histo1D({"h1_Mksp", ";M(K_{S}p) (GeV);Counts", 75, 1.4, 3.7}, "mksp", "accidental_weight");
+	auto h1_Mksp_sb = rdfBaryons.Filter(sideband).Histo1D({"h1_Mksp_sb", ";M(K_{S}p)  (GeV^{2});Counts", 75, 1.4, 3.7}, "mksp", "accidental_weight");
+
+	auto h1_Mklp = rdfBaryons.Filter(signal).Histo1D({"h1_Mklp", ";M(K_{L}p) (GeV);Counts", 75, 1.4, 3.7}, "mklp", "accidental_weight");
+	auto h1_Mklp_sb = rdfBaryons.Filter(sideband).Histo1D({"h1_Mklp_sb", ";M(K_{L}p)  (GeV^{2});Counts", 75, 1.4, 3.7}, "mklp", "accidental_weight");
+
+	// auto h1_Mksp2 = rdfMandelt.Filter(signal+" && mandel_t > 0.20 && mandel_t < 0.5").Histo1D({"h1_Mksp2", ";M(K_{S}p) (GeV);Counts", 100, 1.0, 4.0}, "mksp", "accidental_weight");
+	// auto h1_Mksp2_sb = rdfMandelt.Filter(sideband+" && mandel_t > 0.20 && mandel_t < 0.5").Histo1D({"h1_Mksp2_sb", ";M(K_{S}p)  (GeV^{2});Counts", 100, 1.0, 4.0}, "mksp", "accidental_weight");
+
+	// auto h1_Mklp2 = rdfMandelt.Filter(signal+" && mandel_t > 0.2 && mandel_t < 0.5").Histo1D({"h1_Mklp2", ";M(K_{L}p) (GeV);Counts", 100, 1.0, 4.0}, "mklp", "accidental_weight");
+	// auto h1_Mklp2_sb = rdfMandelt.Filter(sideband+" && mandel_t > 0.2 && mandel_t < 0.5").Histo1D({"h1_Mklp2_sb", ";M(K_{L}p)  (GeV^{2});Counts", 100, 1.0, 4.0}, "mklp", "accidental_weight");
+
+	auto h1_Mpipp = rdfBaryons.Filter(signal).Histo1D({"h1_Mpipp", ";M(#pi^{+}p) (GeV);Counts", 75, 1.0, 3.5}, "mpipp", "accidental_weight");
+	auto h1_Mpipp_sb = rdfBaryons.Filter(sideband).Histo1D({"h1_Mpipp_sb", ";M(#pi^{+}p)  (GeV^{2});Counts", 75, 1.0, 3.5}, "mpipp", "accidental_weight");
+
+	// auto h1_Mpipp2 = rdfMandelt.Filter(signal+" && mandel_t > 0.2 && mandel_t < 0.5").Histo1D({"h1_Mpipp2", ";M(#pi^{+}p) (GeV);Counts", 100, 1.0, 4.0}, "mpipp", "accidental_weight");
+	// auto h1_Mpipp2_sb = rdfMandelt.Filter(sideband+" && mandel_t > 0.2 && mandel_t < 0.5").Histo1D({"h1_Mpipp2_sb", ";M(#pi^{+}p)  (GeV^{2});Counts", 100, 1.0, 4.0}, "mpipp", "accidental_weight");
+
+	auto h1_Mpimp = rdfBaryons.Filter(signal).Histo1D({"h1_Mpimp", ";M(#pi^{-}p) (GeV);Counts", 100, 1.0, 3.5}, "mpimp", "accidental_weight");
+	auto h1_Mpimp_sb = rdfBaryons.Filter(sideband).Histo1D({"h1_Mpimp_sb", ";M(#pi^{-}p)  (GeV^{2});Counts", 100, 1.0, 3.5}, "mpimp", "accidental_weight");
+
+	// auto h1_Mpimp2 = rdfMandelt.Filter(signal+" && mandel_t > 0.2 && mandel_t < 0.5").Histo1D({"h1_Mpimp2", ";M(#pi^{-}p) (GeV);Counts", 100, 1.0, 4.0}, "mpimp", "accidental_weight");
+	// auto h1_Mpimp2_sb = rdfMandelt.Filter(sideband+" && mandel_t > 0.2 && mandel_t < 0.5").Histo1D({"h1_Mpimp2_sb", ";M(#pi^{-}p)  (GeV^{2});Counts", 100, 1.0, 4.0}, "mpimp", "accidental_weight");
 
 	auto h1_MissingMass = rdfMissingMass_cut.Filter(signal).Histo1D({"h1_MissingMass", ";Missing Mass (GeV);Counts",  100, 0, 1}, "missing_mass", "accidental_weight");
 	auto h1_MissingMass_sb = rdfMissingMass_cut.Filter(sideband).Histo1D({"h1_MissingMass_sb", ";Missing Mass (GeV);Counts",  100, 0, 1}, "missing_mass", "accidental_weight");
@@ -117,17 +154,62 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	auto h1_Mpipi = rdfMpipi_cut.Histo1D({"h1_Mpipi", ";M(#pi^{+}#pi^{-});Counts",  100, 0.3, 0.7}, "mpipi", "accidental_weight");
 
+	auto h2_mkskl_cosHel = rdf_cut2.Filter(signal).Histo2D({"h2_mkskl_cosHel", ";M(K_{S}K_{L});cos(#theta_{hel});Counts", 20, 1.10, 2.0, 20, -1, 1}, "mkskl", "cos_hel_ks", "accidental_weight");
+	auto h2_mkskl_cosHel_sb = rdf_cut2.Filter(sideband).Histo2D({"h2_mkskl_cosHel_sb", ";M(K_{S}K_{L});cos(#theta_{hel});Counts", 20, 1.10, 2.0, 20, -1, 1}, "mkskl", "cos_hel_ks", "accidental_weight");
+
+	auto h2_mkskl_cosHel2 = rdf_cut2.Filter(signal+" && mklp > 2.0").Histo2D({"h2_mkskl_cosHel2", ";M(K_{S}K_{L});cos(#theta_{hel});Counts", 40, 1.10, 2.0, 20, -1, 1}, "mkskl", "cos_hel_ks", "accidental_weight");
+	auto h2_mkskl_cosHel3 = rdf_cut2.Filter(signal+" && mksp > 2.0").Histo2D({"h2_mkskl_cosHel3", ";M(K_{S}K_{L});cos(#theta_{hel});Counts", 40, 1.10, 2.0, 20, -1, 1}, "mkskl", "cos_hel_ks", "accidental_weight");
+
+	auto h2_mkskl_phiHel = rdf_cut2.Filter(signal).Histo2D({"h2_mkskl_phiHel", ";M(K_{S}K_{L});#phi_{hel};Counts", 20, 1.10, 2.00, 20, -TMath::Pi(), TMath::Pi()}, "mkskl", "phi_hel_ks", "accidental_weight");
+	auto h2_mkskl_phiHel_sb = rdf_cut2.Filter(sideband).Histo2D({"h2_mkskl_phiHel_sb", ";M(K_{S}K_{L});#phi_{hel};Counts", 20, 1.10, 2.00, 20, -TMath::Pi(), TMath::Pi()}, "mkskl", "phi_hel_ks", "accidental_weight");
+
+	// make 2D hist of mkskl vs t and mkskl vs t'
+	auto h2_mkskl_t = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_t", ";M(K_{S}K_{L});-t (GeV^{2});Counts", 20, 1.10, 2.0, 20, 0, 1.0}, "mkskl", "mandel_t", "accidental_weight");
+	auto h2_mkskl_tp = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_tp", ";M(K_{S}K_{L});-t' (GeV^{2});Counts", 20, 1.10, 2.0, 20, 0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
+
+	auto h2_mkskl_t2 = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_t2", ";M(K_{S}K_{L});-t (GeV^{2});Counts", 50, 1.10, 2.6, 80, 0, 20.0}, "mkskl", "mandel_t", "accidental_weight");
+	auto h2_mkskl_tp2 = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_tp2", ";M(K_{S}K_{L});-t' (GeV^{2});Counts", 50, 1.10, 2.6, 80, 0, 20.0}, "mkskl", "mandel_tp", "accidental_weight");
+
 	cout <<" "<< endl;
 	
 	//5.) Write everything to a file:
 	cout <<"Write results to file: " << opf_name << endl;
 
-	tmp->Write();
 	im_kskl->Write();
 	im_kskl_sb->Write();
 
+	im_kskl_BaryonCut1->Write();
+	im_kskl_BaryonCut1_sb->Write();
+
 	h1_mandelt->Write();
 	h1_mandelt_sb->Write();
+
+	h1_mandeltp->Write();
+	h1_mandeltp_sb->Write();
+
+	h1_Mksp->Write();
+	h1_Mksp_sb->Write();
+
+	// h1_Mksp2->Write();
+	// h1_Mksp2_sb->Write();
+
+	h1_Mklp->Write();
+	h1_Mklp_sb->Write();
+
+	// h1_Mklp2->Write();
+	// h1_Mklp2_sb->Write();
+
+	h1_Mpipp->Write();
+	h1_Mpipp_sb->Write();
+
+	// h1_Mpipp2->Write();
+	// h1_Mpipp2_sb->Write();
+
+	h1_Mpimp->Write();
+	h1_Mpimp_sb->Write();
+
+	// h1_Mpimp2->Write();
+	// h1_Mpimp2_sb->Write();
 
 	h1_MissingMass->Write();
 	h1_MissingMass_sb->Write();
@@ -148,6 +230,21 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	h1_ProtonZVertex_sb->Write();
 
 	h1_Mpipi->Write();
+
+	h2_mkskl_cosHel->Write();
+	h2_mkskl_cosHel_sb->Write();
+
+	h2_mkskl_cosHel2->Write();
+	h2_mkskl_cosHel3->Write();
+
+	h2_mkskl_phiHel->Write();
+	h2_mkskl_phiHel_sb->Write();
+
+	h2_mkskl_t->Write();
+	h2_mkskl_tp->Write();
+
+	h2_mkskl_t2->Write();
+	h2_mkskl_tp2->Write();
 
 	out_file->Write();
 	out_file->Close();

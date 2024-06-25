@@ -1,11 +1,11 @@
 TCanvas* twoscales(TH1F* h1, TH1F* h2);
 
-void fig_mkskl() {
+void fig_mandelt_acc() {
 	gStyle->SetOptStat(0);
-	gStyle->SetPadTopMargin(0.03);
+	gStyle->SetPadTopMargin(0.07);
 	gStyle->SetPadRightMargin(0.09);
 	gStyle->SetPadBottomMargin(0.15);
-	gStyle->SetPadLeftMargin(0.14);
+	gStyle->SetPadLeftMargin(0.12);
 
 	gStyle->SetTitleBorderSize(0);
 		
@@ -15,7 +15,9 @@ void fig_mkskl() {
 	
 	gStyle->SetTitleSize(0.06,"XY");
 	gStyle->SetTitleOffset(1.15,"X");
-	gStyle->SetTitleOffset(1.25,"Y");
+	gStyle->SetTitleOffset(1.05,"Y");
+
+	TGaxis::SetMaxDigits(3);
 	
 	gStyle->SetMarkerSize(1.5);
 	gROOT->ForceStyle();
@@ -24,10 +26,10 @@ void fig_mkskl() {
 	TFile *inf2 = TFile::Open("hist_acc_gluex1.root");
 	TFile *inf3 = TFile::Open("hist_gen_gluex1.root");
 
-	TH1F *h1 = (TH1F*)inf1->Get("im_kskl");
-	TH1F *h1_sb = (TH1F*)inf1->Get("im_kskl_sb");
-	TH1F *h2 = (TH1F*)inf2->Get("im_kskl");
-	TH1F *h3 = (TH1F*)inf3->Get("im_kskl");
+	TH1F *h1 = (TH1F*)inf1->Get("h1_mandelt");
+	TH1F *h1_sb = (TH1F*)inf1->Get("h1_mandelt_sb");
+	TH1F *h2 = (TH1F*)inf2->Get("h1_mandelt");
+	TH1F *h3 = (TH1F*)inf3->Get("h1_mandelt");
 
 	h1->Add(h1_sb, -1);
 	h2->Divide(h3);
@@ -37,18 +39,16 @@ void fig_mkskl() {
 
 	h1->SetMarkerStyle(8);
 	h2->SetMarkerStyle(35);
-	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
-	h1->GetXaxis()->SetRangeUser(1.1, 2.0);
-	h1->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
-
 	h2->SetMarkerSize(0.0);
 	h2->GetYaxis()->SetTitle("Efficiency");
-	h2->GetYaxis()->SetRangeUser(0, 0.1);
 
+	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
+	h1->GetXaxis()->SetRangeUser(0.15, 1.0);
+	h2->GetYaxis()->SetRangeUser(0, 0.3);
 
 	TCanvas *c = twoscales(h1, h2);
 
-	c->SaveAs("figs/mkskl.pdf");
+	c->SaveAs("figs/mandelt_acc.pdf");
 }
 
 TCanvas* twoscales(TH1F* h1, TH1F* h2) {

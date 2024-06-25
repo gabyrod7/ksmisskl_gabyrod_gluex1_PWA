@@ -21,28 +21,48 @@ void fig_mandelt() {
 	TFile *inf1 = TFile::Open("hist_dat_gluex1.root");
 	TFile *inf2 = TFile::Open("hist_acc_gluex1.root");
 
+	TLatex t;
+	t.SetTextSize(0.08);
+
 	TH1F *h1 = (TH1F*)inf1->Get("h1_mandelt");
 	TH1F *h1_sb = (TH1F*)inf1->Get("h1_mandelt_sb");
 	TH1F *h2 = (TH1F*)inf2->Get("h1_mandelt");
 
-	h1->Add(h1_sb, -1);
-
-	h2->Scale(h1->GetMaximum()/h2->GetMaximum());
-
-	h1->SetMarkerColor(kBlack);
-	h2->SetMarkerColor(kRed);
-
 	h1->SetMarkerStyle(8);
 	h2->SetMarkerStyle(35);
 
-	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
+	h1->SetMarkerColor(kBlack);
+	h2->SetMarkerColor(kRed);
+	h1_sb->SetFillColor(kRed);
 
 	TCanvas *c = new TCanvas();
 	h1->Draw();
-	h2->Draw("SAME");
+	h1_sb->Draw("SAME HIST");
 
-	TLatex t;
-	t.SetTextSize(0.08);
+	t.DrawLatex(0.5, 0.85*h1->GetMaximum(), "GlueX-I Data");
+	t.SetTextColor(kRed);
+	t.DrawLatex(0.5, 0.73*h1->GetMaximum(), "M(#pi#pi) Sideband");
+	t.SetTextColor(kBlack);
+
+	c->SaveAs("figs/mandelt_Wbackground.pdf");
+
+	h1->Add(h1_sb, -1);
+	TH1F* h3 = (TH1F*)h1->Clone("h3");
+
+	// h2->Scale(h1->GetMaximum()/h2->GetMaximum());
+	// scale h2 to match h1 at 0.2
+	h2->Scale(h1->GetBinContent(h1->GetXaxis()->FindBin(0.2))/h2->GetBinContent(h2->GetXaxis()->FindBin(0.2)));
+
+	h3->SetFillColorAlpha(kGreen, 0.2);
+
+	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
+	h3->GetXaxis()->SetRangeUser(0.2, 0.5);
+
+	c = new TCanvas();
+	h1->Draw();
+	h2->Draw("SAME");
+	h3->Draw("SAME HIST");
+
 	t.DrawLatex(0.6, 0.85*h1->GetMaximum(), "GlueX-I Data");
 	t.SetTextColor(kRed);
 	t.DrawLatex(0.6, 0.73*h1->GetMaximum(), "Monte Carlo");

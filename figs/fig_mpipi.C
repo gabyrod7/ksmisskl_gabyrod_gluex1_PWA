@@ -46,8 +46,8 @@ void fig_mpipi() {
 	TCanvas *c = new TCanvas();
 	h1->Draw();
 	h3->Draw("SAME HIST");
-	h4->Draw("SAME HIST");
-	h5->Draw("SAME HIST");
+	// h4->Draw("SAME HIST");
+	// h5->Draw("SAME HIST");
 	h1->Draw("SAME");
 	h2->Draw("SAME");
 

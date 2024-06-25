@@ -49,9 +49,13 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto im_kskl = rdf_cut.Filter("mandel_t > 0.20 && mandel_t < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  45, 1.10, 2.00}, "mkskl");
+	auto im_kskl = rdf_cut.Filter("mandel_t > 0.20 && mandel_t < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  50, 1.10, 2.10}, "mkskl");
 	
-	auto h1_mandelt = rdf_cut.Filter("mkskl > 1.1").Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 85, 0.15, 1.00}, "mandel_t");
+	auto h1_mandelt = rdf_cut.Filter("mkskl > 1.1").Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 100, 0.0, 1.00}, "mandel_t");
+	auto h1_mandeltp = rdf_cut.Filter("mkskl > 1.1").Histo1D({"h1_mandeltp", ";M(K_{S}K_{L});Counts / 1 MeV", 100, 0.0, 1.00}, "mandel_tp");
+
+	auto h2_mkskl_cosHel = rdf_cut.Histo2D({"h2_mkskl_cosHel", ";M(K_{S}K_{L});cos(#theta_{hel});Counts", 20, 1.10, 2.0, 20, -1, 1}, "mkskl", "cos_hel_ks");
+	auto h2_mkskl_phiHel = rdf_cut.Histo2D({"h2_mkskl_phiHel", ";M(K_{S}K_{L});#phi_{hel};Counts", 20, 1.10, 2.0, 20, -TMath::Pi(), TMath::Pi()}, "mkskl", "phi_hel_ks");
 
  	// auto im_kskl = rdf_cut.Filter("mandel_t > 0.2 && mandel_t < 0.4").Histo1D({"im_ksks", ";M(K_{S}K_{S});Counts",  1, 1.005, 1.04}, "mksks");
 	// auto h1_mandelt = rdf_cut.Filter("mksks > 1.005 && mksks < 1.04").Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 1, 0.2, 0.4}, "mandel_t");
@@ -62,8 +66,10 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cout <<"Write results to file: RDF_Ana_Results.root ..."<< endl;
 
 	im_kskl->Write();
-
 	h1_mandelt->Write();
+
+	h2_mkskl_cosHel->Write();
+	h2_mkskl_phiHel->Write();
 
 	out_file->Write();
 	out_file->Close();

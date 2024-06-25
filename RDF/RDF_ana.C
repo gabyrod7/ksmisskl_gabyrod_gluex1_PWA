@@ -91,8 +91,8 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	auto cosHX = rdf_cutp.Filter("mpipi > 0.48 && mpipi < 0.52").Histo1D({"cosHX", ";M(K_{S}K_{L});K_{S} cos#theta Helicity",   40, -1, 1}, "cos_hel_ks", "accidental_weight");
 	auto cosHX_sb = rdf_cutp.Filter("(mpipi > 0.43 && mpipi < 0.45) || (mpipi > 0.55 && mpipi < 0.57)").Histo1D({"cosHX_sb", ";K_{S} cos#theta Helicity", 40, -1, 1}, "cos_hel_ks", "accidental_weight");
 
-	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 50 , 1.00, 2.00}, "mkskl", "accidental_weight");
-	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 50 , 1.00, 2.00}, "mkskl", "accidental_weight");
+	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 80 , 1.00, 2.60}, "mkskl", "accidental_weight");
+	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 80 , 1.00, 2.60}, "mkskl", "accidental_weight");
 
 	auto im_kskl2 = rdf_cut.Filter("amptools_dat").Histo1D({"im_kskl2", ";M(K_{S}K_{L});Counts", 50 , 1.00, 2.00}, "mkskl", "Weight");
 	auto im_kskl2_sb = rdf_cut.Filter("amptools_bkg").Histo1D({"im_kskl2_sb", ";M(K_{S}K_{L});Counts", 50 , 1.00, 2.00}, "mkskl", "Weight");

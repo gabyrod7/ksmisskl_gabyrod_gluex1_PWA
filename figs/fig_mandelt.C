@@ -24,9 +24,9 @@ void fig_mandelt() {
 	TLatex t;
 	t.SetTextSize(0.08);
 
-	TH1F *h1 = (TH1F*)inf1->Get("h1_mandelt");
-	TH1F *h1_sb = (TH1F*)inf1->Get("h1_mandelt_sb");
-	TH1F *h2 = (TH1F*)inf2->Get("h1_mandelt");
+	TH1F *h1 = (TH1F*)inf1->Get("h1_mandeltp");
+	TH1F *h1_sb = (TH1F*)inf1->Get("h1_mandeltp_sb");
+	TH1F *h2 = (TH1F*)inf2->Get("h1_mandeltp");
 
 	h1->SetMarkerStyle(8);
 	h2->SetMarkerStyle(35);

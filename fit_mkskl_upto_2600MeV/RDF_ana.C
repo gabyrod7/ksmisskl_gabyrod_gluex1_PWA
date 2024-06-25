@@ -43,13 +43,14 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	std::map<std::string, std::string> cuts_list = {
 		{"mkskl", "mkskl > 1.10 && mkskl < 2.00"},
 		{"mmiss", "missing_mass > 0.3 && missing_mass < 0.7"},
-		{"mandel_t", "mandel_t > 0.20 && mandel_t < 0.5"},
+		// {"mandel_t", "mandel_t > 0.20 && mandel_t < 0.5"},
 		{"flight_significance", "flight_significance > 6"},
 		{"chisq", "chisq_ndf < 2"},
 		{"ntracks", "num_unused_tracks == 0"},
 		{"nshowers", "num_unused_showers < 3"},
 		{"proton_z_vertex", "proton_z_vertex > 52 && proton_z_vertex < 78"},
-		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"} };
+		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"} 
+	};
 	
 	string cuts = "";
 	string signal = "(mpipi > 0.48 && mpipi < 0.52)";
@@ -70,6 +71,17 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	//4.1) Histograms
 	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 80, 1.10, 2.70}, "mkskl", "accidental_weight");
 	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 80, 1.10, 2.70}, "mkskl", "accidental_weight");
+	// auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 36, 1.10, 2.0}, "mkskl", "accidental_weight");
+	// auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 36, 1.10, 2.0}, "mkskl", "accidental_weight");
+
+	auto h1_mandelt = rdf_cut.Filter(signal).Histo1D({"mandel_t", ";-t [GeV^{2}];Counts", 100, 0.0, 1.0}, "mandel_t", "accidental_weight");
+	auto h1_mandelt_sb = rdf_cut.Filter(sideband).Histo1D({"mandel_t_sb", ";-t [GeV^{2}];Counts", 100, 0.0, 1.0}, "mandel_t", "accidental_weight");
+
+	auto h1_mandeltp = rdf_cut.Filter(signal).Histo1D({"mandel_tp", ";-t' [GeV^{2}];Counts", 100, 0.0, 1.0}, "mandel_tp", "accidental_weight");
+	auto h1_mandeltp_sb = rdf_cut.Filter(sideband).Histo1D({"mandel_tp_sb", ";-t' [GeV^{2}];Counts", 100, 0.0, 1.0}, "mandel_tp", "accidental_weight");
+
+	auto h2_mkskl_mandelt = rdf_cut.Filter(signal).Histo2D({"mkskl_mandelt", ";M(K_{S}K_{L});-t [GeV^{2}];Counts", 80, 1.10, 2.70, 100, 0.0, 1.0}, "mkskl", "mandel_t", "accidental_weight");
+	auto h2_mkskl_mandeltp = rdf_cut.Filter(signal).Histo2D({"mkskl_mandeltp", ";M(K_{S}K_{L});-t' [GeV^{2}];Counts", 80, 1.10, 2.70, 100, 0.0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
 
 	cout <<" "<< endl;
 	
@@ -78,6 +90,15 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	im_kskl->Write();
 	im_kskl_sb->Write();
+
+	h1_mandelt->Write();
+	h1_mandelt_sb->Write();
+
+	h1_mandeltp->Write();
+	h1_mandeltp_sb->Write();
+
+	h2_mkskl_mandelt->Write();
+	h2_mkskl_mandeltp->Write();
 
 	out_file->Write();
 	out_file->Close();

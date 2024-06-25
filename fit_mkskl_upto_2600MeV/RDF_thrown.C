@@ -49,9 +49,11 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto im_kskl = rdf_cut.Filter("mandel_t > 0.20 && mandel_t < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  80, 1.10, 2.70}, "mkskl");
+	// auto im_kskl = rdf_cut.Filter("mandel_t > 0.20 && mandel_t < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  80, 1.10, 2.70}, "mkskl");
+	auto im_kskl = rdf_cut.Filter("mandel_t > 0.20 && mandel_t < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  36, 1.10, 2.0}, "mkskl");
 	
 	auto h1_mandelt = rdf_cut.Filter("mkskl > 1.1").Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 85, 0.15, 1.00}, "mandel_t");
+	auto h1_mandelt2 = rdf_cut.Filter("mkskl < 1.1").Histo1D({"h1_mandelt2", ";M(K_{S}K_{L});Counts / 1 MeV", 85, 0.15, 1.00}, "mandel_t");
 
  	// auto im_kskl = rdf_cut.Filter("mandel_t > 0.2 && mandel_t < 0.4").Histo1D({"im_ksks", ";M(K_{S}K_{S});Counts",  1, 1.005, 1.04}, "mksks");
 	// auto h1_mandelt = rdf_cut.Filter("mksks > 1.005 && mksks < 1.04").Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 1, 0.2, 0.4}, "mandel_t");
@@ -64,6 +66,7 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	im_kskl->Write();
 
 	h1_mandelt->Write();
+	h1_mandelt2->Write();
 
 	out_file->Write();
 	out_file->Close();

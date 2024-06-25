@@ -29,10 +29,10 @@ void plot() {
 
 	waves = {"Pm1+", "Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-"};
 	plot_mass(36, waves);
-	plot_angles(18, waves, "cosTheta", 50, -1, 1, 5, 4);
-	plot_angles(18, waves, "phi", 50, -3.14, 3.14, 5, 4);
-	plot_angles(36, waves, "Phi", 50, -3.14, 3.14, 5, 4);
-	plot_angles(18, waves, "psi", 50, -3.14, 3.14, 5, 4);
+	plot_angles(36, waves, "cosTheta", 25, -1, 1, 6, 6);
+	plot_angles(36, waves, "phi", 25, -3.14, 3.14, 6, 6);
+	plot_angles(36, waves, "Phi", 25, -3.14, 3.14, 6, 6);
+	plot_angles(36, waves, "psi", 25, -3.14, 3.14, 6, 6);
 
 //	//waves = {"Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-"};
 //	//plot_mass(18, waves);
@@ -44,9 +44,9 @@ void plot() {
 //	//plot_angles(18, waves, "cosTheta", 50, -1, 1, 5, 4);
 //	//plot_angles(18, waves, "phi", 50, -3.14, 3.14, 5, 4);
 //
-//	waves = {"Pp0+", "Pp0-", "Pp1+", "Pp1-"};
-//	plot_mass(18, waves);
-//	plot_angles(18, waves, "cosTheta", 50, -1, 1, 5, 4);
+	waves = {"Pp0+", "Pp0-", "Pp1+", "Pp1-"};
+	// plot_mass(36, waves);
+	// plot_angles(36, waves, "cosTheta", 50, -1, 1, 5, 4);
 //	plot_angles(18, waves, "phi", 50, -3.14, 3.14, 5, 4);
 //	plot_angles(18, waves, "Phi", 50, -3.14, 3.14, 5, 4);
 //	plot_angles(18, waves, "psi", 50, -3.14, 3.14, 5, 4);
@@ -61,17 +61,16 @@ void plot() {
 	//plot_angles(18, waves, "cosTheta", 50, -1, 1, 5, 4);
 	//plot_angles(18, waves, "phi", 50, -3.14, 3.14, 5, 4);
 
-//	waves = {"Sp0+", "Sp0-", "Pm1+", "Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-"};
-//	plot_mass(36, waves);
-//	//plot_angles(18, waves, "cosTheta", 50, -1, 1, 5, 4);
-//	//plot_angles(18, waves, "phi", 50, -3.14, 3.14, 5, 4);
-//
-//	waves = {"Sp0+", "Sp0-", "Pp0+", "Pp0-", "Pp1+", "Pp1-"};
-//	plot_mass(36, waves);
-//	//waves = {"Pm1+", "Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-", "Dm2+", "Dm2-", "Dm1+", "Dm1-", "Dp0+", "Dp0-", "Dp1+", "Dp1-", "Dp2+", "Dp2-"};
-//	//plot_mass(18, waves);
-//
-//
+	// waves = {"Sp0+", "Sp0-", "Pm1+", "Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-"};
+	// plot_mass(36, waves);
+	// plot_angles(36, waves, "cosTheta", 50, -1, 1, 6, 6);
+	//plot_angles(18, waves, "phi", 50, -3.14, 3.14, 5, 4);
+
+	waves = {"Sp0+", "Sp0-", "Pp0+", "Pp0-", "Pp1+", "Pp1-"};
+	// plot_mass(36, waves);
+	//waves = {"Pm1+", "Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-", "Dm2+", "Dm2-", "Dm1+", "Dm1-", "Dp0+", "Dp0-", "Dp1+", "Dp1-", "Dp2+", "Dp2-"};
+	//plot_mass(18, waves);
+
 //	//**********************************
 //	//**********************************
 //	//
@@ -79,18 +78,36 @@ void plot() {
 //	//
 //	//**********************************
 //	//**********************************
-//
-//	vector<string> f_waves = {"Fm3+", "Fm3-", "Fm2+", "Fm2-", "Fm1+", "Fm1-", "Fp0+", "Fp0-", "Fp1+", "Fp1-", "Fp2+", "Fp2-", "Fp3-"};
-//	//vector<string> f_waves = {"Fm3+", "Fm3-", "Fm2+", "Fm2-", "Fm1+", "Fm1-", "Fp0+", "Fp0-", "Fp1+", "Fp1-", "Fp2+", "Fp2-", "Fp3+", "Fp3-"};
-//
-//	for(auto f_wave : f_waves) {
-//		waves = {"Pm1+", "Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-"};
-//		//waves = {"Pp0+", "Pp0-", "Pp1+", "Pp1-"};
-//		//waves = {"Pp0+", "Pp0-", "Pp1+", "Pp1-", "Fp3+"};
-//		waves.push_back(f_wave);
-//
-//		plot_mass(36, waves);
-//	}
+
+	vector<string> f_waves = {"Fm3+", "Fm3-", "Fm2+", "Fm2-", "Fm1+", "Fm1-", "Fp0+", "Fp0-", "Fp1+", "Fp1-", "Fp2+", "Fp2-", "Fp3+", "Fp3-"};
+
+	for(string f_wave : f_waves) {
+		waves = {"Pm1+", "Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-"};
+		//waves = {"Pp0+", "Pp0-", "Pp1+", "Pp1-"};
+		//waves = {"Pp0+", "Pp0-", "Pp1+", "Pp1-", "Fp3+"};
+		waves.push_back(f_wave);
+
+		plot_mass(36, waves);
+		plot_angles(36, waves, "cosTheta", 25, -1, 1, 6, 6);
+		plot_angles(36, waves, "phi", 25, -3.14, 3.14, 6, 6);
+		plot_angles(36, waves, "Phi", 25, -3.14, 3.14, 6, 6);
+		plot_angles(36, waves, "psi", 25, -3.14, 3.14, 6, 6);
+	}
+
+	// vector<string> f_waves = {"Fm3+", "Fm3-", "Fm2+", "Fm2-", "Fm1+", "Fp0+", "Fp0-", "Fp1+", "Fp1-", "Fp2+", "Fp2-", "Fp3+", "Fp3-"};
+
+	// for(string f_wave : f_waves) {
+	// 	waves = {"Pm1+", "Pm1-", "Pp0+", "Pp0-", "Pp1+", "Pp1-", "Fm1-"};
+	// 	//waves = {"Pp0+", "Pp0-", "Pp1+", "Pp1-"};
+	// 	//waves = {"Pp0+", "Pp0-", "Pp1+", "Pp1-", "Fp3+"};
+	// 	waves.push_back(f_wave);
+
+	// 	plot_mass(36, waves);
+	// 	plot_angles(36, waves, "cosTheta", 25, -1, 1, 6, 6);
+	// 	plot_angles(36, waves, "phi", 25, -3.14, 3.14, 6, 6);
+	// 	plot_angles(36, waves, "Phi", 25, -3.14, 3.14, 6, 6);
+	// 	plot_angles(36, waves, "psi", 25, -3.14, 3.14, 6, 6);
+	// }
 }
 
 void plot_mass(int nbins = 0, vector<string> waves = {""}) {
@@ -164,7 +181,7 @@ void plot_mass(int nbins = 0, vector<string> waves = {""}) {
 			inf->Close();
 		} // end loop over waveset
 
-		if(nbins == 35) break;
+		// if(nbins == 35) break;
 	} // end loop over bins
 
 	h1->Add(h3, -1);
@@ -234,7 +251,7 @@ void plot_angles(int nbins = 0, vector<string> waves = {""}, string var = "", in
 		exit(0);
 	}
 
-	TFile *inf;
+	TFile *inf, *opf;
 	TH1F *h, *h1[nx][ny], *h2[nx][ny], *h3[nx][ny];
 
 	TLatex t;
@@ -242,11 +259,14 @@ void plot_angles(int nbins = 0, vector<string> waves = {""}, string var = "", in
 
 	string waveset = "";
 	string x_title = "";
+	double y_max = 0;
 
 	vector<string> pols = {"000", "045", "090", "135"};
 
 	for(auto wave : waves)	waveset += wave+"_";
 	waveset.pop_back();
+
+	opf = TFile::Open(("root_files/"+var+"_"+waveset+".root").c_str(), "RECREATE");
 
 	TCanvas *c = new TCanvas();
 	CanvasPartition(c, nx, ny, 0.12, 0.03, 0.12, 0.03);
@@ -299,13 +319,17 @@ void plot_angles(int nbins = 0, vector<string> waves = {""}, string var = "", in
 			} // end loop over polarization angles
 	
 			if(h1[i][j] == NULL || h2[i][j] == NULL)	continue;
-	
+
 			h1[i][j]->Add(h3[i][j], -1);
 	
+			if(i == 0 && j == 0) {
+				y_max = 1.2*h1[i][j]->GetMaximum();
+			}
+
 			x_title = h->GetXaxis()->GetTitle();
 			h2[i][j]->GetXaxis()->SetTitle( x_title.c_str() );
 	
-			h2[i][j]->GetYaxis()->SetRangeUser(0, 1.3*h1[i][j]->GetMaximum());
+			h2[i][j]->GetYaxis()->SetRangeUser(0, y_max);
 			h2[i][j]->SetFillColor(kViolet);
 			h2[i][j]->GetYaxis()->SetTitleSize(0.06);
 			h2[i][j]->GetYaxis()->SetLabelSize(0.06);
@@ -320,9 +344,15 @@ void plot_angles(int nbins = 0, vector<string> waves = {""}, string var = "", in
 	
 			t.DrawLatex(0.4, h1[i][j]->GetMaximum(), ("bin_"+to_string(ibin)).c_str() );
 
+			opf->cd();
+			h1[i][j]->Write( ("data_"+to_string(ibin)).c_str() );
+			h2[i][j]->Write( ("acc_"+to_string(ibin)).c_str() );
+
 			inf->Close();
 		} // end j loop
 	} // end i loop
+
+	c->SaveAs( ("hists/"+var+"_"+waveset+".pdf").c_str() );
 }
 
 void CanvasPartition(TCanvas *C, const Int_t Nx = 2, const Int_t Ny = 2, Float_t lMargin = 0.15, Float_t rMargin = 0.05, Float_t bMargin = 0.15, Float_t tMargin = 0.05) {

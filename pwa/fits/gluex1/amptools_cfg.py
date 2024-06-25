@@ -11,8 +11,8 @@ class amptools_cfg:
         self.fit_name = 'fit_name'
         self.reaction_name = 'NAME'
         self.pol_info = []
-	self.ext = ''
-	self.include_bkg = True
+        self.ext = ''
+        self.include_bkg = True
 
     def set_fit_name(self, name):
         self.fit_name = name
@@ -31,10 +31,10 @@ class amptools_cfg:
         self.fname = fname
 
     def set_ext(self, ext):
-	self.ext = ext
+	    self.ext = ext
 
     def set_include_bkg(self, include_bkg):
-	self.include_bkg = include_bkg
+	    self.include_bkg = include_bkg
 
     def write_zlm(self, f, sum, amp, l, m, fix):
         for pol_angle, pol_frac in self.pol_info:
@@ -82,8 +82,8 @@ class amptools_cfg:
         wave_dictionary = {'Sp0+' : ['Positive', 'Sp0+', 0, 0, True],
                            'Sp0-' : ['Negative', 'Sp0-', 0, 0, True],
 
-                           'Pm1+': ['Positive', 'Pm1+', 1, -1, False],
-                           'Pm1-': ['Negative', 'Pm1-', 1, -1, False],
+                           'Pm1+': ['Positive', 'Pm1+', 1, -1, True],
+                           'Pm1-': ['Negative', 'Pm1-', 1, -1, True],
                            'Pp0+': ['Positive', 'Pp0+', 1, 0, False],
                            'Pp0-': ['Negative', 'Pp0-', 1, 0, False],
                            'Pp1+': ['Positive', 'Pp1+', 1, 1, False],
@@ -153,7 +153,7 @@ class amptools_cfg:
                 f.write('genmc '+self.reaction_name+self.pols_map[pol_angle]+' ROOTDataReader '+os.getcwd()+'/gen'+self.pols_map[pol_angle]+self.ext+'.root\n')
                 f.write('accmc '+self.reaction_name+self.pols_map[pol_angle]+' ROOTDataReader '+os.getcwd()+'/acc'+self.pols_map[pol_angle]+self.ext+'.root\n')
                 if self.include_bkg:
-			f.write('bkgnd '+self.reaction_name+self.pols_map[pol_angle]+' ROOTDataReader '+os.getcwd()+'/bkg'+self.pols_map[pol_angle]+self.ext+'.root\n')
+                    f.write('bkgnd '+self.reaction_name+self.pols_map[pol_angle]+' ROOTDataReader '+os.getcwd()+'/bkg'+self.pols_map[pol_angle]+self.ext+'.root\n')
                 f.write('\n')
             f.write('\n')
 

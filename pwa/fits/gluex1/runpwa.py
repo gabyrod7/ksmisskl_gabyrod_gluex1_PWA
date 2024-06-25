@@ -1,9 +1,11 @@
+#!/d/home/gabyrod7/python/python-3.6.8/bin/python3
+
 import os
 from multiprocessing import Pool
 import amptools_cfg
 
 nbins = 36
-nfits = 2
+nfits = 50
 nprocess = 36
 fit_name = 'fit_sp17_36bins'
 reaction_name = 'NAME_'
@@ -53,33 +55,35 @@ def run_fit(path):
 
 	waves = (path.split('/')[-2])
 	for wave in waves.split('_'):
-		#cmd = 'kskl_plotter '+fit_name+'.fit -s '+wave+' -a T -F '+wave+' -o hist.root > plot_'+wave+'.log'
 		cmd = 'kskl_plotter '+fit_name+'.fit -s '+wave+' -a F -F '+wave+' -o hist.root > plot_'+wave+'.log' # do not acceptance correction
-		# kskl_plotter fit_sp17_18bins.fit -s P0+ -a F -F P0+ -o hist.root
 		print(cmd)
 		os.system(cmd)
 
 	cmd = 'kskl_plotter '+fit_name+'.fit -s '+waves+' -a F -F '+waves+' -o hist.root > plot_'+waves+'.log' # do not acceptance correction
-	#cmd = 'kskl_plotter '+fit_name+'.fit -s '+waves+' -a T -F '+waves+' -o hist.root > plot_'+waves+'.log'
+	print(cmd)
+	os.system(cmd)
+ 
+	cmd = 'getAmpsInBin amptools.cfg fit_sp17_36bins.fit 000_045_090_135 true '+waves
 	print(cmd)
 	os.system(cmd)
 
 if __name__ == '__main__':
 	wave_sets = ['Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-']
-	#wave_sets = ['Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-', 'Pp0+_Pp0-_Pp1+_Pp1-', 'Sp0+_Sp0-_Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-', 'Sp0+_Sp0-_Pp0+_Pp0-_Pp1+_Pp1-']
-	#wave_sets = ['Pm1+_Pp0+_Pp0-_Pp1+_Pp1-', 'Pm1-_Pp0+_Pp0-_Pp1+_Pp1-']
-	#wave_sets = ['Pp0+_Pp1+_Pp1-']
-	#wave_sets = ['Pp0+_Pp1+']
-	#wave_sets = ['Sp0+_Sp0-_Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-', 'Sp0+_Sp0-_Pp0+_Pp0-_Pp1+_Pp1-']
-	#wave_sets = ['Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-', 'Pp0+_Pp0-_Pp1+_Pp1-', 'Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-_Fm3+']
+	# wave_sets = ['Sp0+_Sp0-_Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-']
 
-	#wave_sets = []
-	#F_waves = ['Fm3+', 'Fm3-', 'Fm2+', 'Fm2-', 'Fm1+', 'Fm1-', 'Fp0+', 'Fp0-',
-	#	   'Fp3+', 'Fp3-', 'Fp2+', 'Fp2-', 'Fp1+', 'Fp1-']
-	#for F_wave in F_waves:
-	#	wave_sets.append('Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-_'+F_wave)
+	# F_waves = ['Fm3+', 'Fm3-', 'Fm2+', 'Fm2-', 'Fm1+', 'Fm1-', 'Fp0+', 'Fp0-',
+	# 	   'Fp3+', 'Fp3-', 'Fp2+', 'Fp2-', 'Fp1+', 'Fp1-']
+	# for F_wave in F_waves:
+	# 	wave_sets.append('Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-_'+F_wave)
 	#for F_wave in F_waves:
 	#	wave_sets.append('Pp0+_Pp0-_Pp1+_Pp1-_Fp3+_'+F_wave)
+
+	F_waves = ['Fm3+', 'Fm3-', 'Fm2+', 'Fm2-', 'Fm1+', 'Fp0+', 'Fp0-',
+		   'Fp3+', 'Fp3-', 'Fp2+', 'Fp2-', 'Fp1+', 'Fp1-']
+	for F_wave in F_waves:
+		wave_sets.append('Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-_Fm1-_'+F_wave)
+
+	wave_sets = ['Pm1+_Pm1-_Pp0+_Pp0-_Pp1+_Pp1-_Fm2+_Fm2-_Fm1+_Fm1-_Fp1+_Fp1-_Fp2+_Fp2-']
 
 	paths = pwa_setup(wave_sets, nbins, base_directory)
 

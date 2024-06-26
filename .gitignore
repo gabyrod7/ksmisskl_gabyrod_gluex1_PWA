@@ -39,7 +39,7 @@ bootstrap_*.log
 *.png
 
 # Maybe I change my mind later but lets ignore all .txt, .cfg, .log, .fit and .ni files for now
-*.cfg
+# *.cfg
 *.log
 *.fit
 *.ni

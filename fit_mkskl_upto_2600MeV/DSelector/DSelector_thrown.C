@@ -1,5 +1,27 @@
 #include "DSelector_thrown.h"
-//
+
+double calc_tprime(TLorentzVector targetP4, TLorentzVector beamP4, TLorentzVector recoilP4, TLorentzVector mesonP4) {
+	TVector3 cm_boost_vect = (-1)*((targetP4 + beamP4).BoostVector()); // get 3-vector for boosting to the CM frame
+
+	double m1 = targetP4.M2();
+	double m2 = beamP4.M2();
+	double m3 = recoilP4.M2();
+	double m4 = mesonP4.M2();
+
+	double s = (beamP4 + targetP4).M2();
+
+	TLorentzVector p1cm(targetP4);
+	TLorentzVector p3cm(recoilP4);
+
+	p1cm.Boost(cm_boost_vect);
+	p3cm.Boost(cm_boost_vect);
+
+	double tmin = (m1-m2-m3+m4)*(m1-m2-m3+m4)/(4.*s) - (p1cm.Vect().Mag() - p3cm.Vect().Mag())*(p1cm.Vect().Mag() - p3cm.Vect().Mag());
+
+	double t = (targetP4 - recoilP4).M2();
+	return abs(t) - abs(tmin) ;
+}
+
 void DSelector_thrown::Init(TTree *locTree)
 {
 	// USERS: IN THIS FUNCTION, ONLY MODIFY SECTIONS WITH A "USER" OR "EXAMPLE" LABEL. LEAVE THE REST ALONE.
@@ -54,6 +76,8 @@ void DSelector_thrown::Init(TTree *locTree)
 
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("mkskl");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("mandel_t");
+	dFlatTreeInterface->Create_Branch_Fundamental<double>("mandel_tp");
+	dFlatTreeInterface->Create_Branch_Fundamental<double>("beam_energy");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("ks_proper_time");
 
 	dFlatTreeInterface->Create_Branch_Fundamental<bool>("amptools_dat");
@@ -157,13 +181,18 @@ Bool_t DSelector_thrown::Process(Long64_t locEntry)
 	}
 	cout << endl;
 
+	TLorentzVector locKSKL_P4_Thrown = locDecayingKShortP4_Thrown + locMissingKLongP4_Thrown;
+
 	double t = -(locProtonP4_Thrown - dTargetP4).M2();
+	double tp = calc_tprime(dTargetP4, dThrownBeam->Get_P4(), locProtonP4_Thrown, locKSKL_P4_Thrown);
 	double ks_proper_time = -(1./locDecayingKShortP4_Thrown.Gamma())*locDecayingKShortX4_Thrown.T();
 
 	im_kskl->Fill((locDecayingKShortP4_Thrown + locMissingKLongP4_Thrown).M());
 	dFlatTreeInterface->Fill_Fundamental<double>("mkskl", (locDecayingKShortP4_Thrown + locMissingKLongP4_Thrown).M());
 
 	dFlatTreeInterface->Fill_Fundamental<double>("mandel_t", t);
+	dFlatTreeInterface->Fill_Fundamental<double>("mandel_tp", tp);
+	dFlatTreeInterface->Fill_Fundamental<double>("beam_energy", dThrownBeam->Get_P4().E());
 	dFlatTreeInterface->Fill_Fundamental<double>("ks_proper_time", ks_proper_time);
 
 	// AmpTools step 3

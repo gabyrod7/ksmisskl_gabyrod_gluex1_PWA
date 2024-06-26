@@ -64,6 +64,28 @@ double calc_vanHove_Y(double p1, double p2, double p3) {
 
 }
 
+double calc_tprime(TLorentzVector targetP4, TLorentzVector beamP4, TLorentzVector recoilP4, TLorentzVector mesonP4) {
+	TVector3 cm_boost_vect = (-1)*((targetP4 + beamP4).BoostVector()); // get 3-vector for boosting to the CM frame
+
+	double m1 = targetP4.M2();
+	double m2 = beamP4.M2();
+	double m3 = recoilP4.M2();
+	double m4 = mesonP4.M2();
+
+	double s = (beamP4 + targetP4).M2();
+
+	TLorentzVector p1cm(targetP4);
+	TLorentzVector p3cm(recoilP4);
+
+	p1cm.Boost(cm_boost_vect);
+	p3cm.Boost(cm_boost_vect);
+
+	double tmin = (m1-m2-m3+m4)*(m1-m2-m3+m4)/(4.*s) - (p1cm.Vect().Mag() - p3cm.Vect().Mag())*(p1cm.Vect().Mag() - p3cm.Vect().Mag());
+
+	double t = (targetP4 - recoilP4).M2();
+	return abs(t) - abs(tmin) ;
+}
+
 std::string set_cuts(std::map<std::string, std::string> cuts_list, std::pair<std::string, std::string> change_cut = {"", ""}) {
 	std::string cuts = "";
 
@@ -234,6 +256,7 @@ void DSelector_kskl::Init(TTree *locTree)
 
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("beam_energy");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("mandel_t");
+	dFlatTreeInterface->Create_Branch_Fundamental<double>("mandel_tp");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("ks_proper_time");
 
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("flight_significance");
@@ -469,6 +492,7 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		double vanHove_y = calc_vanHove_Y(ks_res.Pz(), kl_res.Pz(), recoil_res.Pz());
 
 		double t = -(locProtonP4 - dTargetP4).M2();
+		double tp = calc_tprime(dTargetP4, locBeamP4, locProtonP4, locKSKL_P4);
 
 		double mkskl = locKSKL_P4.M();
 		double mmiss = locMissingP4_Measured.M();
@@ -533,6 +557,7 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 
 		dFlatTreeInterface->Fill_Fundamental<double>("beam_energy", locBeamP4.E());
 		dFlatTreeInterface->Fill_Fundamental<double>("mandel_t", t);
+		dFlatTreeInterface->Fill_Fundamental<double>("mandel_tp", tp);
 		dFlatTreeInterface->Fill_Fundamental<double>("ks_proper_time", ks_proper_time);
 
 		dFlatTreeInterface->Fill_Fundamental<double>("flight_significance", locPathLengthSignificance);
@@ -618,12 +643,11 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		} 
 
 		//FILL FLAT TREE
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 
-			&& locKSKL_P4.M() > 1.10 && chisq_ndf < 5.0 
-			&& locPathLengthSignificance > 4.0
+		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && tp < 2
+			&& locKSKL_P4.M() > 1.10 && locKSKL_P4.M() < 2.7
+			&& chisq_ndf < 5.0 && locPathLengthSignificance > 4.0
 			&& locDecayingKShortP4.M() > 0.4 && locDecayingKShortP4.M() < 0.6
-			&& t < 1.0 && mmiss > 0.0 && mmiss < 1.0 
-			&& dComboWrapper->Get_NumUnusedTracks() < 2 && dComboWrapper->Get_NumUnusedShowers() < 4) {
+			&& mmiss > 0.0 && mmiss < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 2 && dComboWrapper->Get_NumUnusedShowers() < 4) {
 				Fill_FlatTree();
 			}
 		else {

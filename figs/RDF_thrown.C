@@ -40,8 +40,9 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	//3.2)Now apply cuts on the newly defined variables:
 	std::map<std::string, std::string> cuts_list = {
 		{"mkskl", "mkskl > 1.10 && mkskl < 2.60"},
-		{"mandel_t", "mandel_tp > 0.20 && mandel_tp < 0.5"},
-		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"} };
+		{"mandel_t", "mandel_tp > 0.20 && mandel_tp < 0.5"}
+		// {"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"}
+	};
 	
 	string cuts = "";
 
@@ -68,6 +69,8 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	auto h2_mkskl_cosHel = rdf_cut.Histo2D({"h2_mkskl_cosHel", ";M(K_{S}K_{L});cos(#theta_{hel});Counts", 20, 1.10, 2.0, 20, -1, 1}, "mkskl", "cos_hel_ks");
 	auto h2_mkskl_phiHel = rdf_cut.Histo2D({"h2_mkskl_phiHel", ";M(K_{S}K_{L});#phi_{hel};Counts", 20, 1.10, 2.0, 20, -TMath::Pi(), TMath::Pi()}, "mkskl", "phi_hel_ks");
  
+ 	auto h2_mkskl_tp = rdfMandelt.Histo2D({"h2_mkskl_tp", ";M(K_{S}K_{L});-t' (GeV^{2});Counts", 50, 1.10, 2.6, 50, 0, 1.0}, "mkskl", "mandel_tp");
+
 	cout <<" "<< endl;
 	
 	//5.) Write everything to a file:

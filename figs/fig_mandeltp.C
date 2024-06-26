@@ -1,4 +1,4 @@
-void fig_mandelt() {
+void fig_mandeltp() {
 	gStyle->SetOptStat(0);
 	gStyle->SetPadTopMargin(0.03);
 	gStyle->SetPadRightMargin(0.01);
@@ -24,9 +24,9 @@ void fig_mandelt() {
 	TLatex t;
 	t.SetTextSize(0.08);
 
-	TH1F *h1 = (TH1F*)inf1->Get("h1_mandelt");
-	TH1F *h1_sb = (TH1F*)inf1->Get("h1_mandelt_sb");
-	TH1F *h2 = (TH1F*)inf2->Get("h1_mandelt");
+	TH1F *h1 = (TH1F*)inf1->Get("h1_mandeltp");
+	TH1F *h1_sb = (TH1F*)inf1->Get("h1_mandeltp_sb");
+	TH1F *h2 = (TH1F*)inf2->Get("h1_mandeltp");
 
 	h1->SetMarkerStyle(8);
 	h2->SetMarkerStyle(35);
@@ -44,7 +44,7 @@ void fig_mandelt() {
 	t.DrawLatex(0.5, 0.73*h1->GetMaximum(), "M(#pi#pi) Sideband");
 	t.SetTextColor(kBlack);
 
-	c->SaveAs("figs/mandelt_Wbackground.pdf");
+	c->SaveAs("figs/mandeltp_Wbackground.pdf");
 
 	h1->Add(h1_sb, -1);
 	TH1F* h3 = (TH1F*)h1->Clone("h3");
@@ -56,7 +56,7 @@ void fig_mandelt() {
 	h3->SetFillColorAlpha(kGreen, 0.2);
 
 	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
-	h3->GetXaxis()->SetRangeUser(0.2, 0.5);
+	h3->GetXaxis()->SetRangeUser(0.2, 1.0);
 
 	c = new TCanvas();
 	h1->Draw();
@@ -68,7 +68,7 @@ void fig_mandelt() {
 	t.SetTextColor(kRed);
 	t.DrawLatex(0.6, 0.73*h1->GetMaximum(), "Monte Carlo");
 
-	c->SaveAs("figs/mandel_t.pdf");
+	c->SaveAs("figs/mandel_tp.pdf");
 
 	TLine *line = new TLine(0.15, 0, 0.15, h1->GetMaximum());
 	line->SetLineWidth(2);

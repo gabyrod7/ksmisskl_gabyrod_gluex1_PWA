@@ -163,8 +163,10 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	auto h2_mkskl_phiHel = rdf_cut2.Filter(signal).Histo2D({"h2_mkskl_phiHel", ";M(K_{S}K_{L});#phi_{hel};Counts", 20, 1.10, 2.00, 20, -TMath::Pi(), TMath::Pi()}, "mkskl", "phi_hel_ks", "accidental_weight");
 	auto h2_mkskl_phiHel_sb = rdf_cut2.Filter(sideband).Histo2D({"h2_mkskl_phiHel_sb", ";M(K_{S}K_{L});#phi_{hel};Counts", 20, 1.10, 2.00, 20, -TMath::Pi(), TMath::Pi()}, "mkskl", "phi_hel_ks", "accidental_weight");
 
-	auto h2_mkskl_t = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_t", ";M(K_{S}K_{L});-t (GeV^{2});Counts", 20, 1.10, 2.0, 20, 0, 1.0}, "mkskl", "mandel_t", "accidental_weight");
-	auto h2_mkskl_tp = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_tp", ";M(K_{S}K_{L});-t' (GeV^{2});Counts", 20, 1.10, 2.0, 20, 0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
+	auto h2_mkskl_t = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_t", ";M(K_{S}K_{L});-t (GeV^{2});Counts", 50, 1.10, 2.6, 50, 0, 1.0}, "mkskl", "mandel_t", "accidental_weight");
+
+	auto h2_mkskl_tp = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_tp", ";M(K_{S}K_{L});-t' (GeV^{2})", 50, 1.10, 2.6, 50, 0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
+	auto h2_mkskl_tp_sb = rdfMandelt.Filter(sideband).Histo2D({"h2_mkskl_tp_sb", ";M(K_{S}K_{L});-t' (GeV^{2})", 50, 1.10, 2.6, 50, 0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
 
 	auto h2_mkskl_t2 = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_t2", ";M(K_{S}K_{L});-t (GeV^{2});Counts", 50, 1.10, 2.6, 75, 0, 15.0}, "mkskl", "mandel_t", "accidental_weight");
 	auto h2_mkskl_tp2 = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_tp2", ";M(K_{S}K_{L});-t' (GeV^{2});Counts", 50, 1.10, 2.6, 75, 0, 15.0}, "mkskl", "mandel_tp", "accidental_weight");

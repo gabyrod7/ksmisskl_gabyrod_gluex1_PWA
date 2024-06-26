@@ -44,7 +44,7 @@ void fig_mandelt_acc() {
 
 	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
 	h1->GetXaxis()->SetRangeUser(0.15, 1.0);
-	h2->GetYaxis()->SetRangeUser(0, 0.3);
+	h2->GetYaxis()->SetRangeUser(0, 0.15);
 
 	TCanvas *c = twoscales(h1, h2);
 

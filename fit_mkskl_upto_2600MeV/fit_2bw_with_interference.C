@@ -34,7 +34,7 @@ void fit_2bw_with_interference() {
 
 	TFile *inf = TFile::Open("hist_dat.root");
 
-	double min = 1.15, max = 2.60;
+	double min = 1.2, max = 2.60;
 	TH1F *h = (TH1F*)inf->Get("im_kskl");
 	h->GetXaxis()->SetRangeUser(min, max);
 
@@ -52,8 +52,8 @@ void fit_2bw_with_interference() {
 	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
-	TF1 *fit = new TF1("fit", myfit, min, max, 9);
-	fit->SetParameters(10, 1.50, 0.22, 10, 1.78, 0.13, 1.0, 280, -170, 25);
+	TF1 *fit = new TF1("fit", myfit, min, max, 10);
+	fit->SetParameters(10, 1.50, 0.22, 10, 1.78, 0.13, 0., 1.71515e+04, -1.92535e+03, -1.80970e+03);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "#Delta#phi", "a0", "a1", "a2");
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);
@@ -196,7 +196,7 @@ Double_t mybw(Double_t* x, Double_t* par) {
 }
 
 Double_t mybkg(Double_t* x, Double_t* par) {
-	return par[0] + par[1]*x[0];// + par[2]*x[0]*x[0];
+	return par[0] + par[1]*x[0] + par[2]*x[0]*x[0];
 }
 
 Double_t mysig(Double_t* x, Double_t* par) {

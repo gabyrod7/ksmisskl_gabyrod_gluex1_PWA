@@ -52,16 +52,18 @@ void fit_3bw_no_interference() {
 	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
-	TF1 *fit = new TF1("fit", myfit, min, max, 11);
+	TF1 *fit = new TF1("fit", myfit, min, max, 12);
 	fit->SetParameters(100, 1.50, 0.20, 100, 1.78, 0.12, 50, 2.2, 0.15);
-	fit->SetParameter(9, 1);
-	fit->SetParameter(10, -1);
-	fit->SetParameter(11, 5.e+03);
+	fit->SetParameter(9, 1.71515e+04);
+	fit->SetParameter(10, -1.92535e+03);
+	fit->SetParameter(11, -1.80970e+03);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "N3", "M3", "#Gamma3");
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);
 
 	// fit->FixParameter(8, 0.14);
+	fit->SetParLimits(7, 2.1, 2.3);
+	fit->SetParLimits(8, 0.1, 0.2);
 
 	TF1 *sig= new TF1("sig", mysig, min, max, 9);
 	sig->SetLineColor(kBlue);
@@ -217,7 +219,7 @@ Double_t myfit(Double_t* x, Double_t* par) {
 	double N3 = par[6];
 	complex<double> bw3 = BreitWigner(x[0], par[7], par[8], 1, 0.497, 0.497);
 
-	return norm(N1*bw1) + norm(N2*bw2) + norm(N3*bw3) + par[9] + par[10]*x[0];// + par[11]*x[0]*x[0];
+	return norm(N1*bw1) + norm(N2*bw2) + norm(N3*bw3) + par[9] + par[10]*x[0] + par[11]*x[0]*x[0];
 }
 
 Double_t mysig(Double_t* x, Double_t* par) {

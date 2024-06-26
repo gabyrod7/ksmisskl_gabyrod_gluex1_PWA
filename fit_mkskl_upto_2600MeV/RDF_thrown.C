@@ -1,3 +1,5 @@
+std::string set_cuts(std::map<std::string, std::string> cuts_list, std::pair<std::string, std::string> change_cut = {"", ""});
+
 void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_report) {
 	cout<<" "<< endl;
 	cout<<"Run RDataFrame Analysis on subset of gp -> KsKlp Spring 2017 data"<< endl;
@@ -36,10 +38,20 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	auto rdf_variables = rdf.Define("target", "TLorentzVector(0,0,0,0.938)");
 
 	//3.2)Now apply cuts on the newly defined variables:
+	std::map<std::string, std::string> cuts_list = {
+		{"mkskl", "mkskl > 1.10 && mkskl < 2.60"},
+		{"mandel_t", "mandel_tp > 0.20 && mandel_tp < 1.0"}
+		// {"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"}
+	};
+	
+	string cuts = "";
 	
 	//Check for energy and momentum balance:
-	auto rdf_cut = rdf_variables.Filter("true");
-	//auto rdf_cut = rdf_variables.Filter("mandel_t > 0.1 && mandel_t < 0.5");
+	cuts = set_cuts(cuts_list, {"", ""});
+	auto rdf_cut = rdf_variables.Filter(cuts);
+
+	cuts = set_cuts(cuts_list, {"mandel_t", ""});
+	auto rdfMandelt = rdf_variables.Filter(cuts);
 
 	cout <<"...done!"<< endl;
 	cout <<" "<< endl;
@@ -49,14 +61,9 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	// auto im_kskl = rdf_cut.Filter("mandel_t > 0.20 && mandel_t < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  80, 1.10, 2.70}, "mkskl");
-	auto im_kskl = rdf_cut.Filter("mandel_t > 0.20 && mandel_t < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  36, 1.10, 2.0}, "mkskl");
+	auto im_kskl = rdf_cut.Filter("mandel_tp > 0.20 && mandel_tp < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  80, 1.10, 2.70}, "mkskl");
 	
-	auto h1_mandelt = rdf_cut.Filter("mkskl > 1.1").Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 85, 0.15, 1.00}, "mandel_t");
-	auto h1_mandelt2 = rdf_cut.Filter("mkskl < 1.1").Histo1D({"h1_mandelt2", ";M(K_{S}K_{L});Counts / 1 MeV", 85, 0.15, 1.00}, "mandel_t");
-
- 	// auto im_kskl = rdf_cut.Filter("mandel_t > 0.2 && mandel_t < 0.4").Histo1D({"im_ksks", ";M(K_{S}K_{S});Counts",  1, 1.005, 1.04}, "mksks");
-	// auto h1_mandelt = rdf_cut.Filter("mksks > 1.005 && mksks < 1.04").Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 1, 0.2, 0.4}, "mandel_t");
+	auto h1_mandeltp = rdfMandelt.Histo1D({"h1_mandeltp", ";-t';Counts / 1 MeV", 85, 0.15, 1.00}, "mandel_tp");
  
 	cout <<" "<< endl;
 	
@@ -65,8 +72,7 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 
 	im_kskl->Write();
 
-	h1_mandelt->Write();
-	h1_mandelt2->Write();
+	h1_mandeltp->Write();
 
 	out_file->Write();
 	out_file->Close();
@@ -105,4 +111,21 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cout <<"Processed "<<nEvents<<" events in: "<<report_time<<ana_time_unit<< endl;
 	cout <<"Have a great day!"<< endl;
 	cout <<" "<< endl;
+}
+
+std::string set_cuts(std::map<std::string, std::string> cuts_list, std::pair<std::string, std::string> change_cut = {"", ""}) {
+	std::string cuts = "";
+
+	for(auto it = cuts_list.begin(); it != cuts_list.end(); ++it) {
+		if(it->first == change_cut.first)	{
+			if(change_cut.second != "")
+				cuts += change_cut.second + " && ";
+			else // if change to cut is an empty string, then remove cut
+				continue;
+		}
+		else								cuts += it->second + " && ";
+	}
+	cuts.erase(cuts.size()-4, 4); // remove last " && "
+
+	return cuts;
 }

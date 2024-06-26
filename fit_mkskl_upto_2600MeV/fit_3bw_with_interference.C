@@ -36,7 +36,7 @@ void fit_3bw_with_interference() {
 
 	TFile *inf = TFile::Open("hist_dat.root");
 
-	double min = 1.15, max = 2.60;
+	double min = 1.2, max = 2.60;
 	TH1F *h = (TH1F*)inf->Get("im_kskl");
 	h->GetXaxis()->SetRangeUser(min, max);
 
@@ -54,14 +54,16 @@ void fit_3bw_with_interference() {
 	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
-	TF1 *fit = new TF1("fit", myfit, min, max, 13);
+	TF1 *fit = new TF1("fit", myfit, min, max, 14);
 	fit->SetParameters(28, 1.46, 0.22, 32, 1.77, 0.13, 0.96, 10, 2.2, 0.14, 4.82);
 	// fit->FixParameter(6, 2.63);
 	// fit->SetParLimits(10, 0, 2*TMath::Pi());
 	// fit->FixParameter(9, 10);
-	fit->SetParameter(11, 1);
-	fit->SetParameter(12, -1);
-	fit->SetParameter(13, 5.e+03);
+	fit->SetParLimits(8, 2.1, 2.3);
+	fit->SetParLimits(9, 0.1, 0.2);
+	fit->SetParameter(11, 1.71515e+04);
+	fit->SetParameter(12, -1.92535e+03);
+	fit->SetParameter(13, -1.80970e+03);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "#Delta#phi_{12}", "N3", "M3", "#Gamma3", "#Delta#phi_{13}");
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);
@@ -216,7 +218,7 @@ Double_t mybw(Double_t* x, Double_t* par) {
 }
 
 Double_t mybkg(Double_t* x, Double_t* par) {
-	return par[0] + par[1]*x[0];// + par[2]*x[0]*x[0];
+	return par[0] + par[1]*x[0] + par[2]*x[0]*x[0];
 }
 
 Double_t mysig(Double_t* x, Double_t* par) {

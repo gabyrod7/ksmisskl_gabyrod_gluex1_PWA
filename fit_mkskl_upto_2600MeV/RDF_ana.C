@@ -41,9 +41,9 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	// 3.2) Make list of nominal cuts
 	std::map<std::string, std::string> cuts_list = {
-		{"mkskl", "mkskl > 1.10 && mkskl < 2.00"},
+		{"mkskl", "mkskl > 1.10 && mkskl < 2.60"},
 		{"mmiss", "missing_mass > 0.3 && missing_mass < 0.7"},
-		// {"mandel_t", "mandel_t > 0.20 && mandel_t < 0.5"},
+		{"mandel_t", "mandel_tp > 0.20 && mandel_tp < 1.0"},
 		{"flight_significance", "flight_significance > 6"},
 		{"chisq", "chisq_ndf < 2"},
 		{"ntracks", "num_unused_tracks == 0"},
@@ -55,11 +55,16 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	string cuts = "";
 	string signal = "(mpipi > 0.48 && mpipi < 0.52)";
 	string sideband = "((mpipi > 0.44 && mpipi < 0.46) || (mpipi > 0.54 && mpipi < 0.56))";
-	// string sideband = "((mpipi > 0.44 && mpipi < 0.45) || (mpipi > 0.55 && mpipi < 0.56))";
 
 	//3.3)Now apply cuts on the newly defined variables:
 	cuts = set_cuts(cuts_list, {"mkskl", ""});
 	auto rdf_cut = rdf_variables.Filter(cuts);
+
+	cuts = set_cuts(cuts_list, {"mandel_t", "mandel_t > 0.20 && mandel_t < 1.0"});
+	auto rdf_cut2 = rdf_variables.Filter(cuts);
+
+	cuts = set_cuts(cuts_list, {"mandel_t", ""});
+	auto rdfMandelt = rdf_variables.Filter(cuts);
 
 	cout <<"...done!"<< endl;
 	cout <<" "<< endl;
@@ -71,17 +76,15 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	//4.1) Histograms
 	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 80, 1.10, 2.70}, "mkskl", "accidental_weight");
 	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 80, 1.10, 2.70}, "mkskl", "accidental_weight");
-	// auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 36, 1.10, 2.0}, "mkskl", "accidental_weight");
-	// auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 36, 1.10, 2.0}, "mkskl", "accidental_weight");
 
-	auto h1_mandelt = rdf_cut.Filter(signal).Histo1D({"mandel_t", ";-t [GeV^{2}];Counts", 100, 0.0, 1.0}, "mandel_t", "accidental_weight");
-	auto h1_mandelt_sb = rdf_cut.Filter(sideband).Histo1D({"mandel_t_sb", ";-t [GeV^{2}];Counts", 100, 0.0, 1.0}, "mandel_t", "accidental_weight");
+	auto im_kskl2 = rdf_cut2.Filter(signal).Histo1D({"im_kskl2", ";M(K_{S}K_{L});Counts", 80, 1.10, 2.70}, "mkskl", "accidental_weight");
+	auto im_kskl_sb2 = rdf_cut2.Filter(sideband).Histo1D({"im_kskl_sb2", ";M(K_{S}K_{L});Counts", 80, 1.10, 2.70}, "mkskl", "accidental_weight");
 
-	auto h1_mandeltp = rdf_cut.Filter(signal).Histo1D({"mandel_tp", ";-t' [GeV^{2}];Counts", 100, 0.0, 1.0}, "mandel_tp", "accidental_weight");
-	auto h1_mandeltp_sb = rdf_cut.Filter(sideband).Histo1D({"mandel_tp_sb", ";-t' [GeV^{2}];Counts", 100, 0.0, 1.0}, "mandel_tp", "accidental_weight");
+	auto h1_mandeltp = rdfMandelt.Histo1D({"h1_mandeltp", ";-t';Counts", 85, 0.15, 1.00}, "mandel_tp", "accidental_weight");
+	auto h1_mandeltp_sb = rdfMandelt.Filter(sideband).Histo1D({"h1_mandeltp_sb", ";-t';Counts", 85, 0.15, 1.00}, "mandel_tp", "accidental_weight");
 
-	auto h2_mkskl_mandelt = rdf_cut.Filter(signal).Histo2D({"mkskl_mandelt", ";M(K_{S}K_{L});-t [GeV^{2}];Counts", 80, 1.10, 2.70, 100, 0.0, 1.0}, "mkskl", "mandel_t", "accidental_weight");
-	auto h2_mkskl_mandeltp = rdf_cut.Filter(signal).Histo2D({"mkskl_mandeltp", ";M(K_{S}K_{L});-t' [GeV^{2}];Counts", 80, 1.10, 2.70, 100, 0.0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
+	auto h2_mkskl_mandeltp = rdfMandelt.Filter(signal).Histo2D({"mkskl_mandeltp", ";M(K_{S}K_{L});-t' [GeV^{2}];Counts", 80, 1.10, 2.70, 100, 0.0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
+	auto h2_mkskl_mandeltp_sb = rdfMandelt.Filter(sideband).Histo2D({"mkskl_mandeltp_sb", ";M(K_{S}K_{L});-t' [GeV^{2}];Counts", 80, 1.10, 2.70, 100, 0.0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
 
 	cout <<" "<< endl;
 	
@@ -91,14 +94,14 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	im_kskl->Write();
 	im_kskl_sb->Write();
 
-	h1_mandelt->Write();
-	h1_mandelt_sb->Write();
+	im_kskl2->Write();
+	im_kskl_sb2->Write();
 
 	h1_mandeltp->Write();
 	h1_mandeltp_sb->Write();
 
-	h2_mkskl_mandelt->Write();
 	h2_mkskl_mandeltp->Write();
+	h2_mkskl_mandeltp_sb->Write();
 
 	out_file->Write();
 	out_file->Close();

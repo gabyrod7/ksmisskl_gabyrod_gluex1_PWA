@@ -49,14 +49,22 @@ void fit_2bw_no_interference() {
 
 	h_acc->Divide(h_gen);
 	h->Divide(h_acc);
-	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
+
+	char s[100];
+	sprintf(s, "Acceptance Corrected Intensity / %.0f MeV", h->GetBinWidth(10)*1000);
+	h->GetYaxis()->SetTitle(s);
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
-	TF1 *fit = new TF1("fit", myfit, min, max, 8);
-	fit->SetParameters(10, 1.50, 0.20, 10, 1.78, 0.12, 1, -1, 1);
+	TF1 *fit = new TF1("fit", myfit, min, max, 9);
+	fit->SetParameters(10, 1.50, 0.20, 10, 1.78, 0.12, 1.71515e+04, -1.92535e+03, -1.80970e+03);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "a0", "a1", "a2");
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);
+
+	// fit->FixParameter(1, 1.507);
+	// fit->FixParameter(2, 0.254);
+	// fit->FixParameter(4, 1.753);
+	// fit->FixParameter(5, 0.122);
 
 	TF1 *sig= new TF1("sig", mysig, min, max, 7);
 	sig->SetLineColor(kBlue);
@@ -100,7 +108,6 @@ void fit_2bw_no_interference() {
 	lg->AddEntry(sig, "Signal", "lf");
 	lg->AddEntry(bkg, "Background", "l");
 
-	char s[100];
 	lg->AddEntry((TObject*)0, "", "");
 	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
 	lg->AddEntry(bw1, s, "l");
@@ -199,7 +206,7 @@ Double_t myfit(Double_t* x, Double_t* par) {
 	double N2 = par[3];
 	complex<double> bw2 = BreitWigner(x[0], par[4], par[5], 1, 0.497, 0.497);
 
-	return norm(N1*bw1) + norm(N2*bw2) + par[6] + par[7]*x[0];// + par[8]*x[0]*x[0];
+	return norm(N1*bw1) + norm(N2*bw2) + par[6] + par[7]*x[0] + par[8]*x[0]*x[0];
 }
 
 Double_t mysig(Double_t* x, Double_t* par) {

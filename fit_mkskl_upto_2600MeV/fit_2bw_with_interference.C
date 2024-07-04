@@ -5,6 +5,7 @@ Double_t myfit(Double_t* x, Double_t* par);
 Double_t mysig(Double_t* x, Double_t* par);
 Double_t mybkg(Double_t* x, Double_t* par);
 Double_t mybw(Double_t* x, Double_t* par);
+TH1F* getAcceptanceCorrectedHist(TString fdata, TString facc, TString fgen, TString hname);
 
 void fit_2bw_with_interference() {
 	gStyle->SetOptStat(0);
@@ -31,25 +32,38 @@ void fit_2bw_with_interference() {
 	gROOT->ForceStyle();
 
 	TCanvas *c;
+	double min = 1.15, max = 2.60;
 
-	TFile *inf = TFile::Open("hist_dat.root");
+	TH1F *h_sp17 = getAcceptanceCorrectedHist("hists/hist_dat_sp17.root", "hists/hist_acc_sp17.root", "hists/hist_gen_sp17.root", "im_kskl");
+	TH1F *h_sp18 = getAcceptanceCorrectedHist("hists/hist_dat_sp18.root", "hists/hist_acc_sp18.root", "hists/hist_gen_sp18.root", "im_kskl");
+	TH1F *h_fa18 = getAcceptanceCorrectedHist("hists/hist_dat_fa18.root", "hists/hist_acc_fa18.root", "hists/hist_gen_fa18.root", "im_kskl");
 
-	double min = 1.2, max = 2.60;
-	TH1F *h = (TH1F*)inf->Get("im_kskl");
-	h->GetXaxis()->SetRangeUser(min, max);
+	// TFile *inf = TFile::Open("hist_dat.root");
 
-	TH1F *sb = (TH1F*)inf->Get("im_kskl_sb");
-	h->Add(sb, -1);
+	// double min = 1.2, max = 2.60;
+	// TH1F *h = (TH1F*)inf->Get("im_kskl");
+	// h->GetXaxis()->SetRangeUser(min, max);
 
-	TFile *inf2 = TFile::Open("hist_acc.root");
-	TFile *inf3 = TFile::Open("hist_gen.root");
+	// TH1F *sb = (TH1F*)inf->Get("im_kskl_sb");
+	// h->Add(sb, -1);
 
-	TH1F *h_acc = (TH1F*)inf2->Get("im_kskl");
-	TH1F *h_gen = (TH1F*)inf3->Get("im_kskl");
+	// TFile *inf2 = TFile::Open("hist_acc.root");
+	// TFile *inf3 = TFile::Open("hist_gen.root");
 
-	h_acc->Divide(h_gen);
-	h->Divide(h_acc);
-	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
+	// TH1F *h_acc = (TH1F*)inf2->Get("im_kskl");
+	// TH1F *h_gen = (TH1F*)inf3->Get("im_kskl");
+
+	// h_acc->Divide(h_gen);
+	// h->Divide(h_acc);
+
+	h_sp17->GetXaxis()->SetRangeUser(min, max);
+	TH1F *h = (TH1F*)h_sp17->Clone("h");
+	h->Add(h_sp18);
+	h->Add(h_fa18);
+
+	char s[100];
+	sprintf(s, "Acceptance Corrected Intensity / %.0f MeV", h->GetBinWidth(10)*1000);
+	h->GetYaxis()->SetTitle(s);
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
 	TF1 *fit = new TF1("fit", myfit, min, max, 10);
@@ -103,7 +117,6 @@ void fit_2bw_with_interference() {
 	lg->AddEntry(sig, "Signal", "lf");
 	lg->AddEntry(bkg, "Background", "l");
 
-	char s[100];
 	lg->AddEntry((TObject*)0, "", "");
 	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
 	lg->AddEntry(bw1, s, "l");
@@ -214,3 +227,20 @@ Double_t myfit(Double_t* x, Double_t* par) {
 	return mysig(&x[0], &par[0]) + mybkg(&x[0], &par[7]);
 }
 
+TH1F* getAcceptanceCorrectedHist(TString fdata, TString facc, TString fgen, TString hname) {
+	TFile *inf = TFile::Open(fdata);
+	TH1F *h = (TH1F*)inf->Get(hname);
+	TH1F *h_sb = (TH1F*)inf->Get(hname + "_sb");
+	h->Add(h_sb, -1);
+
+	TFile *inf2 = TFile::Open(facc);
+	TH1F *h_acc = (TH1F*)inf2->Get(hname);
+
+	TFile *inf3 = TFile::Open(fgen);
+	TH1F *h_gen = (TH1F*)inf3->Get(hname);
+
+	h_acc->Divide(h_gen);
+	h->Divide(h_acc);
+
+	return h;
+}

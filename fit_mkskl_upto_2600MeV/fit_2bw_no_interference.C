@@ -4,6 +4,7 @@ complex<double> BreitWigner(double m, double m0, double width0, int spin, double
 Double_t myfit(Double_t* x, Double_t* par); 
 Double_t mysig(Double_t* x, Double_t* par);
 Double_t mybw(Double_t* x, Double_t* par);
+TH1F* getAcceptanceCorrectedHist(TString fdata, TString facc, TString fgen, TString hname);
 
 void fit_2bw_no_interference() {
 	gStyle->SetOptStat(0);
@@ -30,25 +31,43 @@ void fit_2bw_no_interference() {
 	gROOT->ForceStyle();
 
 	TCanvas *c;
-
-	TFile *inf = TFile::Open("hist_dat.root");
-	// TFile *inf = TFile::Open("hist.root");
-
 	double min = 1.15, max = 2.60;
-	TH1F *h = (TH1F*)inf->Get("im_kskl");
-	h->GetXaxis()->SetRangeUser(min, max);
 
-	TH1F *sb = (TH1F*)inf->Get("im_kskl_sb");
-	h->Add(sb, -1);
+	TH1F *h_sp17 = getAcceptanceCorrectedHist("hists/hist_dat_sp17.root", "hists/hist_acc_sp17.root", "hists/hist_gen_sp17.root", "im_kskl");
+	TH1F *h_sp18 = getAcceptanceCorrectedHist("hists/hist_dat_sp18.root", "hists/hist_acc_sp18.root", "hists/hist_gen_sp18.root", "im_kskl");
+	TH1F *h_fa18 = getAcceptanceCorrectedHist("hists/hist_dat_fa18.root", "hists/hist_acc_fa18.root", "hists/hist_gen_fa18.root", "im_kskl");
 
-	TFile *inf2 = TFile::Open("hist_acc.root");
-	TFile *inf3 = TFile::Open("hist_gen.root");
+	c = new TCanvas();
+	h_sp17->GetXaxis()->SetRangeUser(min, max);
+	// h_sp18->GetXaxis()->SetRangeUser(min, max);
+	// h_fa18->GetXaxis()->SetRangeUser(min, max);
 
-	TH1F *h_acc = (TH1F*)inf2->Get("im_kskl");
-	TH1F *h_gen = (TH1F*)inf3->Get("im_kskl");
+	// h_sp17->SetMarkerColor(kRed);
+	// h_sp18->SetMarkerColor(kBlue);
+	// h_fa18->SetMarkerColor(kGreen+2);
 
-	h_acc->Divide(h_gen);
-	h->Divide(h_acc);
+	// TFile *fflux1 = TFile::Open("/d/grid15/gabyrod7/analysis/ksmisskl_gabyrod_gluex1_PhiSDME/flux/flux_30274_31057.root");
+	// TFile *fflux2 = TFile::Open("/d/grid15/gabyrod7/analysis/ksmisskl_gabyrod_gluex1_PhiSDME/flux/flux_40856_42559.root");
+	// TFile *fflux3 = TFile::Open("/d/grid15/gabyrod7/analysis/ksmisskl_gabyrod_gluex1_PhiSDME/flux/flux_50685_51768.root");
+
+	// TH1F *hflux1 = (TH1F*)fflux1->Get("tagged_lumi");
+	// TH1F *hflux2 = (TH1F*)fflux2->Get("tagged_lumi");
+	// TH1F *hflux3 = (TH1F*)fflux3->Get("tagged_lumi");
+
+	// h_sp17->Scale(1.0/hflux1->Integral());
+	// h_sp18->Scale(1.0/hflux2->Integral());
+	// h_fa18->Scale(1.0/hflux3->Integral());
+
+	// h_sp18->GetYaxis()->SetRangeUser(0.0, 1.1*h_fa18->GetMaximum());
+
+	// h_sp18->Draw();
+	// h_sp17->Draw("SAME");
+	// h_fa18->Draw("SAME");
+	// c->SaveAs("pdfs/tmp.pdf");
+
+	TH1F *h = (TH1F*)h_sp17->Clone("h");
+	h->Add(h_sp18);
+	h->Add(h_fa18);
 
 	char s[100];
 	sprintf(s, "Acceptance Corrected Intensity / %.0f MeV", h->GetBinWidth(10)*1000);
@@ -77,7 +96,6 @@ void fit_2bw_no_interference() {
 	bkg->SetLineColor(kBlack);
 	bkg->SetLineWidth(3);
 
-	c = new TCanvas();
 	h->Fit(fit, "RE");
 	h->GetYaxis()->SetRangeUser(0.0, 1.05*h->GetMaximum());
 	sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5));
@@ -118,9 +136,6 @@ void fit_2bw_no_interference() {
 	sprintf(s, "#chi^{2}/ndf = %.0f/%d = %.2f", fit->GetChisquare(), fit->GetNDF(), fit->GetChisquare()/fit->GetNDF());
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
-
-	// sprintf(s, "Counts / %.0f MeV", h->GetBinWidth(10)*1000);
-	// h->GetYaxis()->SetTitle(s);
 
 	cout << fit->GetChisquare() << endl;
 
@@ -219,3 +234,20 @@ Double_t mysig(Double_t* x, Double_t* par) {
 	return norm(N1*bw1) + norm(N2*bw2);
 }
 
+TH1F* getAcceptanceCorrectedHist(TString fdata, TString facc, TString fgen, TString hname) {
+	TFile *inf = TFile::Open(fdata);
+	TH1F *h = (TH1F*)inf->Get(hname);
+	TH1F *h_sb = (TH1F*)inf->Get(hname + "_sb");
+	h->Add(h_sb, -1);
+
+	TFile *inf2 = TFile::Open(facc);
+	TH1F *h_acc = (TH1F*)inf2->Get(hname);
+
+	TFile *inf3 = TFile::Open(fgen);
+	TH1F *h_gen = (TH1F*)inf3->Get(hname);
+
+	h_acc->Divide(h_gen);
+	h->Divide(h_acc);
+
+	return h;
+}

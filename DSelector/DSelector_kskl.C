@@ -643,8 +643,8 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		} 
 
 		//FILL FLAT TREE
-		if(locKSKL_P4.M() > 1.10 && chisq_ndf < 6.0 && mmiss > 0.0 && mmiss < 1.0 //&& t < 1.0
-			&& dComboWrapper->Get_NumUnusedTracks() < 2 && dComboWrapper->Get_NumUnusedShowers() < 5) {
+		if(locKSKL_P4.M() > 1.10 && chisq_ndf < 6.0 && mmiss > 0.0 && mmiss < 1.0 && tp < 2) { 
+			// && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 2 && dComboWrapper->Get_NumUnusedShowers() < 5) {
 				Fill_FlatTree();
 			}
 		else {

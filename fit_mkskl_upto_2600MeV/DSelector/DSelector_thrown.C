@@ -80,6 +80,7 @@ void DSelector_thrown::Init(TTree *locTree)
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("beam_energy");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("ks_proper_time");
 
+	dFlatTreeInterface->Create_Branch_Fundamental<bool>("in_time");
 	dFlatTreeInterface->Create_Branch_Fundamental<bool>("amptools_dat");
 }
 
@@ -212,6 +213,7 @@ Bool_t DSelector_thrown::Process(Long64_t locEntry)
 	FillAmpTools_FlatTree(dThrownBeam->Get_P4(), locFinalStateP4);
 	//FillAmpTools_FlatTree(locBeamP4, locFinalStateP4);
 
+	dFlatTreeInterface->Fill_Fundamental<bool>("in_time", true);
 	dFlatTreeInterface->Fill_Fundamental<bool>("amptools_dat", true);
 
 	//if(count_proton == 1 && count_ks == 1 && count_kl == 1)

@@ -34,6 +34,11 @@ __init__/
 bootstrap_*.cfg
 bootstrap_*.log
 
+# AmpTools related files
+amptools.cfg
+param_*.cfg
+bin*.cfg
+
 # Ignore pdf and png 
 *.pdf
 *.png
@@ -49,6 +54,7 @@ bootstrap_*.log
 # Ignore tmp and foo files files
 *tmp*
 *foo*
+*old*
 
 # Ignore directories
 pwa/fits/

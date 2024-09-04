@@ -40,7 +40,7 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	//3.2)Now apply cuts on the newly defined variables:
 	std::map<std::string, std::string> cuts_list = {
 		{"mkskl", "mkskl > 1.10 && mkskl < 2.60"},
-		{"mandel_t", "mandel_tp > 0.20 && mandel_tp < 1.0"}
+		{"mandel_tp", "mandel_tp > 0.20 && mandel_tp < 1.0"}
 		// {"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"}
 	};
 	
@@ -50,8 +50,8 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cuts = set_cuts(cuts_list, {"", ""});
 	auto rdf_cut = rdf_variables.Filter(cuts);
 
-	cuts = set_cuts(cuts_list, {"mandel_t", ""});
-	auto rdfMandelt = rdf_variables.Filter(cuts);
+	cuts = set_cuts(cuts_list, {"mandel_tp", ""});
+	auto rdfMandeltp = rdf_variables.Filter(cuts);
 
 	cout <<"...done!"<< endl;
 	cout <<" "<< endl;
@@ -61,9 +61,9 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto im_kskl = rdf_cut.Filter("mandel_tp > 0.20 && mandel_tp < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  80, 1.10, 2.70}, "mkskl");
+	auto im_kskl = rdf_cut.Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  80, 1.10, 2.70}, "mkskl");
 	
-	auto h1_mandeltp = rdfMandelt.Histo1D({"h1_mandeltp", ";-t';Counts / 1 MeV", 85, 0.15, 1.00}, "mandel_tp");
+	auto h1_mandeltp = rdfMandeltp.Histo1D({"h1_mandeltp", ";-t';Counts / 1 MeV", 85, 0.15, 1.00}, "mandel_tp");
  
 	cout <<" "<< endl;
 	

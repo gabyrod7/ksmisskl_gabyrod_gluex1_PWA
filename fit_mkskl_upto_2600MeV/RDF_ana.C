@@ -43,7 +43,7 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	std::map<std::string, std::string> cuts_list = {
 		{"mkskl", "mkskl > 1.10 && mkskl < 2.60"},
 		{"mmiss", "missing_mass > 0.3 && missing_mass < 0.7"},
-		{"mandel_t", "mandel_tp > 0.20 && mandel_tp < 1.0"},
+		{"mandel_tp", "mandel_tp > 0.20 && mandel_tp < 1.0"},
 		{"flight_significance", "flight_significance > 6"},
 		{"chisq", "chisq_ndf < 2"},
 		{"ntracks", "num_unused_tracks == 0"},

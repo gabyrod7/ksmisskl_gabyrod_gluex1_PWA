@@ -36,31 +36,6 @@ void fit_2bw_no_interference() {
 
 	c = new TCanvas();
 	h_sp17->GetXaxis()->SetRangeUser(min, max);
-	// h_sp18->GetXaxis()->SetRangeUser(min, max);
-	// h_fa18->GetXaxis()->SetRangeUser(min, max);
-
-	// h_sp17->SetMarkerColor(kRed);
-	// h_sp18->SetMarkerColor(kBlue);
-	// h_fa18->SetMarkerColor(kGreen+2);
-
-	// TFile *fflux1 = TFile::Open("/d/grid15/gabyrod7/analysis/ksmisskl_gabyrod_gluex1_PhiSDME/flux/flux_30274_31057.root");
-	// TFile *fflux2 = TFile::Open("/d/grid15/gabyrod7/analysis/ksmisskl_gabyrod_gluex1_PhiSDME/flux/flux_40856_42559.root");
-	// TFile *fflux3 = TFile::Open("/d/grid15/gabyrod7/analysis/ksmisskl_gabyrod_gluex1_PhiSDME/flux/flux_50685_51768.root");
-
-	// TH1F *hflux1 = (TH1F*)fflux1->Get("tagged_lumi");
-	// TH1F *hflux2 = (TH1F*)fflux2->Get("tagged_lumi");
-	// TH1F *hflux3 = (TH1F*)fflux3->Get("tagged_lumi");
-
-	// h_sp17->Scale(1.0/hflux1->Integral());
-	// h_sp18->Scale(1.0/hflux2->Integral());
-	// h_fa18->Scale(1.0/hflux3->Integral());
-
-	// h_sp18->GetYaxis()->SetRangeUser(0.0, 1.1*h_fa18->GetMaximum());
-
-	// h_sp18->Draw();
-	// h_sp17->Draw("SAME");
-	// h_fa18->Draw("SAME");
-	// c->SaveAs("pdfs/tmp.pdf");
 
 	TH1F *h = (TH1F*)h_sp17->Clone("h");
 	h->Add(h_sp18);

@@ -1,6 +1,5 @@
-double barrierFactor ( double q, int spin ); 
-double breakupMomentum( double mass0, double mass1, double mass2 ); 
-complex<double> BreitWigner(double m, double m0, double width0, int spin, double m_daughter1, double m_daughter2); 
+#include "helper_functions.h"
+
 Double_t myfit(Double_t* x, Double_t* par); 
 Double_t mysig(Double_t* x, Double_t* par);
 Double_t mybw(Double_t* x, Double_t* par);
@@ -30,30 +29,26 @@ void fit_3bw_no_interference() {
 	gROOT->ForceStyle();
 
 	TCanvas *c;
-
-	TFile *inf = TFile::Open("hist_dat.root");
-	// TFile *inf = TFile::Open("hist.root");
-
 	double min = 1.15, max = 2.60;
-	TH1F *h = (TH1F*)inf->Get("im_kskl");
-	h->GetXaxis()->SetRangeUser(min, max);
 
-	TH1F *sb = (TH1F*)inf->Get("im_kskl_sb");
-	h->Add(sb, -1);
+	TH1F *h_sp17 = getAcceptanceCorrectedHist("hists/hist_dat_sp17.root", "hists/hist_acc_sp17.root", "hists/hist_gen_sp17.root", "im_kskl");
+	TH1F *h_sp18 = getAcceptanceCorrectedHist("hists/hist_dat_sp18.root", "hists/hist_acc_sp18.root", "hists/hist_gen_sp18.root", "im_kskl");
+	TH1F *h_fa18 = getAcceptanceCorrectedHist("hists/hist_dat_fa18.root", "hists/hist_acc_fa18.root", "hists/hist_gen_fa18.root", "im_kskl");
 
-	TFile *inf2 = TFile::Open("hist_acc.root");
-	TFile *inf3 = TFile::Open("hist_gen.root");
+	h_sp17->GetXaxis()->SetRangeUser(min, max);
+	TH1F *h = (TH1F*)h_sp17->Clone("h");
+	h->Add(h_sp18);
+	h->Add(h_fa18);
 
-	TH1F *h_acc = (TH1F*)inf2->Get("im_kskl");
-	TH1F *h_gen = (TH1F*)inf3->Get("im_kskl");
-
-	h_acc->Divide(h_gen);
-	h->Divide(h_acc);
-	h->GetYaxis()->SetTitle("Acceptance Corrected Intensity");
+	char s[100];
+	sprintf(s, "Acceptance Corrected Intensity / %.0f MeV", h->GetBinWidth(10)*1000);
+	h->GetYaxis()->SetTitle(s);
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
 	TF1 *fit = new TF1("fit", myfit, min, max, 12);
-	fit->SetParameters(100, 1.50, 0.20, 100, 1.78, 0.12, 50, 2.2, 0.15);
+	fit->SetParameters(100, 1.54, 0.25, 100, 1.75, 0.12, 50, 2.2, 0.15);
+	// fit->SetParLimits(7, 2.1, 2.3);
+	// fit->SetParLimits(8, 0.1, 0.2);
 	fit->SetParameter(9, 1.71515e+04);
 	fit->SetParameter(10, -1.92535e+03);
 	fit->SetParameter(11, -1.80970e+03);
@@ -114,7 +109,7 @@ void fit_3bw_no_interference() {
 	lg->AddEntry(sig, "Signal", "lf");
 	lg->AddEntry(bkg, "Background", "l");
 
-	char s[100];
+	// char s[100];
 	lg->AddEntry((TObject*)0, "", "");
 	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(1), fit->GetParameter(1), fit->GetParError(1), fit->GetParName(2), fit->GetParameter(2), fit->GetParError(2));
 	lg->AddEntry(bw1, s, "l");
@@ -143,72 +138,6 @@ void fit_3bw_no_interference() {
 	//auto opf = TFile::Open("fit.root", "recreate");
 	//h->Write();
 }
-
-// q is the breakup momentum
-double barrierFactor ( double q, int spin ) {
-	double barrier, z;
-
-	z = ( (q*q) / (0.1973*0.1973) );
-
-	if(spin == 0)
-		barrier = 1.0;
-
-	else if(spin == 1)
-		barrier = sqrt( (2.0*z) / (z + 1.0) );
-
-	else if(spin == 2)
-		barrier = sqrt( (13.0*z*z) / ((z-3.0)*(z-3.0) + 9.0*z) );
-
-	else if(spin == 3)
-		barrier = sqrt( (277.0*z*z*z) / (z*(z-15.0)*(z-15.0) + 9.0*(2.0*z-5.0)*(2.0*z-5.0)) );
-
-	else if(spin == 4)
-		barrier = sqrt( (12746.0*z*z*z*z) / ((z*z-45.0*z+105.0)*(z*z-45.0*z+105.0) + 25.0*z*(2.0*z-21.0)*(2.0*z-21.0)) );
-
-	else
-		barrier = 0.0;
-
-	return barrier;
-}
-
-// mass0 = x
-// mass1 = mass of daughter particle 1
-// mass2 = mass of daughter particle 2
-double breakupMomentum( double mass0, double mass1, double mass2 ) {
-	double q;
-	
-	q = sqrt( fabs( mass0*mass0*mass0*mass0 + 
-			mass1*mass1*mass1*mass1 +
-			mass2*mass2*mass2*mass2 -
-			2.0*mass0*mass0*mass1*mass1 -
-			2.0*mass0*mass0*mass2*mass2 -
-			2.0*mass1*mass1*mass2*mass2  ) ) / (2.0 * mass0);
-	
-	return q;
-}
-
-complex<double> BreitWigner(double m, double m0, double width0, int spin, double m_daughter1, double m_daughter2) {
-	double q = breakupMomentum(m, m_daughter1, m_daughter2);
-	double q0 = breakupMomentum(m0, m_daughter1, m_daughter2);
-
-	double F = barrierFactor(q, spin);
-	double F0 = barrierFactor(q0, spin);
-
-	double Gamma = width0 * (m0/m) * (q/q0) * ((F*F)/(F0*F0));
-
-	complex<double> top(m0*Gamma, 0.0);
-	complex<double> bottom(m0*m0 - m*m, -1*m0*Gamma);
-
-	return top/bottom;
-}
-
-Double_t mybw(Double_t* x, Double_t* par) {
-	double N = par[0];
-	complex<double> bw = BreitWigner(x[0], par[1], par[2], 1, 0.497, 0.497);
-
-	return norm(N*bw);
-}
-
 Double_t myfit(Double_t* x, Double_t* par) {
 	double N1 = par[0];
 	complex<double> bw1 = BreitWigner(x[0], par[1], par[2], 1, 0.497, 0.497);

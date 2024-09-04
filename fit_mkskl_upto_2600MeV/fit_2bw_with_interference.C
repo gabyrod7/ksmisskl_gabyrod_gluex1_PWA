@@ -35,24 +35,6 @@ void fit_2bw_with_interference() {
 	TH1F *h_sp18 = getAcceptanceCorrectedHist("hists/hist_dat_sp18.root", "hists/hist_acc_sp18.root", "hists/hist_gen_sp18.root", "im_kskl");
 	TH1F *h_fa18 = getAcceptanceCorrectedHist("hists/hist_dat_fa18.root", "hists/hist_acc_fa18.root", "hists/hist_gen_fa18.root", "im_kskl");
 
-	// TFile *inf = TFile::Open("hist_dat.root");
-
-	// double min = 1.2, max = 2.60;
-	// TH1F *h = (TH1F*)inf->Get("im_kskl");
-	// h->GetXaxis()->SetRangeUser(min, max);
-
-	// TH1F *sb = (TH1F*)inf->Get("im_kskl_sb");
-	// h->Add(sb, -1);
-
-	// TFile *inf2 = TFile::Open("hist_acc.root");
-	// TFile *inf3 = TFile::Open("hist_gen.root");
-
-	// TH1F *h_acc = (TH1F*)inf2->Get("im_kskl");
-	// TH1F *h_gen = (TH1F*)inf3->Get("im_kskl");
-
-	// h_acc->Divide(h_gen);
-	// h->Divide(h_acc);
-
 	h_sp17->GetXaxis()->SetRangeUser(min, max);
 	TH1F *h = (TH1F*)h_sp17->Clone("h");
 	h->Add(h_sp18);

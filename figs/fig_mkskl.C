@@ -20,9 +20,9 @@ void fig_mkskl() {
 	gStyle->SetMarkerSize(1.5);
 	gROOT->ForceStyle();
 
-	TFile *inf1 = TFile::Open("hist_dat_gluex1.root");
-	TFile *inf2 = TFile::Open("hist_acc_gluex1.root");
-	TFile *inf3 = TFile::Open("hist_gen_gluex1.root");
+	TFile *inf1 = TFile::Open("hists/hist_dat_gluex1.root");
+	TFile *inf2 = TFile::Open("hists/hist_acc_gluex1.root");
+	TFile *inf3 = TFile::Open("hists/hist_gen_gluex1.root");
 
 	TH1F *h1 = (TH1F*)inf1->Get("im_kskl");
 	TH1F *h1_sb = (TH1F*)inf1->Get("im_kskl_sb");
@@ -38,7 +38,7 @@ void fig_mkskl() {
 	h1->SetMarkerStyle(8);
 	h2->SetMarkerStyle(35);
 	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
-	h1->GetXaxis()->SetRangeUser(1.1, 2.0);
+	h1->GetXaxis()->SetRangeUser(1.1, 2.6);
 	h1->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
 	h2->SetMarkerSize(0.0);
@@ -47,6 +47,9 @@ void fig_mkskl() {
 
 
 	TCanvas *c = twoscales(h1, h2);
+
+	// TCanvas *c = new TCanvas();
+	// h1->Draw();
 
 	c->SaveAs("figs/mkskl.pdf");
 }
@@ -63,7 +66,7 @@ TCanvas* twoscales(TH1F* h1, TH1F* h2) {
    Float_t scale    = gPad->GetUymax()/rightmax;
    h2->SetLineColor(kRed);
    h2->Scale(scale);
-   h2->Draw("hist l same");
+   h2->Draw("hist same");
    //draw an axis on the right side
    TGaxis*axis = new TGaxis(gPad->GetUxmax(),gPad->GetUymin(),
                             gPad->GetUxmax(),gPad->GetUymax(),

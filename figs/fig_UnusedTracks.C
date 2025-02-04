@@ -18,14 +18,51 @@ void fig_UnusedTracks() {
 	// gStyle->SetMarkerSize(1.5);
 	gROOT->ForceStyle();
 
-	TFile *inf1 = TFile::Open("hist_dat_gluex1.root");
-	TFile *inf2 = TFile::Open("hist_acc_gluex1.root");
+	// TFile *inf1 = TFile::Open("hist_dat_gluex1.root");
+	// TFile *inf2 = TFile::Open("hist_acc_gluex1.root");
 
-	TH1F *h1 = (TH1F*)inf1->Get("h1_UnusedTracks");
-	TH1F *h1_sb = (TH1F*)inf1->Get("h1_UnusedTracks_sb");
-	TH1F *h2 = (TH1F*)inf2->Get("h1_UnusedTracks");
+	// TH1F *h1 = (TH1F*)inf1->Get("h1_UnusedTracks");
+	// TH1F *h1_sb = (TH1F*)inf1->Get("h1_UnusedTracks_sb");
+	// TH1F *h2 = (TH1F*)inf2->Get("h1_UnusedTracks");
+
+	// h1->Add(h1_sb, -1);
+
+	TFile *inf_dat_sp17 = TFile::Open("hists/hist_dat_sp17.root");
+	TFile *inf_acc_sp17 = TFile::Open("hists/hist_acc_sp17.root");
+
+	TFile *inf_dat_sp18 = TFile::Open("hists/hist_dat_sp18.root");
+	TFile *inf_acc_sp18 = TFile::Open("hists/hist_acc_sp18.root");
+
+	TFile *inf_dat_fa18 = TFile::Open("hists/hist_dat_fa18.root");
+	TFile *inf_acc_fa18 = TFile::Open("hists/hist_acc_fa18.root");
+
+	TH1F *hdat_sp17 = (TH1F*)inf_dat_sp17->Get("h1_UnusedTracks");
+	TH1F *hdat_sp17_sb = (TH1F*)inf_dat_sp17->Get("h1_UnusedTracks_sb");
+	TH1F *hacc_sp17 = (TH1F*)inf_acc_sp17->Get("h1_UnusedTracks");
+
+	TH1F *hdat_sp18 = (TH1F*)inf_dat_sp18->Get("h1_UnusedTracks");
+	TH1F *hdat_sp18_sb = (TH1F*)inf_dat_sp18->Get("h1_UnusedTracks_sb");
+	TH1F *hacc_sp18 = (TH1F*)inf_acc_sp18->Get("h1_UnusedTracks");
+
+	TH1F *hdat_fa18 = (TH1F*)inf_dat_fa18->Get("h1_UnusedTracks");
+	TH1F *hdat_fa18_sb = (TH1F*)inf_dat_fa18->Get("h1_UnusedTracks_sb");
+	TH1F *hacc_fa18 = (TH1F*)inf_acc_fa18->Get("h1_UnusedTracks");
+
+	TH1F *h1 = (TH1F*)hdat_sp17->Clone("h1");
+	TH1F *h1_sb = (TH1F*)hdat_sp17_sb->Clone("h1_sb");
+	TH1F *h2 = (TH1F*)hacc_sp17->Clone("h2");
+
+	h1->Add(hdat_sp18);
+	h1->Add(hdat_fa18);
+
+	h1_sb->Add(hdat_sp18_sb);
+	h1_sb->Add(hdat_fa18_sb);
 
 	h1->Add(h1_sb, -1);
+
+	h2->Add(hacc_sp18);
+	h2->Add(hacc_fa18);
+
 	TH1F *h3 = (TH1F*)h1->Clone();
 
 	h2->Scale(h1->GetMaximum()/h2->GetMaximum());

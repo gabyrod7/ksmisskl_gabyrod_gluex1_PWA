@@ -18,18 +18,46 @@ void fig_UnusedShowers() {
 	// gStyle->SetMarkerSize(1.5);
 	gROOT->ForceStyle();
 
-	TFile *inf1 = TFile::Open("hist_dat_gluex1.root");
-	TFile *inf2 = TFile::Open("hist_acc_gluex1.root");
+	TFile *inf_dat_sp17 = TFile::Open("hists/hist_dat_sp17.root");
+	TFile *inf_acc_sp17 = TFile::Open("hists/hist_acc_sp17.root");
 
-	TH1F *h1 = (TH1F*)inf1->Get("h1_UnusedShowers");
-	TH1F *h1_sb = (TH1F*)inf1->Get("h1_UnusedShowers_sb");
-	TH1F *h2 = (TH1F*)inf2->Get("h1_UnusedShowers");
+	TFile *inf_dat_sp18 = TFile::Open("hists/hist_dat_sp18.root");
+	TFile *inf_acc_sp18 = TFile::Open("hists/hist_acc_sp18.root");
+
+	TFile *inf_dat_fa18 = TFile::Open("hists/hist_dat_fa18.root");
+	TFile *inf_acc_fa18 = TFile::Open("hists/hist_acc_fa18.root");
+
+	TH1F *hdat_sp17 = (TH1F*)inf_dat_sp17->Get("h1_UnusedShowers");
+	TH1F *hdat_sp17_sb = (TH1F*)inf_dat_sp17->Get("h1_UnusedShowers_sb");
+	TH1F *hacc_sp17 = (TH1F*)inf_acc_sp17->Get("h1_UnusedShowers");
+
+	TH1F *hdat_sp18 = (TH1F*)inf_dat_sp18->Get("h1_UnusedShowers");
+	TH1F *hdat_sp18_sb = (TH1F*)inf_dat_sp18->Get("h1_UnusedShowers_sb");
+	TH1F *hacc_sp18 = (TH1F*)inf_acc_sp18->Get("h1_UnusedShowers");
+
+	TH1F *hdat_fa18 = (TH1F*)inf_dat_fa18->Get("h1_UnusedShowers");
+	TH1F *hdat_fa18_sb = (TH1F*)inf_dat_fa18->Get("h1_UnusedShowers_sb");
+	TH1F *hacc_fa18 = (TH1F*)inf_acc_fa18->Get("h1_UnusedShowers");
+
+	TH1F *h1 = (TH1F*)hdat_sp17->Clone("h1");
+	TH1F *h1_sb = (TH1F*)hdat_sp17_sb->Clone("h1_sb");
+	TH1F *h2 = (TH1F*)hacc_sp17->Clone("h2");
+
+	h1->Add(hdat_sp18);
+	h1->Add(hdat_fa18);
+
+	h1_sb->Add(hdat_sp18_sb);
+	h1_sb->Add(hdat_fa18_sb);
 
 	h1->Add(h1_sb, -1);
+
+	h2->Add(hacc_sp18);
+	h2->Add(hacc_fa18);
+
 	TH1F *h3 = (TH1F*)h1->Clone();
 
 	// h2->Scale(h1->GetMaximum()/h2->GetMaximum());
-	h2->Scale(h1->GetBinContent(1)/h2->GetBinContent(1));
+	h2->Scale(h1->GetBinContent(3)/h2->GetBinContent(3));
 	h3->GetXaxis()->SetRangeUser(0.00, 3.00);
 
 	h1->SetMarkerColor(kBlack);
@@ -42,7 +70,7 @@ void fig_UnusedShowers() {
 	h1->SetMarkerSize(1.5);
 	h2->SetMarkerSize(2.0);
 
-	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
+	h1->GetYaxis()->SetRangeUser(0, 1.1*h2->GetMaximum());
 
 	TCanvas *c = new TCanvas();
 	h1->Draw();

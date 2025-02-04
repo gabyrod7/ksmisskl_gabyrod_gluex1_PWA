@@ -3,7 +3,12 @@ std::string set_cuts(std::map<std::string, std::string> cuts_list, std::pair<std
 void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_report) {	
 	cout<<" "<< endl;
 	cout<<"Run RDataFrame Analysis"<< endl;
-	cout<<" "<< endl;
+
+	// print to screen local time
+	time_t now = time(0);
+	tm *ltm = localtime(&now);
+	cout << "Local time: " << ltm->tm_hour << ":" << ltm->tm_min << ":" << ltm->tm_sec << endl;
+	cout << endl;
     
 	if(n_threads > 0.0)	ROOT::EnableImplicitMT(n_threads);
 	
@@ -35,6 +40,7 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	//3.1) Define some variables first:
 	auto rdf_variables = rdf.Define("fs", "flight_significance").Define("misse", "missing_p4_meas.E()").Define("mmiss", "missing_mass")
 				.Define("mksp", "(ks_p4 + p_p4_kin).M()").Define("mklp", "(kl_p4 + p_p4_kin).M()")
+				.Define("mksp2", "(ks_p4 + p_p4_kin).M2()").Define("mklp2", "(kl_p4 + p_p4_kin).M2()").Define("mkskl2", "mkskl*mkskl")
 				.Define("ks_phi", "ks_p4_cm.Phi()").Define("p_z", "p_x4_kin.Z()")
 				.Define("ksphi", "ks_p4.Phi()*180/3.14159265359")
 				.Define("mpipp", "(pip_p4_kin + p_p4_kin).M()").Define("mpimp", "(pim_p4_kin + p_p4_kin).M()");
@@ -43,13 +49,14 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	std::map<std::string, std::string> cuts_list = {
 		{"mkskl", "mkskl > 1.10 && mkskl < 2.60"},
 		{"mmiss", "missing_mass > 0.3 && missing_mass < 0.7"},
-		{"mandel_t", "mandel_tp > 0.20 && mandel_tp < 0.5"},
+		{"mandel_tp", "mandel_tp > 0.20 && mandel_tp < 1.0"},
 		{"flight_significance", "flight_significance > 6"},
 		{"chisq", "chisq_ndf < 2"},
 		{"ntracks", "num_unused_tracks == 0"},
 		{"nshowers", "num_unused_showers < 3"},
 		{"proton_z_vertex", "proton_z_vertex > 52 && proton_z_vertex < 78"},
-		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"} };
+		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"} 
+	};
 	
 	string cuts = "";
 	string signal = "(mpipi > 0.48 && mpipi < 0.52)";
@@ -66,7 +73,7 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	cuts = set_cuts(cuts_list, {"mandel_t", "mandel_t > 0.20 && mandel_t < 0.5"});
 	auto rdfBaryons = rdf_variables.Filter(cuts);
 
-	cuts = set_cuts(cuts_list, {"mandel_t", ""});
+	cuts = set_cuts(cuts_list, {"mandel_tp", ""});
 	auto rdfMandelt = rdf_variables.Filter(cuts);
 
 	cuts = set_cuts(cuts_list, {"mmiss", ""});
@@ -98,15 +105,15 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 50, 1.10, 2.10}, "mkskl", "accidental_weight");
-	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 50, 1.10, 2.10}, "mkskl", "accidental_weight");
+	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", 80, 1.10, 2.70}, "mkskl", "accidental_weight");
+	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", 80, 1.10, 2.70}, "mkskl", "accidental_weight");
 
 	auto im_kskl_BaryonCut1 = rdf_cut.Filter(signal+"&& mklp < 2.0").Histo1D({"im_kskl_BaryonCut1", ";M(K_{S}K_{L});Counts", 50, 1.10, 2.10}, "mkskl", "accidental_weight");
 	auto im_kskl_BaryonCut1_sb = rdf_cut.Filter(sideband+"&& mklp < 2.0").Histo1D({"im_kskl_BaryonCut1_sb", ";M(K_{S}K_{L});Counts", 50, 1.10, 2.10}, "mkskl", "accidental_weight");
 
 	auto h1_mandelt = rdfMandelt.Filter(signal).Histo1D({"h1_mandelt", ";-t (GeV^{2});Counts", 100, 0, 1.0}, "mandel_t", "accidental_weight");
 	auto h1_mandelt_sb = rdfMandelt.Filter(sideband).Histo1D({"h1_mandelt_sb", ";-t (GeV^{2});Counts", 100, 0, 1.0}, "mandel_t", "accidental_weight");
-	
+
 	auto h1_mandeltp = rdfMandelt.Filter(signal).Histo1D({"h1_mandeltp", ";-t' (GeV^{2});Counts", 100, 0, 1.0}, "mandel_tp", "accidental_weight");
 	auto h1_mandeltp_sb = rdfMandelt.Filter(sideband).Histo1D({"h1_mandeltp_sb", ";-t' (GeV^{2});Counts", 100, 0, 1.0}, "mandel_tp", "accidental_weight");
 
@@ -146,8 +153,14 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	auto h1_UnusedTracks = rdfUnusedTracks_cut.Filter(signal).Histo1D({"h1_UnusedTracks", ";Number of Unused Tracks;Counts",  4, 0, 4}, "num_unused_tracks", "accidental_weight");
 	auto h1_UnusedTracks_sb = rdfUnusedTracks_cut.Filter(sideband).Histo1D({"h1_UnusedTracks_sb", ";Number of Unused Tracks;Counts",  4, 0, 4}, "num_unused_tracks", "accidental_weight");
 
+	auto h2_mkskl_UnusedTracks = rdfUnusedTracks_cut.Filter(signal).Histo2D({"h2_mkskl_UnusedTracks", ";M(K_{S}K_{L});Number of Unused Tracks;Counts", 18, 1.10, 2.0, 4, 0, 4}, "mkskl", "num_unused_tracks", "accidental_weight");
+	auto h2_mkskl_UnusedTracks_sb = rdfUnusedTracks_cut.Filter(sideband).Histo2D({"h2_mkskl_UnusedTracks_sb", ";M(K_{S}K_{L});Number of Unused Tracks;Counts", 18, 1.10, 2.0, 4, 0, 4}, "mkskl", "num_unused_tracks", "accidental_weight");
+
 	auto h1_UnusedShowers = rdfUnusedShowers_cut.Filter(signal).Histo1D({"h1_UnusedShowers", ";Number of Unused Showers;Counts",  10, 0, 10}, "num_unused_showers", "accidental_weight");
 	auto h1_UnusedShowers_sb = rdfUnusedShowers_cut.Filter(sideband).Histo1D({"h1_UnusedShowers_sb", ";Number of Unused Showers;Counts",  10, 0, 10}, "num_unused_showers", "accidental_weight");
+
+	auto h2_mkskl_UnusedShowers = rdfUnusedShowers_cut.Filter(signal).Histo2D({"h2_mkskl_UnusedShowers", ";M(K_{S}K_{L});Number of Unused Showers;Counts", 18, 1.10, 2.0, 10, 0, 10}, "mkskl", "num_unused_showers", "accidental_weight");
+	auto h2_mkskl_UnusedShowers_sb = rdfUnusedShowers_cut.Filter(sideband).Histo2D({"h2_mkskl_UnusedShowers_sb", ";M(K_{S}K_{L});Number of Unused Showers;Counts", 18, 1.10, 2.0, 10, 0, 10}, "mkskl", "num_unused_showers", "accidental_weight");
 
 	auto h1_ProtonZVertex = rdfProtonZVertex_cut.Filter(signal).Histo1D({"h1_ProtonZVertex", ";Proton Z vertex (cm);Counts",  70, 30, 100}, "proton_z_vertex", "accidental_weight");
 	auto h1_ProtonZVertex_sb = rdfProtonZVertex_cut.Filter(sideband).Histo1D({"h1_ProtonZVertex_sb", ";Proton Z-vertex (cm);Counts",  70, 30, 100}, "proton_z_vertex", "accidental_weight");
@@ -170,6 +183,12 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	auto h2_mkskl_t2 = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_t2", ";M(K_{S}K_{L});-t (GeV^{2});Counts", 50, 1.10, 2.6, 75, 0, 15.0}, "mkskl", "mandel_t", "accidental_weight");
 	auto h2_mkskl_tp2 = rdfMandelt.Filter(signal).Histo2D({"h2_mkskl_tp2", ";M(K_{S}K_{L});-t' (GeV^{2});Counts", 50, 1.10, 2.6, 75, 0, 15.0}, "mkskl", "mandel_tp", "accidental_weight");
+
+	auto dalitz_ksp_klp = rdf_cut.Filter(signal).Histo2D({"dalitz_ksp_klp", ";M^{2}(K_{S}p) (GeV^{2});M^{2}(K_{L}p) (GeV^{2});Counts", 130, 1, 14, 130, 1, 14}, "mksp2", "mklp2", "accidental_weight");
+	auto dalitz_ksp_klp_sb = rdf_cut.Filter(sideband).Histo2D({"dalitz_ksp_klp_sb", ";M^{2}(K_{S}p) (GeV^{2});M^{2}(K_{L}p) (GeV^{2});Counts", 130, 1, 14, 130, 1, 14}, "mksp2", "mklp2", "accidental_weight");
+
+	auto dalitz_kskl_klp = rdf_cut.Filter(signal).Histo2D({"dalitz_kskl_klp", ";M^{2}(K_{S}K_{L}) (GeV^{2});M^{2}(K_{L}p) (GeV^{2});Counts", 80, 1.0, 9, 130, 1, 14}, "mkskl2", "mklp2", "accidental_weight");
+	auto dalitz_kskl_klp_sb = rdf_cut.Filter(sideband).Histo2D({"dalitz_kskl_klp_sb", ";M^{2}(K_{S}K_{L}) (GeV^{2});M^{2}(K_{L}p) (GeV^{2});Counts", 80, 1.0, 9, 130, 1, 14}, "mkskl2", "mklp2", "accidental_weight");
 
 	cout <<" "<< endl;
 	
@@ -224,8 +243,14 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	h1_UnusedTracks->Write();
 	h1_UnusedTracks_sb->Write();
 
+	h2_mkskl_UnusedTracks->Write();
+	h2_mkskl_UnusedTracks_sb->Write();
+
 	h1_UnusedShowers->Write();
 	h1_UnusedShowers_sb->Write();
+
+	h2_mkskl_UnusedShowers->Write();
+	h2_mkskl_UnusedShowers_sb->Write();
 
 	h1_ProtonZVertex->Write();
 	h1_ProtonZVertex_sb->Write();
@@ -246,6 +271,12 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	h2_mkskl_t2->Write();
 	h2_mkskl_tp2->Write();
+
+	dalitz_ksp_klp->Write();
+	dalitz_ksp_klp_sb->Write();
+
+	dalitz_kskl_klp->Write();
+	dalitz_kskl_klp_sb->Write();
 
 	out_file->Write();
 	out_file->Close();

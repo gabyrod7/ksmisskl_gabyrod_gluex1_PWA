@@ -40,18 +40,19 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	//3.2)Now apply cuts on the newly defined variables:
 	std::map<std::string, std::string> cuts_list = {
 		{"mkskl", "mkskl > 1.10 && mkskl < 2.60"},
-		{"mandel_t", "mandel_tp > 0.20 && mandel_tp < 0.5"}
+		{"mandel_tp", "mandel_tp > 0.20 && mandel_tp < 1.0"}
 		// {"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"}
 	};
 	
 	string cuts = "";
 
 	//Check for energy and momentum balance:
-	auto rdf_cut = rdf_variables.Filter("true");
-	//auto rdf_cut = rdf_variables.Filter("mandel_t > 0.1 && mandel_t < 0.5");
+	// auto rdf_cut = rdf_variables.Filter("true");
+	cuts = set_cuts(cuts_list, {"", ""});
+	auto rdf_cut = rdf_variables.Filter(cuts);
 
-	cuts = set_cuts(cuts_list, {"mandel_t", ""});
-	auto rdfMandelt = rdf_variables.Filter(cuts);
+	cuts = set_cuts(cuts_list, {"mandel_tp", ""});
+	auto rdfMandeltp = rdf_variables.Filter(cuts);
 
 	cout <<"...done!"<< endl;
 	cout <<" "<< endl;
@@ -61,15 +62,15 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto im_kskl = rdf_cut.Filter("mandel_t > 0.20 && mandel_t < 0.50").Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  50, 1.10, 2.10}, "mkskl");
+	auto im_kskl = rdf_cut.Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  80, 1.10, 2.70}, "mkskl");
 	
-	auto h1_mandelt = rdfMandelt.Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 100, 0.0, 1.00}, "mandel_t");
-	auto h1_mandeltp = rdfMandelt.Histo1D({"h1_mandeltp", ";M(K_{S}K_{L});Counts / 1 MeV", 100, 0.0, 1.00}, "mandel_tp");
+	auto h1_mandelt = rdfMandeltp.Histo1D({"h1_mandelt", ";M(K_{S}K_{L});Counts / 1 MeV", 100, 0.0, 1.00}, "mandel_t");
+	auto h1_mandeltp = rdfMandeltp.Histo1D({"h1_mandeltp", ";M(K_{S}K_{L});Counts / 1 MeV", 100, 0.0, 1.00}, "mandel_tp");
 
 	auto h2_mkskl_cosHel = rdf_cut.Histo2D({"h2_mkskl_cosHel", ";M(K_{S}K_{L});cos(#theta_{hel});Counts", 20, 1.10, 2.0, 20, -1, 1}, "mkskl", "cos_hel_ks");
 	auto h2_mkskl_phiHel = rdf_cut.Histo2D({"h2_mkskl_phiHel", ";M(K_{S}K_{L});#phi_{hel};Counts", 20, 1.10, 2.0, 20, -TMath::Pi(), TMath::Pi()}, "mkskl", "phi_hel_ks");
  
- 	auto h2_mkskl_tp = rdfMandelt.Histo2D({"h2_mkskl_tp", ";M(K_{S}K_{L});-t' (GeV^{2});Counts", 50, 1.10, 2.6, 50, 0, 1.0}, "mkskl", "mandel_tp");
+ 	auto h2_mkskl_tp = rdfMandeltp.Histo2D({"h2_mkskl_tp", ";M(K_{S}K_{L});-t' (GeV^{2});Counts", 50, 1.10, 2.6, 50, 0, 1.0}, "mkskl", "mandel_tp");
 
 	cout <<" "<< endl;
 	

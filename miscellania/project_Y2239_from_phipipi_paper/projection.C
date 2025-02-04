@@ -52,16 +52,16 @@ void projection() {
 	cout << scale << endl;
 
 	TF1 *model1 = new TF1("proj1", BreitWigner, min, max, 3);
-	model1->SetParameters(scale, 2.239, 0.140);
+	model1->SetParameters(scale*2, 2.239, 0.140);
 	model1->SetParNames("N", "M", "#Gamma");
 	model1->SetLineColor(kRed);
 
 	TF1 *model2 = new TF1("proj2", BreitWigner, min, max, 3);
-	model2->SetParameters(scale*0.5, 2.239, 0.140);
+	model2->SetParameters(scale, 2.239, 0.140);
 	model2->SetLineColor(kOrange);
 
 	TF1 *model3 = new TF1("proj3", BreitWigner, min, max, 3);
-	model3->SetParameters(scale*0.1, 2.239, 0.140);
+	model3->SetParameters(scale*0.3, 2.239, 0.140);
 	model3->SetLineColor(kViolet);
 
 
@@ -70,16 +70,16 @@ void projection() {
 	model2->Draw("SAME");
 	model3->Draw("SAME");
 
-	TLegend *lg = new TLegend(0.6, 0.7, 0.97, 0.97);
-	lg->AddEntry(model1, "Br(Y -> KsKl) = 1", "l");
-	lg->AddEntry(model2, "Br(Y -> KsKl) = 0.5", "l");
-	lg->AddEntry(model3, "Br(Y -> KsKl) = 0.1", "l");
+	TLegend *lg = new TLegend(0.6, 0.6, 0.97, 0.97);
+	lg->AddEntry(model1, "#frac{Br(Y -> KsKl)}{Br(Y -> #phi#pi#pi)} = 2", "l");
+	lg->AddEntry(model2, "#frac{Br(Y -> KsKl)}{Br(Y -> #phi#pi#pi)} = 1", "l");
+	lg->AddEntry(model3, "#frac{Br(Y -> KsKl)}{Br(Y -> #phi#pi#pi)} = 0.3", "l");
 	lg->Draw();
 
 	TLegend *lg2 = new TLegend(0.16, 0.8, 0.45, 0.97);
 	lg2->SetTextSize(0.02);
 	char s[50];
-	sprintf(s, "#sigma(#gamma p -> Yp -> #phi#pi#pip) = %.1f pb", Y2239_cross_section);
+	sprintf(s, "#sigma(#gamma p -> Yp)*Br(Y -> #phi#pi#pi) = %.1f pb", Y2239_cross_section);
 	lg2->AddEntry((TObject*)0, s, "");
 	sprintf(s, "Luminosity = %.1f pb^{-1}", lumi);
 	lg2->AddEntry((TObject*)0, s, "");

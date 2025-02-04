@@ -63,12 +63,15 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	//4.1) Histograms
 	int nBins = 72;
 	double xMin = 1.16, xMax = 2.60;
-	auto im_kskl = rdf_cut.Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  nBins, xMin, xMax}, "mkskl");
+	auto im_kskl = rdf_cut.Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts",  nBins, xMin, xMax}, "mkskl");\
+	auto im_kskl_tp = rdf_cut.Histo2D({"im_kskl_tp", ";M(K_{S}K_{L});-t';Counts", nBins, xMin, xMax, 100, 0.0, 1.0}, "mkskl", "mandel_tp");
 
 	auto im_kskl_mpipi1 = rdf_cut.Histo1D({"im_kskl_mpipi1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_mpipi2 = rdf_cut.Histo1D({"im_kskl_mpipi2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_mpipi3 = rdf_cut.Histo1D({"im_kskl_mpipi3", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_mmiss1 = rdf_cut.Histo1D({"im_kskl_mmiss1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_mmiss2 = rdf_cut.Histo1D({"im_kskl_mmiss2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	// auto im_kskl_baryonCut = rdf_cut.Filter("mksp > 2 && mklp > 2").Histo1D({"im_kskl_baryonCut", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_mandeltp1 = rdfMandeltp.Filter("mandel_tp > 0.2 && mandel_tp < 0.8").Histo1D({"im_kskl_mandel_tp1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_mandeltp2 = rdfMandeltp.Filter("mandel_tp > 0.15 && mandel_tp < 1.10").Histo1D({"im_kskl_mandel_tp2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_FS1 = rdf_cut.Histo1D({"im_kskl_FS1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
@@ -81,9 +84,8 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	auto im_kskl_nshowers3 = rdf_cut.Histo1D({"im_kskl_nshowers3", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_proton_z_vertex1 = rdf_cut.Histo1D({"im_kskl_proton_z_vertex1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_proton_z_vertex2 = rdf_cut.Histo1D({"im_kskl_proton_z_vertex2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
-	auto im_kskl_beam_energy1 = rdf_cut.Filter("beam_energy > 8.2 && beam_energy < 8.4").Histo1D({"im_kskl_beam_energy1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
-	auto im_kskl_beam_energy2 = rdf_cut.Filter("beam_energy > 8.4 && beam_energy < 8.6").Histo1D({"im_kskl_beam_energy2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
-	auto im_kskl_beam_energy3 = rdf_cut.Filter("beam_energy > 8.6 && beam_energy < 8.8").Histo1D({"im_kskl_beam_energy3", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_beam_energy1 = rdf_cut.Filter("beam_energy > 8.2 && beam_energy < 8.5").Histo1D({"im_kskl_beam_energy1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_beam_energy2 = rdf_cut.Filter("beam_energy > 8.5 && beam_energy < 8.8").Histo1D({"im_kskl_beam_energy2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_fitRange1 = rdf_cut.Histo1D({"im_kskl_fitRange1", ";M(K_{S}K_{L});Counts", 78, 1.10, 2.66}, "mkskl");
 	auto im_kskl_fitRange2 = rdf_cut.Histo1D({"im_kskl_fitRange2", ";M(K_{S}K_{L});Counts", 67, 1.20, 2.54}, "mkskl");
 	auto im_kskl_binning1 = rdf_cut.Histo1D({"im_kskl_binning1", ";M(K_{S}K_{L});Counts", 64, xMin, xMax}, "mkskl");
@@ -97,9 +99,11 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	cout <<"Write results to file: RDF_Ana_Results.root ..."<< endl;
 
 	im_kskl->Write();
+	im_kskl_tp->Write();
 
 	im_kskl_mpipi1->Write();
 	im_kskl_mpipi2->Write();
+	im_kskl_mpipi3->Write();
 	im_kskl_mmiss1->Write();
 	im_kskl_mmiss2->Write();
 	im_kskl_mandeltp1->Write();
@@ -116,7 +120,6 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	im_kskl_proton_z_vertex2->Write();
 	im_kskl_beam_energy1->Write();
 	im_kskl_beam_energy2->Write();
-	im_kskl_beam_energy3->Write();
 	im_kskl_fitRange1->Write();
 	im_kskl_fitRange2->Write();
 	im_kskl_binning1->Write();

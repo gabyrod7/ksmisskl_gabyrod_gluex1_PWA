@@ -4,7 +4,7 @@ Double_t myfit(Double_t* x, Double_t* par);
 Double_t mysig(Double_t* x, Double_t* par);
 Double_t mybkg(Double_t* x, Double_t* par);
 
-void fit_2bw_with_interference() {
+void fit_2bw_noInterference_pol3() {
 	gStyle->SetOptStat(0);
 	gStyle->SetPadTopMargin(0.03);
 	gStyle->SetPadRightMargin(0.03);
@@ -24,7 +24,7 @@ void fit_2bw_with_interference() {
 	gStyle->SetTitleOffset(1.1,"X");
 
 	gStyle->SetMarkerStyle(8);
-	gStyle->SetMarkerSize(1.0);
+	gStyle->SetMarkerSize(1.);
 
 	gROOT->ForceStyle();
 
@@ -35,7 +35,9 @@ void fit_2bw_with_interference() {
 	TH1F *h_sp18 = getAcceptanceCorrectedHist("hists/hist_dat_sp18.root", "hists/hist_acc_sp18.root", "hists/hist_gen_sp18.root", "im_kskl");
 	TH1F *h_fa18 = getAcceptanceCorrectedHist("hists/hist_dat_fa18.root", "hists/hist_acc_fa18.root", "hists/hist_gen_fa18.root", "im_kskl");
 
+	c = new TCanvas();
 	h_sp17->GetXaxis()->SetRangeUser(min, max);
+
 	TH1F *h = (TH1F*)h_sp17->Clone("h");
 	h->Add(h_sp18);
 	h->Add(h_fa18);
@@ -46,8 +48,8 @@ void fit_2bw_with_interference() {
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
 	TF1 *fit = new TF1("fit", myfit, min, max, 10);
-	fit->SetParameters(10, 1.50, 0.22, 10, 1.78, 0.13, 0., 1.71515e+04, -1.92535e+03, -1.80970e+03);
-	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "#Delta#phi", "a0", "a1", "a2");
+	fit->SetParameters(110, 1.50, 0.25, 100, 1.75, 0.12, 1.71515e+04, -1.92535e+03, 1.80970e+03, 1);
+	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "a0", "a1", "a2", "a3");
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);
 
@@ -55,22 +57,18 @@ void fit_2bw_with_interference() {
 	sig->SetLineColor(kBlue);
 	sig->SetFillStyle(3002);
 	sig->SetLineWidth(0);
-	sig->SetFillColor(kAzure+8);
+	sig->SetFillColorAlpha(kAzure+8, 1.0);
 	sig->SetNpx(1000);
 
-	TF1 *bkg = new TF1("bkg", mybkg, min, max, 3);
+	TF1 *bkg = new TF1("bkg", mybkg, min, max, 4);
 	bkg->SetLineColor(kBlack);
 	bkg->SetLineWidth(3);
-	bkg->SetNpx(1000);
 
-	c = new TCanvas();
 	h->Fit(fit, "RE");
-	//h->Draw();
-	// fit->Draw("SAME");
 	h->GetYaxis()->SetRangeUser(0.0, 1.05*h->GetMaximum());
-	sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5), fit->GetParameter(6));
+	sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5));
 	sig->Draw("same");
-	bkg->SetParameters(fit->GetParameter(7), fit->GetParameter(8), fit->GetParameter(9));
+	bkg->SetParameters(fit->GetParameter(6), fit->GetParameter(7), fit->GetParameter(8), fit->GetParameter(9));
 	bkg->Draw("SAME");
 
 	TF1 *bw1= new TF1("bw1", mybw, min, max, 3);
@@ -103,27 +101,44 @@ void fit_2bw_with_interference() {
 	sprintf(s, "#splitline{%s = %.3f #pm %.3f GeV}{%s = %.3f #pm %.3f GeV}", fit->GetParName(4), fit->GetParameter(4), fit->GetParError(4), fit->GetParName(5), fit->GetParameter(5), fit->GetParError(5));
 	lg->AddEntry(bw2, s, "l");
 	lg->AddEntry((TObject*)0, "", "");
-	sprintf(s, "%s = %.2f #pm %.2f", fit->GetParName(6), fit->GetParameter(6), fit->GetParError(6));
-	lg->AddEntry((TObject*)0, s, "");
 	sprintf(s, "#chi^{2}/ndf = %.0f/%d = %.2f", fit->GetChisquare(), fit->GetNDF(), fit->GetChisquare()/fit->GetNDF());
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
 
-	// sprintf(s, "Counts / %.1f MeV", h->GetBinWidth(10)*1000);
-	// h->GetYaxis()->SetTitle(s);
+	cout << fit->GetChisquare() << endl;
 
-	c->SaveAs("pdfs/kskl_2bw_with_interference.pdf");
+	c->SaveAs("pdf_nInterference/bkgPol3.pdf");
 
-	//c = new TCanvas();
-	//auto rp = new TRatioPlot(h);
-	//rp->Draw();
+	TGraphErrors *m1 = new TGraphErrors();
+	TGraphErrors *m2 = new TGraphErrors();
+	TGraphErrors *g1 = new TGraphErrors();
+	TGraphErrors *g2 = new TGraphErrors();
 
-	//auto opf = TFile::Open("fit.root", "recreate");
-	//h->Write();
+	m1->SetPoint(0, 1, fit->GetParameter(1));
+	m1->SetPointError(0, 0, fit->GetParError(1));
+	m2->SetPoint(0, 1, fit->GetParameter(4));
+	m2->SetPointError(0, 0, fit->GetParError(4));
+	g1->SetPoint(0, 1, fit->GetParameter(2));
+	g1->SetPointError(0, 0, fit->GetParError(2));
+	g2->SetPoint(0, 1, fit->GetParameter(5));
+	g2->SetPointError(0, 0, fit->GetParError(5));
+
+	TFile *outf = new TFile("rootFiles/fit_pol3.root", "RECREATE");
+	m1->Write("m1");
+	m2->Write("m2");
+	g1->Write("g1");
+	g2->Write("g2");
+
 }
 
-Double_t mybkg(Double_t* x, Double_t* par) {
-	return par[0] + par[1]*x[0] + par[2]*x[0]*x[0];
+Double_t myfit(Double_t* x, Double_t* par) {
+	double N1 = par[0];
+	complex<double> bw1 = BreitWigner(x[0], par[1], par[2], 1, 0.497, 0.497);
+
+	double N2 = par[3];
+	complex<double> bw2 = BreitWigner(x[0], par[4], par[5], 1, 0.497, 0.497);
+
+	return mysig(&x[0], &par[0]) + mybkg(&x[0], &par[6]);
 }
 
 Double_t mysig(Double_t* x, Double_t* par) {
@@ -131,12 +146,11 @@ Double_t mysig(Double_t* x, Double_t* par) {
 	complex<double> bw1 = BreitWigner(x[0], par[1], par[2], 1, 0.497, 0.497);
 
 	double N2 = par[3];
-	complex<double> phase(cos(par[6]), sin(par[6]));
 	complex<double> bw2 = BreitWigner(x[0], par[4], par[5], 1, 0.497, 0.497);
 
-	return norm(N1*bw1 + N2*phase*bw2);
+	return norm(N1*bw1) + norm(N2*bw2);
 }
 
-Double_t myfit(Double_t* x, Double_t* par) {
-	return mysig(&x[0], &par[0]) + mybkg(&x[0], &par[7]);
+Double_t mybkg(Double_t* x, Double_t* par) {
+	return par[0] + par[1]*x[0] + par[2]*x[0]*x[0] + par[3]*x[0]*x[0]*x[0];
 }

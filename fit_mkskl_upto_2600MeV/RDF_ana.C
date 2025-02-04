@@ -37,7 +37,8 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 				.Define("mksp", "(ks_p4 + p_p4_kin).M()").Define("mklp", "(kl_p4 + p_p4_kin).M()")
 				.Define("ks_phi", "ks_p4_cm.Phi()").Define("p_z", "p_x4_kin.Z()")
 				.Define("ksphi", "ks_p4.Phi()*175/3.14159265359")
-				.Define("mpipp", "(pip_p4_kin + p_p4_kin).M()").Define("mpimp", "(pim_p4_kin + p_p4_kin).M()");
+				.Define("mpipp", "(pip_p4_kin + p_p4_kin).M()").Define("mpimp", "(pim_p4_kin + p_p4_kin).M()")
+				.Define("special_weight", "accidental_weight * 0.5");
 
 	// 3.2) Make list of nominal cuts
 	std::map<std::string, std::string> cuts_list = {
@@ -97,11 +98,17 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	auto im_kskl = rdf_cut.Filter(signal).Histo1D({"im_kskl", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
+	auto im_kskl_tp = rdf_cut.Filter(signal).Histo2D({"im_kskl_tp", ";M(K_{S}K_{L});-t';Counts", nBins, xMin, xMax, 100, 0.0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
+	auto im_kskl_tp_sb = rdf_cut.Filter(sideband).Histo2D({"im_kskl_tp_sb", ";M(K_{S}K_{L});-t';Counts", nBins, xMin, xMax, 100, 0.0, 1.0}, "mkskl", "mandel_tp", "accidental_weight");
+
 	auto im_kskl_mmiss1 = rdf_cut_mmiss.Filter(signal+"&& mmiss > 0.2 && mmiss < 0.8").Histo1D({"im_kskl_mmiss1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_mmiss1_sb = rdf_cut_mmiss.Filter(sideband+"&& mmiss > 0.2 && mmiss < 0.8").Histo1D({"im_kskl_mmiss1_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
 	auto im_kskl_mmiss2 = rdf_cut_mmiss.Filter(signal+"&& mmiss > 0.35 && mmiss < 0.65").Histo1D({"im_kskl_mmiss2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_mmiss2_sb = rdf_cut_mmiss.Filter(sideband+"&& mmiss > 0.35 && mmiss < 0.65").Histo1D({"im_kskl_mmiss2_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+
+	auto im_kskl_baryonCut = rdf_cut.Filter(signal+"&& mksp > 2 && mklp > 2").Histo1D({"im_kskl_baryonCut", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_baryonCut_sb = rdf_cut.Filter(sideband+"&& mksp > 2 && mklp > 2").Histo1D({"im_kskl_baryonCut_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
 	auto im_kskl_mandel_tp1 = rdf_cut_mandel_tp.Filter(signal+"&& mandel_tp > 0.25 && mandel_tp < 0.9").Histo1D({"im_kskl_mandel_tp1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_mandel_tp1_sb = rdf_cut_mandel_tp.Filter(sideband+"&& mandel_tp > 0.25 && mandel_tp < 0.9").Histo1D({"im_kskl_mandel_tp1_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
@@ -139,14 +146,11 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	auto im_kskl_proton_z_vertex2 = rdf_cut_proton_z_vertex.Filter(signal+"&& proton_z_vertex > 53 && proton_z_vertex < 77").Histo1D({"im_kskl_proton_z_vertex2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_proton_z_vertex2_sb = rdf_cut_proton_z_vertex.Filter(sideband+"&& proton_z_vertex > 53 && proton_z_vertex < 77").Histo1D({"im_kskl_proton_z_vertex2_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
-	auto im_kskl_beam_energy1 = rdf_cut_beam_energy.Filter(signal+"&& beam_energy > 8.2 && beam_energy < 8.4").Histo1D({"im_kskl_beam_energy1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
-	auto im_kskl_beam_energy1_sb = rdf_cut_beam_energy.Filter(sideband+"&& beam_energy > 8.2 && beam_energy < 8.4").Histo1D({"im_kskl_beam_energy1_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_beam_energy1 = rdf_cut_beam_energy.Filter(signal+"&& beam_energy > 8.2 && beam_energy < 8.5").Histo1D({"im_kskl_beam_energy1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_beam_energy1_sb = rdf_cut_beam_energy.Filter(sideband+"&& beam_energy > 8.2 && beam_energy < 8.5").Histo1D({"im_kskl_beam_energy1_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
-	auto im_kskl_beam_energy2 = rdf_cut_beam_energy.Filter(signal+"&& beam_energy > 8.4 && beam_energy < 8.6").Histo1D({"im_kskl_beam_energy2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
-	auto im_kskl_beam_energy2_sb = rdf_cut_beam_energy.Filter(sideband+"&& beam_energy > 8.4 && beam_energy < 8.6").Histo1D({"im_kskl_beam_energy2_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
-
-	auto im_kskl_beam_energy3 = rdf_cut_beam_energy.Filter(signal+"&& beam_energy > 8.6 && beam_energy < 8.8").Histo1D({"im_kskl_beam_energy3", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
-	auto im_kskl_beam_energy3_sb = rdf_cut_beam_energy.Filter(sideband+"&& beam_energy > 8.6 && beam_energy < 8.8").Histo1D({"im_kskl_beam_energy3_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_beam_energy2 = rdf_cut_beam_energy.Filter(signal+"&& beam_energy > 8.5 && beam_energy < 8.8").Histo1D({"im_kskl_beam_energy2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_beam_energy2_sb = rdf_cut_beam_energy.Filter(sideband+"&& beam_energy > 8.5 && beam_energy < 8.8").Histo1D({"im_kskl_beam_energy2_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
 	signal = "(mpipi > 0.485 && mpipi < 0.515)";
 	sideband = "((mpipi > 0.445 && mpipi < 0.46) || (mpipi > 0.54 && mpipi < 0.555))";
@@ -157,6 +161,11 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	sideband = "((mpipi > 0.435 && mpipi < 0.46) || (mpipi > 0.54 && mpipi < 0.565))";
 	auto im_kskl_mpipi2 = rdf_cut.Filter(signal).Histo1D({"im_kskl_mpipi2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_mpipi2_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_mpipi2_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+
+	signal = "(mpipi > 0.48 && mpipi < 0.52)";
+	sideband = "((mpipi > 0.42 && mpipi < 0.46) || (mpipi > 0.54 && mpipi < 0.58))";
+	auto im_kskl_mpipi3 = rdf_cut.Filter(signal).Histo1D({"im_kskl_mpipi3", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_mpipi3_sb = rdf_cut.Filter(sideband).Histo1D({"im_kskl_mpipi3_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "special_weight");
 
 	signal = "(mpipi > 0.48 && mpipi < 0.52)";
 	sideband = "((mpipi > 0.44 && mpipi < 0.46) || (mpipi > 0.54 && mpipi < 0.56))";
@@ -181,17 +190,26 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	im_kskl->Write();
 	im_kskl_sb->Write();
 
+	im_kskl_tp->Write();
+	im_kskl_tp_sb->Write();
+
 	im_kskl_mpipi1->Write();
 	im_kskl_mpipi1_sb->Write();
 
 	im_kskl_mpipi2->Write();
 	im_kskl_mpipi2_sb->Write();
 
+	im_kskl_mpipi3->Write();
+	im_kskl_mpipi3_sb->Write();
+
 	im_kskl_mmiss1->Write();
 	im_kskl_mmiss1_sb->Write();
 
 	im_kskl_mmiss2->Write();
 	im_kskl_mmiss2_sb->Write();
+
+	im_kskl_baryonCut->Write();
+	im_kskl_baryonCut_sb->Write();
 
 	im_kskl_mandel_tp1->Write();
 	im_kskl_mandel_tp1_sb->Write();
@@ -234,9 +252,6 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	im_kskl_beam_energy2->Write();
 	im_kskl_beam_energy2_sb->Write();
-
-	im_kskl_beam_energy3->Write();
-	im_kskl_beam_energy3_sb->Write();
 
 	im_kskl_fitRange1->Write();
 	im_kskl_fitRange1_sb->Write();

@@ -42,7 +42,7 @@ void fit_2bw_no_interference() {
 	h->Add(h_fa18);
 
 	char s[100];
-	sprintf(s, "Acceptance Corrected Intensity / %.0f MeV", h->GetBinWidth(10)*1000);
+	sprintf(s, "Acceptance Corrected Intensity / %.1f MeV", h->GetBinWidth(10)*1000);
 	h->GetYaxis()->SetTitle(s);
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 

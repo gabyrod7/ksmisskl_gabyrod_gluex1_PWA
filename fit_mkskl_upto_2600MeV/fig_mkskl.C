@@ -20,14 +20,50 @@ void fig_mkskl() {
 	gStyle->SetMarkerSize(1.5);
 	gROOT->ForceStyle();
 
-	TFile *inf1 = TFile::Open("hist_dat.root");
-	TFile *inf2 = TFile::Open("hist_acc.root");
-	TFile *inf3 = TFile::Open("hist_gen.root");
+	// TFile *inf1 = TFile::Open("hist_dat.root");
+	// TFile *inf2 = TFile::Open("hist_acc.root");
+	// TFile *inf3 = TFile::Open("hist_gen.root");
 
-	TH1F *h1 = (TH1F*)inf1->Get("im_kskl");
-	TH1F *h1_sb = (TH1F*)inf1->Get("im_kskl_sb");
-	TH1F *h2 = (TH1F*)inf2->Get("im_kskl");
-	TH1F *h3 = (TH1F*)inf3->Get("im_kskl");
+	// TH1F *h1 = (TH1F*)inf1->Get("im_kskl");
+	// TH1F *h1_sb = (TH1F*)inf1->Get("im_kskl_sb");
+	// TH1F *h2 = (TH1F*)inf2->Get("im_kskl");
+	// TH1F *h3 = (TH1F*)inf3->Get("im_kskl");
+
+	TFile *inf1_sp17 = TFile::Open("hists/hist_dat_sp17.root");
+	TFile *inf2_sp17 = TFile::Open("hists/hist_acc_sp17.root");
+	TFile *inf3_sp17 = TFile::Open("hists/hist_gen_sp17.root");
+	TFile *inf1_sp18 = TFile::Open("hists/hist_dat_sp18.root");
+	TFile *inf2_sp18 = TFile::Open("hists/hist_acc_sp18.root");
+	TFile *inf3_sp18 = TFile::Open("hists/hist_gen_sp18.root");
+	TFile *inf1_fa18 = TFile::Open("hists/hist_dat_fa18.root");
+	TFile *inf2_fa18 = TFile::Open("hists/hist_acc_fa18.root");
+	TFile *inf3_fa18 = TFile::Open("hists/hist_gen_fa18.root");
+
+	TH1F *h1_sp17 = (TH1F*)inf1_sp17->Get("im_kskl");
+	TH1F *h1_sp17_sb = (TH1F*)inf1_sp17->Get("im_kskl_sb");
+	TH1F *h2_sp17 = (TH1F*)inf2_sp17->Get("im_kskl");
+	TH1F *h3_sp17 = (TH1F*)inf3_sp17->Get("im_kskl");
+	TH1F *h1_sp18 = (TH1F*)inf1_sp18->Get("im_kskl");
+	TH1F *h1_sp18_sb = (TH1F*)inf1_sp18->Get("im_kskl_sb");
+	TH1F *h2_sp18 = (TH1F*)inf2_sp18->Get("im_kskl");
+	TH1F *h3_sp18 = (TH1F*)inf3_sp18->Get("im_kskl");
+	TH1F *h1_fa18 = (TH1F*)inf1_fa18->Get("im_kskl");
+	TH1F *h1_fa18_sb = (TH1F*)inf1_fa18->Get("im_kskl_sb");
+	TH1F *h2_fa18 = (TH1F*)inf2_fa18->Get("im_kskl");
+	TH1F *h3_fa18 = (TH1F*)inf3_fa18->Get("im_kskl");
+
+	TH1F *h1 = (TH1F*)h1_sp17->Clone("h1");
+	h1->Add(h1_sp18);
+	h1->Add(h1_fa18);
+	TH1F *h1_sb = (TH1F*)h1_sp17_sb->Clone("h1_sb");
+	h1_sb->Add(h1_sp18_sb);
+	h1_sb->Add(h1_fa18_sb);
+	TH1F *h2 = (TH1F*)h2_sp17->Clone("h2");
+	h2->Add(h2_sp18);
+	h2->Add(h2_fa18);
+	TH1F *h3 = (TH1F*)h3_sp17->Clone("h3");
+	h3->Add(h3_sp18);
+	h3->Add(h3_fa18);
 
 	h1->Add(h1_sb, -1);
 	h2->Divide(h3);

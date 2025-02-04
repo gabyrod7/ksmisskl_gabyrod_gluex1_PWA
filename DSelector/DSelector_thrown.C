@@ -100,6 +100,8 @@ void DSelector_thrown::Init(TTree *locTree)
 	dFlatTreeInterface->Create_Branch_Fundamental<int>("pol_angle"); // I use this to split the trees by polarization angle
 
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("mkskl");
+	dFlatTreeInterface->Create_Branch_Fundamental<double>("mksp");
+	dFlatTreeInterface->Create_Branch_Fundamental<double>("mklp");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("mandel_t");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("mandel_tp");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("ks_proper_time");
@@ -220,6 +222,8 @@ Bool_t DSelector_thrown::Process(Long64_t locEntry)
 
 	im_kskl->Fill((locDecayingKShortP4_Thrown + locMissingKLongP4_Thrown).M());
 	dFlatTreeInterface->Fill_Fundamental<double>("mkskl", (locDecayingKShortP4_Thrown + locMissingKLongP4_Thrown).M());
+	dFlatTreeInterface->Fill_Fundamental<double>("mksp", (locDecayingKShortP4_Thrown + locProtonP4_Thrown).M());
+	dFlatTreeInterface->Fill_Fundamental<double>("mklp", (locProtonP4_Thrown + locMissingKLongP4_Thrown).M());
 
 	dFlatTreeInterface->Fill_Fundamental<double>("mandel_t", t);
 	dFlatTreeInterface->Fill_Fundamental<double>("mandel_tp", tp);

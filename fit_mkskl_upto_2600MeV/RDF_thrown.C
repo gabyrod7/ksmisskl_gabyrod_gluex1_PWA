@@ -84,10 +84,16 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	auto im_kskl_nshowers3 = rdf_cut.Histo1D({"im_kskl_nshowers3", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_proton_z_vertex1 = rdf_cut.Histo1D({"im_kskl_proton_z_vertex1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_proton_z_vertex2 = rdf_cut.Histo1D({"im_kskl_proton_z_vertex2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
-	auto im_kskl_beam_energy1 = rdf_cut.Filter("beam_energy > 8.2 && beam_energy < 8.5").Histo1D({"im_kskl_beam_energy1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
-	auto im_kskl_beam_energy2 = rdf_cut.Filter("beam_energy > 8.5 && beam_energy < 8.8").Histo1D({"im_kskl_beam_energy2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
-	auto im_kskl_fitRange1 = rdf_cut.Histo1D({"im_kskl_fitRange1", ";M(K_{S}K_{L});Counts", 78, 1.10, 2.66}, "mkskl");
+	auto im_kskl_beam_energy1 = rdf_cut.Filter("beam_energy > 8.2 && beam_energy < 8.3").Histo1D({"im_kskl_beam_energy1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_beam_energy2 = rdf_cut.Filter("beam_energy > 8.3 && beam_energy < 8.4").Histo1D({"im_kskl_beam_energy2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_beam_energy3 = rdf_cut.Filter("beam_energy > 8.4 && beam_energy < 8.5").Histo1D({"im_kskl_beam_energy3", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_beam_energy4 = rdf_cut.Filter("beam_energy > 8.5 && beam_energy < 8.6").Histo1D({"im_kskl_beam_energy4", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_beam_energy5 = rdf_cut.Filter("beam_energy > 8.6 && beam_energy < 8.7").Histo1D({"im_kskl_beam_energy5", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_beam_energy6 = rdf_cut.Filter("beam_energy > 8.7 && beam_energy < 8.8").Histo1D({"im_kskl_beam_energy6", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_fitRange1 = rdf_cut.Histo1D({"im_kskl_fitRange1", ";M(K_{S}K_{L});Counts", 76, 1.14, 2.66}, "mkskl");
 	auto im_kskl_fitRange2 = rdf_cut.Histo1D({"im_kskl_fitRange2", ";M(K_{S}K_{L});Counts", 67, 1.20, 2.54}, "mkskl");
+	auto im_kskl_fitRange3 = rdf_cut.Histo1D({"im_kskl_fitRange3", ";M(K_{S}K_{L});Counts", 67, xMin, 2.5}, "mkskl");
+	auto im_kskl_fitRange4 = rdf_cut.Histo1D({"im_kskl_fitRange4", ";M(K_{S}K_{L});Counts", 77, xMin, 2.7}, "mkskl");
 	auto im_kskl_binning1 = rdf_cut.Histo1D({"im_kskl_binning1", ";M(K_{S}K_{L});Counts", 64, xMin, xMax}, "mkskl");
 	auto im_kskl_binning2 = rdf_cut.Histo1D({"im_kskl_binning2", ";M(K_{S}K_{L});Counts", 100, xMin, xMax}, "mkskl");
 	
@@ -120,8 +126,14 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	im_kskl_proton_z_vertex2->Write();
 	im_kskl_beam_energy1->Write();
 	im_kskl_beam_energy2->Write();
+	im_kskl_beam_energy3->Write();
+	im_kskl_beam_energy4->Write();
+	im_kskl_beam_energy5->Write();
+	im_kskl_beam_energy6->Write();
 	im_kskl_fitRange1->Write();
 	im_kskl_fitRange2->Write();
+	im_kskl_fitRange3->Write();
+	im_kskl_fitRange4->Write();
 	im_kskl_binning1->Write();
 	im_kskl_binning2->Write();
 

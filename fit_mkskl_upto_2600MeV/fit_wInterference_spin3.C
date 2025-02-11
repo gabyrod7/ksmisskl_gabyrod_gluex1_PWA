@@ -4,7 +4,7 @@ Double_t myfit(Double_t* x, Double_t* par);
 Double_t mysig(Double_t* x, Double_t* par);
 Double_t mybkg(Double_t* x, Double_t* par);
 
-void fit_2bw_with_interference() {
+void fit_wInterference_spin3() {
 	gStyle->SetOptStat(0);
 	gStyle->SetPadTopMargin(0.03);
 	gStyle->SetPadRightMargin(0.03);
@@ -109,17 +109,31 @@ void fit_2bw_with_interference() {
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
 
-	// sprintf(s, "Counts / %.1f MeV", h->GetBinWidth(10)*1000);
-	// h->GetYaxis()->SetTitle(s);
+	c->SaveAs("pdf_wInterference/spin3.pdf");
 
-	c->SaveAs("pdfs/kskl_2bw_with_interference.pdf");
+	TGraphErrors *m1 = new TGraphErrors();
+	TGraphErrors *m2 = new TGraphErrors();
+	TGraphErrors *g1 = new TGraphErrors();
+	TGraphErrors *g2 = new TGraphErrors();
+	TGraphErrors *phase = new TGraphErrors();
 
-	//c = new TCanvas();
-	//auto rp = new TRatioPlot(h);
-	//rp->Draw();
+	m1->SetPoint(0, 1, fit->GetParameter(1));
+	m1->SetPointError(0, 0, fit->GetParError(1));
+	m2->SetPoint(0, 1, fit->GetParameter(4));
+	m2->SetPointError(0, 0, fit->GetParError(4));
+	g1->SetPoint(0, 1, fit->GetParameter(2));
+	g1->SetPointError(0, 0, fit->GetParError(2));
+	g2->SetPoint(0, 1, fit->GetParameter(5));
+	g2->SetPointError(0, 0, fit->GetParError(5));
+	phase->SetPoint(0, 1, fit->GetParameter(6));
+	phase->SetPointError(0, 0, fit->GetParError(6));
 
-	//auto opf = TFile::Open("fit.root", "recreate");
-	//h->Write();
+	TFile *outf = new TFile("rootFiles/fit_wInterference_spin3.root", "RECREATE");
+	m1->Write("m1");
+	m2->Write("m2");
+	g1->Write("g1");
+	g2->Write("g2");
+	phase->Write("phase");
 }
 
 Double_t mybkg(Double_t* x, Double_t* par) {
@@ -132,7 +146,7 @@ Double_t mysig(Double_t* x, Double_t* par) {
 
 	double N2 = par[3];
 	complex<double> phase(cos(par[6]), sin(par[6]));
-	complex<double> bw2 = BreitWigner(x[0], par[4], par[5], 1, 0.497, 0.497);
+	complex<double> bw2 = BreitWigner(x[0], par[4], par[5], 3, 0.497, 0.497);
 
 	return norm(N1*bw1 + N2*phase*bw2);
 }

@@ -5,7 +5,7 @@ Double_t myfit(Double_t* x, Double_t* par);
 Double_t mysig(Double_t* x, Double_t* par);
 Double_t mybkg(Double_t* x, Double_t* par);
 
-void fit_mkskl_tBins_interference() {
+void fit_wInterference_tBins() {
 	gStyle->SetOptStat(0);
 	gStyle->SetPadTopMargin(0.03);
 	gStyle->SetPadRightMargin(0.03);
@@ -34,6 +34,7 @@ void fit_mkskl_tBins_interference() {
 	TCanvas *c;
     TH1F *h;
 	double min = 1.16, max = 2.60;
+    // vector<double> tBins = {0.2, 0.25, 0.3, 0.5, 0.7, 1.0};
     vector<double> tBins = {0.2, 0.26, 0.36, 0.6, 1.0};
     // vector<double> tBins = {0.2, 1.0};
 	TGraphErrors *m1 = new TGraphErrors(tBins.size()-1),
@@ -54,14 +55,14 @@ void fit_mkskl_tBins_interference() {
 	h2->Add(h_fa18);
 
     TF1 *fit = new TF1("fit", myfit, min, max, 10);
-	fit->SetParameters(50, 1.50, 0.22, 10, 1.78, 0.13, 1., 1.71515e+04, -1.92535e+03, -1.80970e+03);
+	fit->SetParameters(50, 1.50, 0.22, 10, 1.78, 0.13, 0.8, 1.71515e+04, -1.92535e+03, -1.80970e+03);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "#Delta#phi", "a0", "a1", "a2");
 	fit->SetParLimits(0, 0, 1000);
 	fit->SetParLimits(1, 1.0, 2.0);
 	fit->SetParLimits(2, 0, 0.5);
 	fit->SetParLimits(3, 0, 1000);
 	fit->SetParLimits(4, 1.0, 2.0);
-	fit->SetParLimits(5, 0, 0.4);
+	fit->SetParLimits(5, 0, 0.5);
 	fit->SetParLimits(6, 0, TMath::Pi());
     fit->SetLineWidth(3);
     fit->SetNpx(1000);
@@ -88,8 +89,20 @@ void fit_mkskl_tBins_interference() {
     bkg->SetLineWidth(3);
 
     for(int iBin = 0; iBin < tBins.size()-1; iBin++) {
+		cout << Form("t = (%.2f,%.2f)", tBins[iBin], tBins[iBin+1]) << endl;
         h = (TH1F*)h2->ProjectionX(Form("h_%d", iBin), h2->GetYaxis()->FindBin(tBins[iBin]), h2->GetYaxis()->FindBin(tBins[iBin+1]) - 1);
         h->GetXaxis()->SetRangeUser(min, max);
+		if(tBins[iBin] == 0.5) {
+			fit->SetParameter(0, 36);
+			fit->SetParameter(1, 1.56);
+			fit->SetParameter(2, 0.21);
+			fit->SetParameter(3, 42);
+			fit->SetParameter(4, 1.76);
+			fit->SetParameter(5, 0.11);
+			fit->SetParameter(6, 1);
+			// fit->FixParameter(6, 1);
+		}
+		// fit->SetParameters(50, 1.50, 0.22, 10, 1.78, 0.13, 1., 1.71515e+04, -1.92535e+03, -1.80970e+03);
         // fit->SetParameters(10, 1.50, 0.246, 10, 1.78, 0.127, 1, 1, 1);
         // cout bin numbers
         // cout << h2->GetYaxis()->FindBin(tBins[iBin]) << " " << h2->GetYaxis()->FindBin(tBins[iBin+1]) - 1 << endl;

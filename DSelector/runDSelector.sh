@@ -62,7 +62,7 @@ data="/d/grid17/gabyrod7/MC/kskl/gen_amp_kskl_flat_sp17_9M_3854/trees/tree_ksmis
 hist="hist_acc_sp17.root"
 tree="tree_acc_sp17.root"
 ftree="ftree_acc_sp17.root"
-# runDSelector
+runDSelector
 
 ## Spring 2017 thrown MC
 DSelector="DSelector_thrown.C"
@@ -71,7 +71,7 @@ data="/d/grid17/gabyrod7/MC/kskl/gen_amp_kskl_flat_sp17_9M_3854/thrown/tree*"
 hist="hist_gen_sp17.root"
 tree="tree_gen_sp17.root"
 ftree="ftree_gen_sp17.root"
-runDSelector
+# runDSelector
 
 ## Spring 2018 reconstructed MC 
 DSelector="DSelector_kskl.C"
@@ -80,7 +80,7 @@ data="/d/grid17/gabyrod7/MC/kskl/gen_amp_kskl_flat_sp18_25M_3855/root/trees/tree
 hist="hist_acc_sp18.root"
 tree="tree_acc_sp18.root"
 ftree="ftree_acc_sp18.root"
-# runDSelector
+runDSelector
 
 ## Spring 2018 thrown MC
 DSelector="DSelector_thrown.C"
@@ -89,7 +89,7 @@ data="/d/grid17/gabyrod7/MC/kskl/gen_amp_kskl_flat_sp18_25M_3855/root/thrown/tre
 hist="hist_gen_sp18.root"
 tree="tree_gen_sp18.root"
 ftree="ftree_gen_sp18.root"
-runDSelector
+# runDSelector
 
 ## Fall 2018 reconstructed MC 
 DSelector="DSelector_kskl.C"
@@ -98,7 +98,7 @@ data="/d/grid17/gabyrod7/MC/kskl/gen_amp_kskl_flat_fa18_16M_3856/trees/tree_ksmi
 hist="hist_acc_fa18.root"
 tree="tree_acc_fa18.root"
 ftree="ftree_acc_fa18.root"
-# runDSelector
+runDSelector
 
 ## Fall 2018 thrown MC
 DSelector="DSelector_thrown.C"
@@ -107,9 +107,9 @@ data="/d/grid17/gabyrod7/MC/kskl/gen_amp_kskl_flat_fa18_16M_3856/thrown/tree*"
 hist="hist_gen_fa18.root"
 tree="tree_gen_fa18.root"
 ftree="ftree_gen_fa18.root"
-runDSelector
+# runDSelector
 
-# hadd -f ftrees/ftree_acc_gluex1.root ftrees/ftree_acc_sp17.root ftrees/ftree_acc_sp18.root ftrees/ftree_acc_fa18.root
+hadd -f ftrees/ftree_acc_gluex1.root ftrees/ftree_acc_sp17.root ftrees/ftree_acc_sp18.root ftrees/ftree_acc_fa18.root
 # hadd -f ftrees/ftree_gen_gluex1.root ftrees/ftree_gen_sp17.root ftrees/ftree_gen_sp18.root ftrees/ftree_gen_fa18.root
 
 rm -r 0.*

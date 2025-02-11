@@ -241,6 +241,13 @@ void DSelector_kskl::Init(TTree *locTree)
 	dFlatTreeInterface->Create_Branch_ClonesArray<TLorentzVector>("flat_my_p4_array");
 	*/
 
+	dIsMC = (dTreeInterface->Get_Branch("MCWeight") != NULL);
+	if(dIsMC) {
+		dFlatTreeInterface->Create_Branch_Fundamental<bool>("dIsMC");
+
+		dFlatTreeInterface->Create_Branch_Fundamental<double>("mkskl_res");
+	}		
+
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("event_weight");
 	dFlatTreeInterface->Create_Branch_Fundamental<double>("accidental_weight");
 
@@ -312,8 +319,8 @@ void DSelector_kskl::Init(TTree *locTree)
 
 	/************************************** DETERMINE IF ANALYZING SIMULATED DATA *************************************/
 
-	dIsMC = (dTreeInterface->Get_Branch("MCWeight") != NULL);
-	if(dIsMC)	dFlatTreeInterface->Create_Branch_Fundamental<bool>("dIsMC");
+	// dIsMC = (dTreeInterface->Get_Branch("MCWeight") != NULL);
+	// if(dIsMC)	dFlatTreeInterface->Create_Branch_Fundamental<bool>("dIsMC");
 }
 
 Bool_t DSelector_kskl::Process(Long64_t locEntry)
@@ -467,6 +474,8 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 
 		TLorentzVector locProtonX4 = dProtonWrapper->Get_X4();
 
+		TLorentzVector locProtonX4_Thrown, locDecayingKShortP4_Thrown, locMissingKLongP4_Thrown, locKsKlP4_Thrown;
+
 		// do some boosting
 		//TLorentzRotation resRestBoost( -locKSKL_P4.BoostVector() );
 		TLorentzRotation resRestBoost( -(locBeamP4_Measured + dTargetP4).BoostVector() );
@@ -541,8 +550,36 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 			dComboWrapper->Set_IsComboCut(true);
 			continue;
 		}
-		
-		if(dIsMC)	dFlatTreeInterface->Fill_Fundamental<bool>("dIsMC", dIsMC);
+
+		//Loop over throwns
+		for(UInt_t loc_i = 0; loc_i < Get_NumThrown(); ++loc_i)
+		{
+			//Set branch array indices corresponding to this particle
+			dThrownWrapper->Set_ArrayIndex(loc_i);
+
+			//Do stuff with the wrapper here ...
+			Particle_t locPID = dThrownWrapper->Get_PID();
+			TLorentzVector locThrownX4 = dThrownWrapper->Get_X4();
+			TLorentzVector locThrownP4 = dThrownWrapper->Get_P4();
+			if(locPID == 14) {
+				locProtonX4_Thrown = locThrownX4;
+			}
+			else if(locPID == 16) {
+				locDecayingKShortP4_Thrown = locThrownP4;
+				// locDecayingKShortX4_Thrown = locThrownX4;
+			}
+			else if(locPID == 10) {
+				locMissingKLongP4_Thrown = locThrownP4;
+			}
+		}
+		locKsKlP4_Thrown = locDecayingKShortP4_Thrown + locMissingKLongP4_Thrown;
+
+		// if(dIsMC)	dFlatTreeInterface->Fill_Fundamental<bool>("dIsMC", dIsMC);
+		if(dIsMC) {
+			dFlatTreeInterface->Fill_Fundamental<bool>("dIsMC", dIsMC);
+
+			dFlatTreeInterface->Fill_Fundamental<double>("mkskl_res", (locKSKL_P4.M() - locKsKlP4_Thrown.M()));
+		}
 
 		dFlatTreeInterface->Fill_Fundamental<double>("event_weight", event_weight);
 		dFlatTreeInterface->Fill_Fundamental<double>("accidental_weight", locHistAccidWeightFactor);

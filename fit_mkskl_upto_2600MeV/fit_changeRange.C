@@ -44,7 +44,7 @@ void fit_changeRange() {
 	string hName;
 
 	hName = "im_kskl_fitRange1";
-	pars = fit_2bw_no_interference(hName, 1.10, 2.66, "fit_range1");
+	pars = fit_2bw_no_interference(hName, 1.14, 2.66, "fit_range1");
 	m1->SetPoint(0, 0, pars[0]);
 	m1->SetPointError(0, 0, pars[1]);
 	g1->SetPoint(0, 0, pars[2]);
@@ -54,7 +54,7 @@ void fit_changeRange() {
 	g2->SetPoint(0, 0, pars[6]);
 	g2->SetPointError(0, 0, pars[7]);
 
-	fit_2bw_with_interference(hName, 1.10, 2.66, "fit_range1");
+	// fit_2bw_with_interference(hName, 1.10, 2.66, "fit_range1");
 
 	hName = "im_kskl_fitRange2";
 	pars = fit_2bw_no_interference(hName, 1.20, 2.54, "fit_range2");
@@ -67,7 +67,31 @@ void fit_changeRange() {
 	g2->SetPoint(1, 1, pars[6]);
 	g2->SetPointError(1, 0, pars[7]);
 
-	fit_2bw_with_interference(hName, 1.20, 2.54, "fit_range2");
+	// fit_2bw_with_interference(hName, 1.20, 2.54, "fit_range2");
+
+	hName = "im_kskl_fitRange3";
+	pars = fit_2bw_no_interference(hName, 1.16, 2.5, "fit_range3");
+	m1->SetPoint(2, 2, pars[0]);
+	m1->SetPointError(2, 0, pars[1]);
+	g1->SetPoint(2, 2, pars[2]);
+	g1->SetPointError(2, 0, pars[3]);
+	m2->SetPoint(2, 2, pars[4]);
+	m2->SetPointError(2, 0, pars[5]);
+	g2->SetPoint(2, 2, pars[6]);
+	g2->SetPointError(2, 0, pars[7]);
+
+	hName = "im_kskl_fitRange4";
+	pars = fit_2bw_no_interference(hName, 1.16, 2.7, "fit_range4");
+	m1->SetPoint(3, 3, pars[0]);
+	m1->SetPointError(3, 0, pars[1]);
+	g1->SetPoint(3, 3, pars[2]);
+	g1->SetPointError(3, 0, pars[3]);
+	m2->SetPoint(3, 3, pars[4]);
+	m2->SetPointError(3, 0, pars[5]);
+	g2->SetPoint(3, 3, pars[6]);
+	g2->SetPointError(3, 0, pars[7]);
+
+	// fit_2bw_with_interference(hName, 1.20, 2.54, "fit_range2");
 
 	TFile *opf = TFile::Open("rootFiles/fit_changeRange.root", "RECREATE");
 	m1->Write("m1");

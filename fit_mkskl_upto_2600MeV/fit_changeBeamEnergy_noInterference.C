@@ -10,9 +10,9 @@ Double_t modelSig2(Double_t* x, Double_t* par);
 
 Double_t modelBkg(Double_t* x, Double_t* par);
 
-double calc_barlow(double nominal, double nominal_err, double variation, double variation_err);
+double calc_pull(double nominal, double nominal_err, double variation, double variation_err);
 
-void fit_changeEventSelections() {
+void fit_changeBeamEnergy_noInterference() {
 	gStyle->SetOptStat(0);
 	gStyle->SetPadTopMargin(0.03);
 	gStyle->SetPadRightMargin(0.03);
@@ -39,31 +39,16 @@ void fit_changeEventSelections() {
 	gROOT->ForceStyle();
 
 	vector<double> pars;
-	vector<string> hNames = {"im_kskl", "im_kskl_mpipi1", "im_kskl_mpipi2", "im_kskl_mpipi3", "im_kskl_mmiss1", "im_kskl_mmiss2", "im_kskl_mandel_tp1", "im_kskl_mandel_tp2",
-		"im_kskl_FS1", "im_kskl_FS2", "im_kskl_chisq1", "im_kskl_chisq2", "im_kskl_ntracks1",
-		"im_kskl_nshowers1", "im_kskl_nshowers2", "im_kskl_nshowers3",  "im_kskl_proton_z_vertex1", "im_kskl_proton_z_vertex2"};
+	vector<string> hNames = {"im_kskl", "im_kskl_beam_energy1", "im_kskl_beam_energy2", "im_kskl_beam_energy3", "im_kskl_beam_energy4", "im_kskl_beam_energy5", "im_kskl_beam_energy6"};
 
 	map<string, string> hNamesMap = {
 		{"im_kskl", "Nominal"},
-		{"im_kskl_mpipi1", "M_{#pi#pi} Region 1"},
-		{"im_kskl_mpipi2", "M_{#pi#pi} Region 2"},
- 		{"im_kskl_mpipi3", "Wider Sideband"},
-		{"im_kskl_mmiss1", "M_{miss} = (0.2,0.8)"},
-		{"im_kskl_mmiss2", "M_{miss} = (0.35,0.65)"},
-		{"im_kskl_mandel_tp1", "#minust' = (0.25,0.9)"},
-		{"im_kskl_mandel_tp2", "#minust' = (0.15,1.1)"},
-		{"im_kskl_FS1", "FS > 5"},
-		{"im_kskl_FS2", "FS > 7"},
-		{"im_kskl_chisq1", "#chi^{2}/ndf < 1.5"},
-		{"im_kskl_chisq2", "#chi^{2}/ndf < 2.5"},
-		{"im_kskl_ntracks1", "N_{tracks} < 2"},
-		{"im_kskl_nshowers1", "N_{showers} < 2"},
-		{"im_kskl_nshowers2", "N_{showers} < 4"},
-		{"im_kskl_nshowers3", "N_{showers} < 1"},
-		{"im_kskl_proton_z_vertex1", "Proton-Z = (51,79)"},
-		{"im_kskl_proton_z_vertex2", "Proton-Z = (53,77)"}
-		// {"im_kskl_beam_energy1", "E_{#gamma} = (8.2,8.5)"},
-		// {"im_kskl_beam_energy2", "E_{#gamma} = (8.5,8.8)"}
+		{"im_kskl_beam_energy1", "E_{#gamma} = (8.2,8.3)"},
+		{"im_kskl_beam_energy2", "E_{#gamma} = (8.3,8.4)"},
+		{"im_kskl_beam_energy3", "E_{#gamma} = (8.4,8.5)"},
+		{"im_kskl_beam_energy4", "E_{#gamma} = (8.5,8.6)"},
+		{"im_kskl_beam_energy5", "E_{#gamma} = (8.6,8.7)"},
+		{"im_kskl_beam_energy6", "E_{#gamma} = (8.7,8.8)"}
 	};
 
 
@@ -78,12 +63,7 @@ void fit_changeEventSelections() {
 		*m1_ni = new TGraphErrors(hNamesMap.size()-1),
 		*g1_ni = new TGraphErrors(hNamesMap.size()-1),
 		*m2_ni = new TGraphErrors(hNamesMap.size()-1),
-		*g2_ni = new TGraphErrors(hNamesMap.size()-1),
-		
-		*m1_ni_barlow = new TGraphErrors(hNamesMap.size()-1),
-		*g1_ni_barlow = new TGraphErrors(hNamesMap.size()-1),
-		*m2_ni_barlow = new TGraphErrors(hNamesMap.size()-1),
-		*g2_ni_barlow = new TGraphErrors(hNamesMap.size()-1);
+		*g2_ni = new TGraphErrors(hNamesMap.size()-1);
 	
 	TH1F *frame = new TH1F("frame", "", hNames.size(), 0, hNames.size());
 	frame->GetXaxis()->SetRangeUser(0, hNames.size()-1);
@@ -110,21 +90,21 @@ void fit_changeEventSelections() {
 
 		m1_ni->SetPoint(count, count-0.5, pars[0]);
 		m1_ni->SetPointError(count, 0, pars[1]);
-		g1_ni->SetPoint(count, count-0.5, pars[2]);
+		g1_ni->SetPoint(count, count-0.5, abs(pars[2]));
 		g1_ni->SetPointError(count, 0, pars[3]);
 		m2_ni->SetPoint(count, count-0.5, pars[4]);
 		m2_ni->SetPointError(count, 0, pars[5]);
-		g2_ni->SetPoint(count, count-0.5, pars[6]);
+		g2_ni->SetPoint(count, count-0.5, abs(pars[6]));
 		g2_ni->SetPointError(count, 0, pars[7]);
-
-		m1_ni_barlow->SetPoint(count, count-0.5, calc_barlow(m1, m1_err, pars[0], pars[1]));
-		g1_ni_barlow->SetPoint(count, count-0.5, calc_barlow(g1, g1_err, pars[2], pars[3]));
-		m2_ni_barlow->SetPoint(count, count-0.5, calc_barlow(m2, m2_err, pars[4], pars[5]));
-		g2_ni_barlow->SetPoint(count, count-0.5, calc_barlow(g2, g2_err, pars[6], pars[7]));
 
 		count++;
 		frame->GetXaxis()->SetBinLabel(count, hNamesMap[hName].c_str());
 	}
+
+	cout << "m1 pull: " << calc_pull(m1_ni->GetPointY(1), m1_ni->GetErrorY(1), m1_ni->GetPointY(2), m1_ni->GetErrorY(2)) << " | diff. = " << m1_ni->GetPointY(1) - m1_ni->GetPointY(2) << endl;
+	cout << "g1 pull: " << calc_pull(g1_ni->GetPointY(1), g1_ni->GetErrorY(1), g1_ni->GetPointY(2), g1_ni->GetErrorY(2)) << " | diff. = " << g1_ni->GetPointY(1) - g1_ni->GetPointY(2) << endl;
+	cout << "m2 pull: " << calc_pull(m2_ni->GetPointY(1), m2_ni->GetErrorY(1), m2_ni->GetPointY(2), m2_ni->GetErrorY(2)) << " | diff. = " << m2_ni->GetPointY(1) - m2_ni->GetPointY(2) << endl;
+	cout << "g2 pull: " << calc_pull(g2_ni->GetPointY(1), g2_ni->GetErrorY(1), g2_ni->GetPointY(2), g2_ni->GetErrorY(2)) << " | diff. = " << g2_ni->GetPointY(1) - g2_ni->GetPointY(2) << endl;
 
 	TCanvas *c;
 	
@@ -137,7 +117,7 @@ void fit_changeEventSelections() {
 	m1_ni->Draw("P");
 	box->DrawBox(0, m1 - m1_err, hNames.size()-1, m1 + m1_err);
 	line->DrawLine(0, m1, hNames.size()-1, m1);
-	c->SaveAs("pdf_nInterference/eventSelectionVariation_m1Scan.pdf");
+	c->SaveAs("pdf_nInterference/beamEnergy_m1Scan.pdf");
 
 	c = new TCanvas();
 	c->SetBottomMargin(0.3);
@@ -148,7 +128,7 @@ void fit_changeEventSelections() {
 	g1_ni->Draw("P");
 	box->DrawBox(0, g1 - g1_err, hNames.size()-1, g1 + g1_err);
 	line->DrawLine(0, g1, hNames.size()-1, g1);
-	c->SaveAs("pdf_nInterference/eventSelectionVariation_g1Scan.pdf");
+	c->SaveAs("pdf_nInterference/beamEnergy_g1Scan.pdf");
 
 	c = new TCanvas();
 	c->SetBottomMargin(0.3);
@@ -159,73 +139,27 @@ void fit_changeEventSelections() {
 	m2_ni->Draw("P");
 	box->DrawBox(0, m2 - m2_err, hNames.size()-1, m2 + m2_err);
 	line->DrawLine(0, m2, hNames.size()-1, m2);
-	c->SaveAs("pdf_nInterference/eventSelectionVariation_m2Scan.pdf");
+	c->SaveAs("pdf_nInterference/beamEnergy_m2Scan.pdf");
 
 	c = new TCanvas();
 	c->SetBottomMargin(0.3);
 	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(g2 - 3*g2_err, g2 + 3*g2_err);
+	frame->GetYaxis()->SetRangeUser(g2 - 7*g2_err, g2 + 7*g2_err);
 	frame->GetYaxis()->SetTitle("#Gamma_{2} Parameter (GeV)");
 	frame->Draw();
 	g2_ni->Draw("P");
 	box->DrawBox(0, g2 - g2_err, hNames.size()-1, g2 + g2_err);
 	line->DrawLine(0, g2, hNames.size()-1, g2);
-	c->SaveAs("pdf_nInterference/eventSelectionVariation_g2Scan.pdf");
+	c->SaveAs("pdf_nInterference/beamEnergy_g2Scan.pdf");
 
 	line->SetLineColor(kBlack);
 	line->SetLineStyle(2);
 
-	double yLine = 4;
-
-	c = new TCanvas();
-	c->SetBottomMargin(0.3);
-	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(-6, 6);
-	frame->GetYaxis()->SetTitle("M_{1} Barlow Test");
-	frame->Draw();
-	line->DrawLine(0, -yLine, hNames.size()-1, -yLine);
-	line->DrawLine(0, yLine, hNames.size()-1, yLine);
-	m1_ni_barlow->Draw("P");
-	c->SaveAs("pdf_nInterference/eventSelectionVariation_m1BarlowScan.pdf");
-
-	c = new TCanvas();
-	c->SetBottomMargin(0.3);
-	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(-6, 6);
-	frame->GetYaxis()->SetTitle("#Gamma_{1} Barlow Test");
-	frame->Draw();
-	line->DrawLine(0, -yLine, hNames.size()-1, -yLine);
-	line->DrawLine(0, yLine, hNames.size()-1, yLine);
-	g1_ni_barlow->Draw("P");
-	c->SaveAs("pdf_nInterference/eventSelectionVariation_g1BarlowScan.pdf");
-
-	c = new TCanvas();
-	c->SetBottomMargin(0.3);
-	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(-6, 6);
-	frame->GetYaxis()->SetTitle("M_{2} Barlow Test");
-	frame->Draw();
-	line->DrawLine(0, -yLine, hNames.size()-1, -yLine);
-	line->DrawLine(0, yLine, hNames.size()-1, yLine);
-	m2_ni_barlow->Draw("P");
-	c->SaveAs("pdf_nInterference/eventSelectionVariation_m2BarlowScan.pdf");
-
-	c = new TCanvas();
-	c->SetBottomMargin(0.3);
-	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(-6, 6);
-	frame->GetYaxis()->SetTitle("#Gamma_{2} Barlow Test");
-	frame->Draw();
-	line->DrawLine(0, -yLine, hNames.size()-1, -yLine);
-	line->DrawLine(0, yLine, hNames.size()-1, yLine);
-	g2_ni_barlow->Draw("P");
-	c->SaveAs("pdf_nInterference/eventSelectionVariation_g2BarlowScan.pdf");
-
-	TFile *opf = new TFile("rootFiles/graphs_EventSelelctionVariations.root", "RECREATE");
-	m1_ni->Write("eventSelectionVariation_m1Scan");
-	g1_ni->Write("eventSelectionVariation_g1Scan");
-	m2_ni->Write("eventSelectionVariation_m2Scan");
-	g2_ni->Write("eventSelectionVariation_g2Scan");
+	TFile *opf = new TFile("rootFiles/graphs_beamEnergy.root", "RECREATE");
+	m1_ni->Write("m1");
+	g1_ni->Write("g1");
+	m2_ni->Write("m2");
+	g2_ni->Write("g2");
 }
 
 vector<double> fit_2bw_no_interference(string hName, string cut, double min = 1.16, double max = 2.60) {
@@ -249,7 +183,12 @@ vector<double> fit_2bw_no_interference(string hName, string cut, double min = 1.
 
 	TF1 *fit = new TF1("fit", model1, min, max, 9);
 	// fit->SetParameters(110, 1.50, 0.25, 100, 1.75, 0.12, 3.3+04, -1.7+04, 2.9+03);
-	fit->SetParameters(110, 1.50, 0.25, 100, 1.75, 0.12, 1, -1, 1);
+	if(cut == "E_{#gamma} = (8.2,8.3)") {
+		fit->SetParameters(110, 1.50, 0.25, 100, 1.75, 0.12, 1, -1, 1);
+	}
+	else {
+		fit->SetParameters(100, 1.50, 0.25, 100, 1.75, 0.12, 4e3, -1e3, 1e2);
+	}
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "a0", "a1", "a2");
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);
@@ -359,6 +298,6 @@ Double_t modelBkg(Double_t* x, Double_t* par) {
 	return par[0] + par[1]*x[0] + par[2]*x[0]*x[0];
 }
 
-double calc_barlow(double nominal, double nominal_err, double variation, double variation_err) {
-	return (nominal - variation) / TMath::Sqrt( abs(nominal_err*nominal_err - variation_err*variation_err) );
+double calc_pull(double nominal, double nominal_err, double variation, double variation_err) {
+	return (nominal - variation) / TMath::Sqrt( abs(nominal_err*nominal_err + variation_err*variation_err) );
 }

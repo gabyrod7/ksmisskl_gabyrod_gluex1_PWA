@@ -32,7 +32,8 @@ void fit_mkskl_tBins() {
 	TCanvas *c;
     TH1F *h;
 	double min = 1.16, max = 2.60;
-    vector<double> tBins = {0.2, 0.26, 0.36, 0.6, 1.1};
+    // vector<double> tBins = {0.2, 0.26, 0.36, 0.6, 1.1};
+    vector<double> tBins = {0.2, 0.25, 0.35, 0.50, 0.7, 1.0};
 	TGraphErrors *m1 = new TGraphErrors(tBins.size()-1),
 		*m2 = new TGraphErrors(tBins.size()-1),
 		*g1 = new TGraphErrors(tBins.size()-1),
@@ -79,6 +80,7 @@ void fit_mkskl_tBins() {
     for(int iBin = 0; iBin < tBins.size()-1; iBin++) {
         h = (TH1F*)h2->ProjectionX(Form("h_%d", iBin), h2->GetYaxis()->FindBin(tBins[iBin]), h2->GetYaxis()->FindBin(tBins[iBin+1]) - 1);
         h->GetXaxis()->SetRangeUser(min, max);
+        h->GetYaxis()->SetRangeUser(0.0, 1.2*h->GetMaximum());
         fit->SetParameters(10, 1.50, 0.246, 10, 1.78, 0.127, 1, 1, 1);
         // cout bin numbers
         cout << h2->GetYaxis()->FindBin(tBins[iBin]) << " " << h2->GetYaxis()->FindBin(tBins[iBin+1]) - 1 << endl;
@@ -90,7 +92,6 @@ void fit_mkskl_tBins() {
         h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
         h->Fit(fit, "RE");
-        h->GetYaxis()->SetRangeUser(0.0, 1.05*h->GetMaximum());
         sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5));
         sig->Draw("same");
         bkg->SetParameters(fit->GetParameter(6), fit->GetParameter(7), fit->GetParameter(8));
@@ -100,7 +101,7 @@ void fit_mkskl_tBins() {
 	    bw2->SetParameters(fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5));
     	bw2->Draw("SAME");
 
-        TLegend *lg = new TLegend(0.6, 0.42, 0.96, 0.97);
+        TLegend *lg = new TLegend(0.6, 0.5, 0.96, 0.97);
         lg->SetFillStyle(0);
         lg->SetBorderSize(0);
 
@@ -149,38 +150,38 @@ void fit_mkskl_tBins() {
 
 	c = new TCanvas();
 	m1->SetTitle(";-t (GeV^{2});M_{1} Parameter (GeV)");
-	m1->GetXaxis()->SetRangeUser(0.1,1.1);
+	m1->GetXaxis()->SetRangeUser(0.1, tBins[tBins.size()-1]);
 	m1->GetYaxis()->SetRangeUser(1.46, 1.6);
 	m1->Draw("AP");
-	box->DrawBox(0.1, 1.534, 1.1, 1.544);
-	line->DrawLine(0.1, 1.539, 1.1, 1.539);
+	box->DrawBox(0.1, 1.534, tBins[tBins.size()-1], 1.544);
+	line->DrawLine(0.1, 1.539, tBins[tBins.size()-1], 1.539);
 	c->SaveAs("tBins/m1.pdf");
 
 	c = new TCanvas();
 	g1->SetTitle(";-t (GeV^{2});#Gamma_{1} Parameter (GeV)");
-	g1->GetXaxis()->SetRangeUser(0.1, 1.1);
+	g1->GetXaxis()->SetRangeUser(0.1, tBins[tBins.size()-1]);
 	g1->GetYaxis()->SetRangeUser(0., 0.4);
 	g1->Draw("AP");
-	box->DrawBox(0.1, 0.229, 1.1, 0.263);
-	line->DrawLine(0.1, 0.246, 1.1, 0.246);
+	box->DrawBox(0.1, 0.229, tBins[tBins.size()-1], 0.263);
+	line->DrawLine(0.1, 0.246, tBins[tBins.size()-1], 0.246);
 	c->SaveAs("tBins/g1.pdf");
 
 	c = new TCanvas();
 	m2->SetTitle(";-t (GeV^{2});M_{2} Parameter (GeV)");
-	m2->GetXaxis()->SetRangeUser(0.1, 1.1);
+	m2->GetXaxis()->SetRangeUser(0.1, tBins[tBins.size()-1]);
 	m2->GetYaxis()->SetRangeUser(1.71, 1.78);
 	m2->Draw("AP");
-	box->DrawBox(0.1, 1.751, 1.1, 1.755);
-	line->DrawLine(0.1, 1.753, 1.1, 1.753);
+	box->DrawBox(0.1, 1.751, tBins[tBins.size()-1], 1.755);
+	line->DrawLine(0.1, 1.753, tBins[tBins.size()-1], 1.753);
 	c->SaveAs("tBins/m2.pdf");
 
 	c = new TCanvas();
 	g2->SetTitle(";-t (GeV^{2});#Gamma_{2} Parameter (GeV)");
-	g2->GetXaxis()->SetRangeUser(0.1, 1.1);
+	g2->GetXaxis()->SetRangeUser(0.1, tBins[tBins.size()-1]);
 	g2->GetYaxis()->SetRangeUser(0.0, 0.3);
 	g2->Draw("AP");
-	box->DrawBox(0.1, 0.118, 1.1, 0.136);
-	line->DrawLine(0.1, 0.127, 1.1, 0.127);
+	box->DrawBox(0.1, 0.118, tBins[tBins.size()-1], 0.136);
+	line->DrawLine(0.1, 0.127, tBins[tBins.size()-1], 0.127);
 	c->SaveAs("tBins/g2.pdf");
 }
 

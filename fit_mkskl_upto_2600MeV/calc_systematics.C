@@ -32,6 +32,7 @@ void calc_systematics() {
     }
 
     cout << "No interference model systematics:" << endl;
+    cout << std::setprecision(3);
     cout << "m1 systematic: " << sqrt(sum_m1) << endl;
     cout << "g1 systematic: " << sqrt(sum_g1) << endl;
     cout << "m2 systematic: " << sqrt(sum_m2) << endl;

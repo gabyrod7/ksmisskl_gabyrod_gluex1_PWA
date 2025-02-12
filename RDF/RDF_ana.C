@@ -82,7 +82,7 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	
 	//4.1) Histograms
 	auto res = rdf_cut.Histo1D({"res", ";M(K_{S}K_{L}) [recon - thrown] (GeV);Counts", 100, -0.20, 0.20}, "mkskl_res", "accidental_weight");
-	auto res_mkskl = rdf_cut.Histo2D({"res_mkskl", ";res;M(K_{S}K_{L})", 100, -0.20, 0.20, 50, 1.10, 2.0}, "mkskl_res", "mkskl", "accidental_weight");
+	auto res_mkskl = rdf_cut.Histo2D({"res_mkskl", ";res;M(K_{S}K_{L})", 100, -0.20, 0.20, 75, 1.10, 2.6}, "mkskl_res", "mkskl", "accidental_weight");
 
 	auto kscosThetaCM = rdf_cut.Histo1D({"kscosThetaCM", ";K_{S} cos#theta CoM;Counts", 100, -1, 1}, "ks_costheta_cm", "accidental_weight");
 	auto cos_mkskl = rdf_cut.Histo2D({"cos_mkskl", ";M(K_{S}K_{L});K_{S} cos#theta CoM",  50, 1.10, 2.0, 40, -1, 1}, "mkskl", "ks_costheta_cm", "accidental_weight");

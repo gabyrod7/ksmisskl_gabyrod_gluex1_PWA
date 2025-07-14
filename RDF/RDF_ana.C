@@ -49,7 +49,8 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 		{"ntracks", "num_unused_tracks == 0"},
 		{"nshowers", "num_unused_showers < 3"},
 		{"proton_z_vertex", "proton_z_vertex > 52 && proton_z_vertex < 78"},
-		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"}};
+		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"}
+	};
 
 	string cuts = set_cuts(cuts_list);
 	string signal = "(mpipi > 0.48 && mpipi < 0.52)";
@@ -73,6 +74,9 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	auto rdfNumUnusedTracks_cut = rdf_variables.Filter("mmiss > 0.4 && mmiss < 0.6 && chisq_ndf < 2 && fs > 6 && mandel_t > 0.1 && mandel_t < 0.5");
 	auto rdfNumUnusedShowers_cut = rdf_variables.Filter("mmiss > 0.4 && mmiss < 0.6 && chisq_ndf < 2 && fs > 6 && mandel_t > 0.1 && mandel_t < 0.5 && num_unused_tracks == 0");
 
+	cuts = set_cuts(cuts_list, {"beam_energy", ""});
+	auto rdfBeamEnergy_cut = rdf_variables.Filter(cuts);
+
 	cout <<"...done!"<< endl;
 	cout <<" "<< endl;
 	
@@ -81,8 +85,10 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	cout <<"Set up histograms..."<< endl;
 	
 	//4.1) Histograms
-	auto res = rdf_cut.Histo1D({"res", ";M(K_{S}K_{L}) [recon - thrown] (GeV);Counts", 100, -0.20, 0.20}, "mkskl_res", "accidental_weight");
-	auto res_mkskl = rdf_cut.Histo2D({"res_mkskl", ";res;M(K_{S}K_{L})", 100, -0.20, 0.20, 75, 1.10, 2.6}, "mkskl_res", "mkskl", "accidental_weight");
+	// auto res = rdf_cut.Histo1D({"res", ";M(K_{S}K_{L}) [recon - thrown] (GeV);Counts", 100, -0.20, 0.20}, "mkskl_res", "accidental_weight");
+	// auto res_mkskl = rdf_cut.Histo2D({"res_mkskl", ";res;M(K_{S}K_{L})", 100, -0.20, 0.20, 75, 1.10, 2.6}, "mkskl_res", "mkskl", "accidental_weight");
+
+	auto h1_beamEnergy = rdfBeamEnergy_cut.Histo1D({"beamEnergy", ";Beam Energy (GeV);Counts", 120, 0, 12}, "beam_energy", "accidental_weight");
 
 	auto kscosThetaCM = rdf_cut.Histo1D({"kscosThetaCM", ";K_{S} cos#theta CoM;Counts", 100, -1, 1}, "ks_costheta_cm", "accidental_weight");
 	auto cos_mkskl = rdf_cut.Histo2D({"cos_mkskl", ";M(K_{S}K_{L});K_{S} cos#theta CoM",  50, 1.10, 2.0, 40, -1, 1}, "mkskl", "ks_costheta_cm", "accidental_weight");
@@ -169,8 +175,10 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	//5.) Write everything to a file:
 	cout <<"Write results to file: " << opf_name << endl;
 
-	res->Write();
-	res_mkskl->Write();
+	// res->Write();
+	// res_mkskl->Write();
+
+	h1_beamEnergy->Write();
 
 	cosHX_mkskl->Write();
 	cosHX_mkskl_sb->Write();
@@ -294,7 +302,12 @@ std::string set_cuts(std::map<std::string, std::string> cuts_list, std::pair<std
 	std::string cuts = "";
 
 	for(auto it = cuts_list.begin(); it != cuts_list.end(); ++it) {
-		if(it->first == change_cut.first)	cuts += change_cut.second + " && ";
+		if(it->first == change_cut.first)	{
+			if(change_cut.second != "")
+				cuts += change_cut.second + " && ";
+			else // if change to cut is an empty string, then remove cut
+				continue;
+		}
 		else								cuts += it->second + " && ";
 	}
 	cuts.erase(cuts.size()-4, 4); // remove last " && "

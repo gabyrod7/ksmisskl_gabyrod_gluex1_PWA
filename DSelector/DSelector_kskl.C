@@ -107,7 +107,7 @@ void DSelector_kskl::Init(TTree *locTree)
 	// Init() will be called many times when running on PROOF (once per file to be processed).
 
 	//USERS: SET OUTPUT FILE NAME //can be overriden by user in PROOF
-	dOutputFileName = "tree.root"; //"" for none
+	dOutputFileName = "hist.root"; //"" for none
 	dOutputTreeFileName = ""; //"" for none
 	dFlatTreeFileName = "ftree.root"; //output flat tree (one combo per tree entry), "" for none
 	dFlatTreeName = "kskl"; //if blank, default name will be chosen
@@ -658,26 +658,26 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 		dFlatTreeInterface->Fill_Fundamental<int>("PID_FinalState", 130, 2);  // KLong 
 		FillAmpTools_FlatTree(locBeamP4, locFinalStateP4);
 
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && locKSKL_P4.M() < 2.0 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() == 0 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7) {
-			if(Ks_Criteria) {
-				h1_RFTime->Fill(locDeltaT_RF);
-			}
-			else if(Ks_Sideband) {
-				h1_RFTime_sb->Fill(locDeltaT_RF);
-			}
-		}
+		// if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && locKSKL_P4.M() > 1.10 && locKSKL_P4.M() < 2.0 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() == 0 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7) {
+		// 	if(Ks_Criteria) {
+		// 		h1_RFTime->Fill(locDeltaT_RF);
+		// 	}
+		// 	else if(Ks_Sideband) {
+		// 		h1_RFTime_sb->Fill(locDeltaT_RF);
+		// 	}
+		// }
 
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && mpipi > 0.48 && mpipi < 0.52) {
-			im_kskl->Fill(mkskl, locHistAccidWeightFactor);
-			h1_MissingEnergy->Fill(locMissingP4_Measured.E(), locHistAccidWeightFactor);
-		}
-		if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && Ks_Sideband)
-			im_kskl_sb->Fill(mkskl, locHistAccidWeightFactor);
+		// if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && mpipi > 0.48 && mpipi < 0.52) {
+		// 	im_kskl->Fill(mkskl, locHistAccidWeightFactor);
+		// 	h1_MissingEnergy->Fill(locMissingP4_Measured.E(), locHistAccidWeightFactor);
+		// }
+		// if(locBeamP4.E() > 8.2 && locBeamP4.E() < 8.8 && chisq_ndf < 2.0 && locPathLengthSignificance > 6.0 && t < 1.0 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3 && mmiss > 0.3 && mmiss < 0.7 && Ks_Sideband)
+		// 	im_kskl_sb->Fill(mkskl, locHistAccidWeightFactor);
 
-		if(locSkipNearestOutOfTimeBunch && abs(locRelBeamBucket)==1) { // Skip nearest out-of-time bunch: tails of in-time distribution also leak in
-			dComboWrapper->Set_IsComboCut(true); 
-			continue; 
-		} 
+		// if(locSkipNearestOutOfTimeBunch && abs(locRelBeamBucket)==1) { // Skip nearest out-of-time bunch: tails of in-time distribution also leak in
+		// 	dComboWrapper->Set_IsComboCut(true); 
+		// 	continue; 
+		// } 
 
 		//FILL FLAT TREE
 		if(locKSKL_P4.M() > 1.10 && chisq_ndf < 6.0 && mmiss > 0.0 && mmiss < 1.0 && tp < 2) { 
@@ -689,55 +689,55 @@ Bool_t DSelector_kskl::Process(Long64_t locEntry)
 			continue;
 		}
 
-		if(Ks_Criteria && in_time)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
-		else if(Ks_Criteria && !in_time)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
-		else if(Ks_Sideband && in_time)		h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
-//		else if(Ks_Sideband && fabs(locDeltaT_RF) > 2)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
+// 		if(Ks_Criteria && in_time)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
+// 		else if(Ks_Criteria && !in_time)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
+// 		else if(Ks_Sideband && in_time)		h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
+// //		else if(Ks_Sideband && fabs(locDeltaT_RF) > 2)	h2_mpipi_rftime->Fill(mpipi, locDeltaT_RF); 
 
-		if(mmiss > 0.3 && mmiss < 0.7)
-			im_pipi->Fill(locDecayingKShortP4.M(), locHistAccidWeightFactor);
-		if(Ks_Criteria) {
-			im_miss->Fill(locMissingP4_Measured.M(), locHistAccidWeightFactor);
-			h1_NumUnusedTracks->Fill(dComboWrapper->Get_NumUnusedTracks(), locHistAccidWeightFactor);
-			h1_NumUnusedShowers->Fill(dComboWrapper->Get_NumUnusedShowers(), locHistAccidWeightFactor);
+// 		if(mmiss > 0.3 && mmiss < 0.7)
+// 			im_pipi->Fill(locDecayingKShortP4.M(), locHistAccidWeightFactor);
+// 		if(Ks_Criteria) {
+// 			im_miss->Fill(locMissingP4_Measured.M(), locHistAccidWeightFactor);
+// 			h1_NumUnusedTracks->Fill(dComboWrapper->Get_NumUnusedTracks(), locHistAccidWeightFactor);
+// 			h1_NumUnusedShowers->Fill(dComboWrapper->Get_NumUnusedShowers(), locHistAccidWeightFactor);
 
-			if(mmiss > 0.3 && mmiss < 0.7 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3) {
-				if(locPathLengthSignificance > 4)
-					h1_ChiSqNdf->Fill(chisq_ndf, locHistAccidWeightFactor);
-				if(chisq_ndf < 4)
-					h1_FS->Fill(locPathLengthSignificance, locHistAccidWeightFactor);
+// 			if(mmiss > 0.3 && mmiss < 0.7 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3) {
+// 				if(locPathLengthSignificance > 4)
+// 					h1_ChiSqNdf->Fill(chisq_ndf, locHistAccidWeightFactor);
+// 				if(chisq_ndf < 4)
+// 					h1_FS->Fill(locPathLengthSignificance, locHistAccidWeightFactor);
 
-				if(locPathLengthSignificance > 4 && chisq_ndf < 4) {
-					h1_KsProperTime->Fill(ks_proper_time, locHistAccidWeightFactor);
-					h1_mandelt->Fill(t, locHistAccidWeightFactor);
-					im_ksp->Fill((locProtonP4 + locDecayingKShortP4).M(), locHistAccidWeightFactor);
-					im_klp->Fill((locProtonP4 + locMissingKLongP4).M(), locHistAccidWeightFactor);
-				}
-			}
-		}
+// 				if(locPathLengthSignificance > 4 && chisq_ndf < 4) {
+// 					h1_KsProperTime->Fill(ks_proper_time, locHistAccidWeightFactor);
+// 					h1_mandelt->Fill(t, locHistAccidWeightFactor);
+// 					im_ksp->Fill((locProtonP4 + locDecayingKShortP4).M(), locHistAccidWeightFactor);
+// 					im_klp->Fill((locProtonP4 + locMissingKLongP4).M(), locHistAccidWeightFactor);
+// 				}
+// 			}
+// 		}
 
-		if(Ks_Sideband) {
-			im_miss_sb->Fill(locMissingP4_Measured.M(), locHistAccidWeightFactor);
+// 		if(Ks_Sideband) {
+// 			im_miss_sb->Fill(locMissingP4_Measured.M(), locHistAccidWeightFactor);
 
-			if(mmiss > 0.3 && mmiss < 0.7 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3) {
-				if(locPathLengthSignificance > 4)
-					h1_ChiSqNdf_sb->Fill(chisq_ndf, locHistAccidWeightFactor);
-				if(chisq_ndf < 4)
-					h1_FS_sb->Fill(locPathLengthSignificance, locHistAccidWeightFactor);
+// 			if(mmiss > 0.3 && mmiss < 0.7 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3) {
+// 				if(locPathLengthSignificance > 4)
+// 					h1_ChiSqNdf_sb->Fill(chisq_ndf, locHistAccidWeightFactor);
+// 				if(chisq_ndf < 4)
+// 					h1_FS_sb->Fill(locPathLengthSignificance, locHistAccidWeightFactor);
 
-				if(locPathLengthSignificance > 4 && chisq_ndf < 4) {
-					h1_KsProperTime_sb->Fill(ks_proper_time, locHistAccidWeightFactor);
-					h1_mandelt_sb->Fill(t, locHistAccidWeightFactor);
-					im_ksp_sb->Fill((locProtonP4 + locDecayingKShortP4).M(), locHistAccidWeightFactor);
-					im_klp_sb->Fill((locProtonP4 + locMissingKLongP4).M(), locHistAccidWeightFactor);
-				}
-			}
-		}
+// 				if(locPathLengthSignificance > 4 && chisq_ndf < 4) {
+// 					h1_KsProperTime_sb->Fill(ks_proper_time, locHistAccidWeightFactor);
+// 					h1_mandelt_sb->Fill(t, locHistAccidWeightFactor);
+// 					im_ksp_sb->Fill((locProtonP4 + locDecayingKShortP4).M(), locHistAccidWeightFactor);
+// 					im_klp_sb->Fill((locProtonP4 + locMissingKLongP4).M(), locHistAccidWeightFactor);
+// 				}
+// 			}
+// 		}
 
-		if(t > 0.15 && t < 1.5 && mmiss > 0.3 && mmiss < 0.7)
-			h3_mpipi_fs_chisq->Fill(mpipi, locPathLengthSignificance, chisq_ndf, locHistAccidWeightFactor);
-		if(t > 0.15 && t < 1.5 && mmiss > 0.3 && mmiss < 0.7 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3)
-			h3_mpipi_fs_chisq2->Fill(mpipi, locPathLengthSignificance, chisq_ndf, locHistAccidWeightFactor);
+// 		if(t > 0.15 && t < 1.5 && mmiss > 0.3 && mmiss < 0.7)
+// 			h3_mpipi_fs_chisq->Fill(mpipi, locPathLengthSignificance, chisq_ndf, locHistAccidWeightFactor);
+// 		if(t > 0.15 && t < 1.5 && mmiss > 0.3 && mmiss < 0.7 && dComboWrapper->Get_NumUnusedTracks() < 1 && dComboWrapper->Get_NumUnusedShowers() < 3)
+// 			h3_mpipi_fs_chisq2->Fill(mpipi, locPathLengthSignificance, chisq_ndf, locHistAccidWeightFactor);
 
 		/******************************************** EXECUTE ANALYSIS ACTIONS *******************************************/
 

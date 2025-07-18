@@ -87,7 +87,7 @@ void fit_wInterference_noAccCorr() {
 	h->Fit(fit, "RE");
 	//h->Draw();
 	// fit->Draw("SAME");
-	h->GetYaxis()->SetRangeUser(0.0, 1.05*h->GetMaximum());
+	h->GetYaxis()->SetRangeUser(0.0, 1.1*h->GetMaximum());
 	sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5), fit->GetParameter(6));
 	sig->Draw("same");
 	bkg->SetParameters(fit->GetParameter(7), fit->GetParameter(8), fit->GetParameter(9));
@@ -128,6 +128,9 @@ void fit_wInterference_noAccCorr() {
 	sprintf(s, "#chi^{2}/ndf = %.0f/%d = %.2f", fit->GetChisquare(), fit->GetNDF(), fit->GetChisquare()/fit->GetNDF());
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
+
+	TLatex t;
+	t.DrawLatex(1.25, 0.93*h->GetMaximum(), "No Acc. Corr.");
 
 	c->SaveAs("pdf_wInterference/noAcceptanceCorrection.pdf");
 

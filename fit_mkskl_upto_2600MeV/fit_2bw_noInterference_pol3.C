@@ -105,6 +105,9 @@ void fit_2bw_noInterference_pol3() {
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
 
+	TLatex t;
+	t.DrawLatex(1.25, 0.93*h->GetMaximum(), "Bkg: pol3");
+
 	cout << fit->GetChisquare() << endl;
 
 	c->SaveAs("pdf_nInterference/bkgPol3.pdf");

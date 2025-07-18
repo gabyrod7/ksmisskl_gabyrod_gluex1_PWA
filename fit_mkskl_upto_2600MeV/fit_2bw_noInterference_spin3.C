@@ -104,6 +104,9 @@ void fit_2bw_noInterference_spin3() {
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
 
+	TLatex t;
+	t.DrawLatex(1.25, 0.93*h->GetMaximum(), "BW2: spin-3");
+
 	c->SaveAs("pdf_nInterference/spin3.pdf");
 
 	TGraphErrors *m1 = new TGraphErrors();

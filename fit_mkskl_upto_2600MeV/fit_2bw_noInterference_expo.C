@@ -105,6 +105,9 @@ void fit_2bw_noInterference_expo() {
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
 
+	TLatex t;
+	t.DrawLatex(1.25, 0.93*h->GetMaximum(), "Bkg: expo");
+
 	cout << fit->GetChisquare() << endl;
 
 	c->SaveAs("pdf_nInterference/bkgExpo.pdf");

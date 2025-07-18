@@ -28,7 +28,7 @@ void fit_2bw_no_interference() {
 	gROOT->ForceStyle();
 
 	TCanvas *c;
-	double min = 1.15, max = 2.60;
+	double min = 1.16, max = 2.60;
 
 	TH1F *h_sp17 = getAcceptanceCorrectedHist("hists/hist_dat_sp17.root", "hists/hist_acc_sp17.root", "hists/hist_gen_sp17.root", "im_kskl");
 	TH1F *h_sp18 = getAcceptanceCorrectedHist("hists/hist_dat_sp18.root", "hists/hist_acc_sp18.root", "hists/hist_gen_sp18.root", "im_kskl");

@@ -46,8 +46,16 @@ void fit_wInterference_spin3() {
 	h->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
 
 	TF1 *fit = new TF1("fit", myfit, min, max, 10);
-	fit->SetParameters(10, 1.50, 0.22, 10, 1.78, 0.13, 0., 1.71515e+04, -1.92535e+03, -1.80970e+03);
+	// fit->SetParameters(10, 1.50, 0.22, 10, 1.78, 0.13, 0., 1.71515e+04, -1.92535e+03, -1.80970e+03);
+	fit->SetParameters(10, 1.50, 0.22, 10, 1.78, 0.13, 1., 1, -1, -1);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "#Delta#phi", "a0", "a1", "a2");
+	fit->SetParLimits(0, 0, 10000);
+	fit->SetParLimits(1, 1.2, 1.6);
+	fit->SetParLimits(2, 0.0, 4.0);
+	fit->SetParLimits(3, 0, 10000);
+	fit->SetParLimits(4, 1.6, 2.0);
+	fit->SetParLimits(5, 0.0, 4.0);
+	fit->SetParLimits(6, 0, TMath::Pi());
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);
 
@@ -108,6 +116,9 @@ void fit_wInterference_spin3() {
 	sprintf(s, "#chi^{2}/ndf = %.0f/%d = %.2f", fit->GetChisquare(), fit->GetNDF(), fit->GetChisquare()/fit->GetNDF());
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
+
+	TLatex t;
+	t.DrawLatex(1.25, 0.93*h->GetMaximum(), "BW2: spin3");
 
 	c->SaveAs("pdf_wInterference/spin3.pdf");
 

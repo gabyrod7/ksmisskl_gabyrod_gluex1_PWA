@@ -39,19 +39,23 @@ void fit_changeEventSelections() {
 	gROOT->ForceStyle();
 
 	vector<double> pars;
-	vector<string> hNames = {"im_kskl", "im_kskl_mpipi1", "im_kskl_mpipi2", "im_kskl_mpipi3", "im_kskl_mmiss1", "im_kskl_mmiss2", "im_kskl_mandel_tp1", "im_kskl_mandel_tp2",
+	vector<string> hNames = {
+		"im_kskl", "im_kskl_mpipi1", "im_kskl_mpipi2", 
+		"im_kskl_mpipi3", "im_kskl_mmiss1", "im_kskl_mmiss2", "im_kskl_mandel_tp1", "im_kskl_mandel_tp2",
 		"im_kskl_FS1", "im_kskl_FS2", "im_kskl_chisq1", "im_kskl_chisq2", "im_kskl_ntracks1",
-		"im_kskl_nshowers1", "im_kskl_nshowers2", "im_kskl_nshowers3",  "im_kskl_proton_z_vertex1", "im_kskl_proton_z_vertex2"};
+		"im_kskl_nshowers1", "im_kskl_nshowers2", "im_kskl_nshowers3",  "im_kskl_proton_z_vertex1", "im_kskl_proton_z_vertex2"
+		// "im_kskl_mksp", "im_kskl_mklp", "im_kskl_mksp_mklp"
+	};
 
 	map<string, string> hNamesMap = {
-		{"im_kskl", "Nominal"},
+		{"im_kskl", ""},
 		{"im_kskl_mpipi1", "M_{#pi#pi} Region 1"},
 		{"im_kskl_mpipi2", "M_{#pi#pi} Region 2"},
  		{"im_kskl_mpipi3", "Wider Sideband"},
 		{"im_kskl_mmiss1", "M_{miss} = (0.2,0.8)"},
 		{"im_kskl_mmiss2", "M_{miss} = (0.35,0.65)"},
-		{"im_kskl_mandel_tp1", "#minust' = (0.25,0.9)"},
-		{"im_kskl_mandel_tp2", "#minust' = (0.15,1.1)"},
+		{"im_kskl_mandel_tp1", "#minust' = (0.25,0.65)"},
+		{"im_kskl_mandel_tp2", "#minust' = (0.15,0.8)"},
 		{"im_kskl_FS1", "FS > 5"},
 		{"im_kskl_FS2", "FS > 7"},
 		{"im_kskl_chisq1", "#chi^{2}/ndf < 1.5"},
@@ -62,6 +66,9 @@ void fit_changeEventSelections() {
 		{"im_kskl_nshowers3", "N_{showers} < 1"},
 		{"im_kskl_proton_z_vertex1", "Proton-Z = (51,79)"},
 		{"im_kskl_proton_z_vertex2", "Proton-Z = (53,77)"}
+		// {"im_kskl_mksp", "M(K_{S}p) > 2 GeV"},
+		// {"im_kskl_mklp", "M(K_{L}p) > 2 GeV"},
+		// {"im_kskl_mksp_mklp", "M(K_{S/L}p) > 2 GeV"}
 		// {"im_kskl_beam_energy1", "E_{#gamma} = (8.2,8.5)"},
 		// {"im_kskl_beam_energy2", "E_{#gamma} = (8.5,8.8)"}
 	};
@@ -131,7 +138,7 @@ void fit_changeEventSelections() {
 	c = new TCanvas();
 	c->SetBottomMargin(0.3);
 	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(m1 - 3*m1_err, m1 + 3*m1_err);
+	frame->GetYaxis()->SetRangeUser(m1 - 4*m1_err, m1 + 4*m1_err);
 	frame->GetYaxis()->SetTitle("M_{1} Parameter (GeV)");
 	frame->Draw();
 	m1_ni->Draw("P");
@@ -142,7 +149,7 @@ void fit_changeEventSelections() {
 	c = new TCanvas();
 	c->SetBottomMargin(0.3);
 	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(g1 - 3*g1_err, g1 + 3*g1_err);
+	frame->GetYaxis()->SetRangeUser(g1 - 4*g1_err, g1 + 4*g1_err);
 	frame->GetYaxis()->SetTitle("#Gamma_{1} Parameter (GeV)");
 	frame->Draw();
 	g1_ni->Draw("P");
@@ -153,7 +160,7 @@ void fit_changeEventSelections() {
 	c = new TCanvas();
 	c->SetBottomMargin(0.3);
 	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(m2 - 3*m2_err, m2 + 3*m2_err);
+	frame->GetYaxis()->SetRangeUser(m2 - 4*m2_err, m2 + 4*m2_err);
 	frame->GetYaxis()->SetTitle("M_{2} Parameter (GeV)");
 	frame->Draw();
 	m2_ni->Draw("P");
@@ -164,7 +171,7 @@ void fit_changeEventSelections() {
 	c = new TCanvas();
 	c->SetBottomMargin(0.3);
 	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(g2 - 3*g2_err, g2 + 3*g2_err);
+	frame->GetYaxis()->SetRangeUser(g2 - 4*g2_err, g2 + 4*g2_err);
 	frame->GetYaxis()->SetTitle("#Gamma_{2} Parameter (GeV)");
 	frame->Draw();
 	g2_ni->Draw("P");
@@ -249,7 +256,8 @@ vector<double> fit_2bw_no_interference(string hName, string cut, double min = 1.
 
 	TF1 *fit = new TF1("fit", model1, min, max, 9);
 	// fit->SetParameters(110, 1.50, 0.25, 100, 1.75, 0.12, 3.3+04, -1.7+04, 2.9+03);
-	fit->SetParameters(110, 1.50, 0.25, 100, 1.75, 0.12, 1, -1, 1);
+	// fit->SetParameters(110, 1.50, 0.25, 100, 1.75, 0.12, 1, -1, 1);
+	fit->SetParameters(120, 1.50, 0.25, 100, 1.75, 0.12, 1, -1, 1);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "a0", "a1", "a2");
 	fit->SetLineWidth(3);
 	fit->SetNpx(1000);

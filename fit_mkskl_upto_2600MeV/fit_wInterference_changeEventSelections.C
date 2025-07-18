@@ -44,14 +44,14 @@ void fit_wInterference_changeEventSelections() {
 		"im_kskl_nshowers1", "im_kskl_nshowers2", "im_kskl_nshowers3",  "im_kskl_proton_z_vertex1", "im_kskl_proton_z_vertex2"};
 
 	map<string, string> hNamesMap = {
-		{"im_kskl", "Signal Region"},
+		{"im_kskl", ""},
 		{"im_kskl_mpipi1", "M_{#pi#pi} Region 1"},
 		{"im_kskl_mpipi2", "M_{#pi#pi} Region 2"},
  		{"im_kskl_mpipi3", "Wider Sideband"},
 		{"im_kskl_mmiss1", "M_{miss} = (0.2,0.8)"},
 		{"im_kskl_mmiss2", "M_{miss} = (0.35,0.65)"},
-		{"im_kskl_mandel_tp1", "#minust' = (0.25,0.9)"},
-		{"im_kskl_mandel_tp2", "#minust' = (0.15,1.1)"},
+		{"im_kskl_mandel_tp1", "#minust' = (0.25,0.65)"},
+		{"im_kskl_mandel_tp2", "#minust' = (0.15,0.8)"},
 		{"im_kskl_FS1", "FS > 5"},
 		{"im_kskl_FS2", "FS > 7"},
 		{"im_kskl_chisq1", "#chi^{2}/ndf < 1.5"},

@@ -50,9 +50,9 @@ void plot_wInterference_variations() {
     box->SetFillColorAlpha(kGreen, 0.2);
 
     TH1F *frame = new TH1F("frame", "", 10, 0, 10);
-    frame->GetXaxis()->SetBinLabel(1, "pol1");
-    frame->GetXaxis()->SetBinLabel(2, "expo");
-    frame->GetXaxis()->SetBinLabel(3, "spin3");
+    frame->GetXaxis()->SetBinLabel(1, "Bkg: pol1");
+    frame->GetXaxis()->SetBinLabel(2, "Bkg: expo");
+    frame->GetXaxis()->SetBinLabel(3, "BW2: spin3");
     frame->GetXaxis()->SetBinLabel(4, "Fit Range 1.14-2.66 GeV");
     frame->GetXaxis()->SetBinLabel(5, "Fit Range 1.2-2.54 GeV");
     frame->GetXaxis()->SetBinLabel(6, "Fit Range 1.16-2.5 GeV");
@@ -61,11 +61,11 @@ void plot_wInterference_variations() {
     frame->GetXaxis()->SetBinLabel(9, "22.5 MeV Bins");
     frame->GetXaxis()->SetBinLabel(10, "14.4 MeV Bins");
 
-    double pm1 = 1.539, pm1_err = 0.005;
-    double pm2 = 1.753, pm2_err = 0.002;
-    double pg1 = 0.246, pg1_err = 0.017;
-    double pg2 = 0.127, pg2_err = 0.009;
-    double pphase = 0.93, pphase_err = 0.32;
+    double pm1 = 1.525, pm1_err = 0.010;
+    double pg1 = 0.269, pg1_err = 0.022;
+    double pm2 = 1.756, pm2_err = 0.007;
+    double pg2 = 0.124, pg2_err = 0.009;
+    double pphase = 0.94, pphase_err = 0.31;
 
     int count = 0;
 
@@ -115,7 +115,7 @@ void plot_wInterference_variations() {
     TCanvas *c = new TCanvas();
     c->SetBottomMargin(0.4);
 	frame->LabelsOption("v");
-	frame->GetYaxis()->SetRangeUser(pm1 - 8*pm1_err, pm1 + 8*pm1_err);
+	frame->GetYaxis()->SetRangeUser(pm1 - 3*pm1_err, pm1 + 3*pm1_err);
 	frame->GetYaxis()->SetTitle("M_{1} Parameter (GeV)");
     frame->Draw();
     graphs["m1"]->Draw("P");
@@ -123,7 +123,7 @@ void plot_wInterference_variations() {
     box->DrawBox(0, pm1 - pm1_err, 10, pm1 + pm1_err);
     c->SaveAs("pdf_wInterference/otherVariation_m1Scan.pdf");
 
-    frame->GetYaxis()->SetRangeUser(pm2 - 8*pm2_err, pm2 + 8*pm2_err);
+    frame->GetYaxis()->SetRangeUser(pm2 - 3*pm2_err, pm2 + 3*pm2_err);
     frame->GetYaxis()->SetTitle("M_{2} Parameter (GeV)");
     frame->Draw();
     graphs["m2"]->Draw("P");
@@ -131,7 +131,7 @@ void plot_wInterference_variations() {
     box->DrawBox(0, pm2 - pm2_err, 10, pm2 + pm2_err);
     c->SaveAs("pdf_wInterference/otherVariation_m2Scan.pdf");
 
-    frame->GetYaxis()->SetRangeUser(pg1 - 5 *pg1_err, pg1 + 5*pg1_err);
+    frame->GetYaxis()->SetRangeUser(pg1 - 3*pg1_err, pg1 + 3*pg1_err);
     frame->GetYaxis()->SetTitle("#Gamma_{1} Parameter (GeV)");
     frame->Draw();
     graphs["g1"]->Draw("P");
@@ -139,7 +139,7 @@ void plot_wInterference_variations() {
     box->DrawBox(0, pg1 - pg1_err, 10, pg1 + pg1_err);
     c->SaveAs("pdf_wInterference/otherVariation_g1Scan.pdf");
 
-    frame->GetYaxis()->SetRangeUser(pg2 - 5*pg2_err, pg2 + 5*pg2_err);
+    frame->GetYaxis()->SetRangeUser(pg2 - 3*pg2_err, pg2 + 3*pg2_err);
     frame->GetYaxis()->SetTitle("#Gamma_{2} Parameter (GeV)");
     frame->Draw();
     graphs["g2"]->Draw("P");

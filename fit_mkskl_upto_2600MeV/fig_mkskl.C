@@ -73,8 +73,9 @@ void fig_mkskl() {
 
 	h1->SetMarkerStyle(8);
 	h1->GetYaxis()->SetRangeUser(0, 1.1*h1->GetMaximum());
-	h1->GetXaxis()->SetRangeUser(1.1, 2.6);
+	h1->GetXaxis()->SetRangeUser(1.16, 2.6);
 	h1->GetXaxis()->SetTitle("M(K_{S}K_{L}) (GeV)");
+	h1->GetYaxis()->SetTitle(Form("Counts / %.1f MeV", h1->GetBinWidth(1)*1000));
 
 	h2->SetMarkerStyle(35);
 	h2->SetMarkerSize(0.0);

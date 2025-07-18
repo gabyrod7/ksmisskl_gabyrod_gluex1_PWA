@@ -40,7 +40,7 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	//3.2)Now apply cuts on the newly defined variables:
 	std::map<std::string, std::string> cuts_list = {
 		// {"mkskl", "mkskl > 1.10 && mkskl < 2.60"},
-		{"mandel_tp", "mandel_tp > 0.20 && mandel_tp < 1.0"},
+		{"mandel_tp", "mandel_tp > 0.20 && mandel_tp < 0.7"},
 		{"beam_energy", "beam_energy > 8.2 && beam_energy < 8.8"}
 	};
 	
@@ -72,8 +72,8 @@ void RDF_thrown(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cu
 	auto im_kskl_mmiss1 = rdf_cut.Histo1D({"im_kskl_mmiss1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_mmiss2 = rdf_cut.Histo1D({"im_kskl_mmiss2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	// auto im_kskl_baryonCut = rdf_cut.Filter("mksp > 2 && mklp > 2").Histo1D({"im_kskl_baryonCut", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
-	auto im_kskl_mandeltp1 = rdfMandeltp.Filter("mandel_tp > 0.2 && mandel_tp < 0.8").Histo1D({"im_kskl_mandel_tp1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
-	auto im_kskl_mandeltp2 = rdfMandeltp.Filter("mandel_tp > 0.15 && mandel_tp < 1.10").Histo1D({"im_kskl_mandel_tp2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_mandeltp1 = rdfMandeltp.Filter("mandel_tp > 0.25 && mandel_tp < 0.65").Histo1D({"im_kskl_mandel_tp1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
+	auto im_kskl_mandeltp2 = rdfMandeltp.Filter("mandel_tp > 0.15 && mandel_tp < 0.8").Histo1D({"im_kskl_mandel_tp2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_FS1 = rdf_cut.Histo1D({"im_kskl_FS1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_FS2 = rdf_cut.Histo1D({"im_kskl_FS2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");
 	auto im_kskl_chisq1 = rdf_cut.Histo1D({"im_kskl_chisq1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl");

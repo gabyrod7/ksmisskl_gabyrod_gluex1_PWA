@@ -44,7 +44,7 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	std::map<std::string, std::string> cuts_list = {
 		{"mkskl", "mkskl > 1.10 && mkskl < 2.70"},
 		{"mmiss", "missing_mass > 0.3 && missing_mass < 0.7"},
-		{"mandel_tp", "mandel_tp > 0.20 && mandel_tp < 1.0"},
+		{"mandel_tp", "mandel_tp > 0.20 && mandel_tp < 0.7"},
 		{"flight_significance", "flight_significance > 6"},
 		{"chisq", "chisq_ndf < 2"},
 		{"ntracks", "num_unused_tracks == 0"},
@@ -110,11 +110,11 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 	auto im_kskl_baryonCut = rdf_cut.Filter(signal+"&& mksp > 2 && mklp > 2").Histo1D({"im_kskl_baryonCut", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_baryonCut_sb = rdf_cut.Filter(sideband+"&& mksp > 2 && mklp > 2").Histo1D({"im_kskl_baryonCut_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
-	auto im_kskl_mandel_tp1 = rdf_cut_mandel_tp.Filter(signal+"&& mandel_tp > 0.25 && mandel_tp < 0.9").Histo1D({"im_kskl_mandel_tp1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
-	auto im_kskl_mandel_tp1_sb = rdf_cut_mandel_tp.Filter(sideband+"&& mandel_tp > 0.25 && mandel_tp < 0.9").Histo1D({"im_kskl_mandel_tp1_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_mandel_tp1 = rdf_cut_mandel_tp.Filter(signal+"&& mandel_tp > 0.25 && mandel_tp < 0.65").Histo1D({"im_kskl_mandel_tp1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_mandel_tp1_sb = rdf_cut_mandel_tp.Filter(sideband+"&& mandel_tp > 0.25 && mandel_tp < 0.65").Histo1D({"im_kskl_mandel_tp1_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
-	auto im_kskl_mandel_tp2 = rdf_cut_mandel_tp.Filter(signal+"&& mandel_tp > 0.15 && mandel_tp < 1.10").Histo1D({"im_kskl_mandel_tp2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
-	auto im_kskl_mandel_tp2_sb = rdf_cut_mandel_tp.Filter(sideband+"&& mandel_tp > 0.15 && mandel_tp < 1.10").Histo1D({"im_kskl_mandel_tp2_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_mandel_tp2 = rdf_cut_mandel_tp.Filter(signal+"&& mandel_tp > 0.15 && mandel_tp < 0.8").Histo1D({"im_kskl_mandel_tp2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_mandel_tp2_sb = rdf_cut_mandel_tp.Filter(sideband+"&& mandel_tp > 0.15 && mandel_tp < 0.8").Histo1D({"im_kskl_mandel_tp2_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
 	auto im_kskl_FS1 = rdf_cut_FS.Filter(signal+"&& fs > 5").Histo1D({"im_kskl_FS1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_FS1_sb = rdf_cut_FS.Filter(sideband+"&& fs > 5").Histo1D({"im_kskl_FS1_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
@@ -145,6 +145,15 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	auto im_kskl_proton_z_vertex2 = rdf_cut_proton_z_vertex.Filter(signal+"&& proton_z_vertex > 53 && proton_z_vertex < 77").Histo1D({"im_kskl_proton_z_vertex2", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_proton_z_vertex2_sb = rdf_cut_proton_z_vertex.Filter(sideband+"&& proton_z_vertex > 53 && proton_z_vertex < 77").Histo1D({"im_kskl_proton_z_vertex2_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+
+	auto im_kskl_mksp = rdf_cut.Filter(signal+"&& mksp > 2").Histo1D({"im_kskl_mksp", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_mksp_sb = rdf_cut.Filter(sideband+"&& mksp > 2").Histo1D({"im_kskl_mksp_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+
+	auto im_kskl_mklp = rdf_cut.Filter(signal+"&& mklp > 2").Histo1D({"im_kskl_mklp", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_mklp_sb = rdf_cut.Filter(sideband+"&& mklp > 2").Histo1D({"im_kskl_mklp_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+
+	auto im_kskl_mksp_mklp = rdf_cut.Filter(signal+"&& mksp > 2 && mklp > 2").Histo1D({"im_kskl_mksp_mklp", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
+	auto im_kskl_mksp_mklp_sb = rdf_cut.Filter(sideband+"&& mksp > 2 && mklp > 2").Histo1D({"im_kskl_mksp_mklp_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 
 	auto im_kskl_beam_energy1 = rdf_cut_beam_energy.Filter(signal+"&& beam_energy > 8.2 && beam_energy < 8.3").Histo1D({"im_kskl_beam_energy1", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
 	auto im_kskl_beam_energy1_sb = rdf_cut_beam_energy.Filter(sideband+"&& beam_energy > 8.2 && beam_energy < 8.3").Histo1D({"im_kskl_beam_energy1_sb", ";M(K_{S}K_{L});Counts", nBins, xMin, xMax}, "mkskl", "accidental_weight");
@@ -264,6 +273,15 @@ void RDF_ana(Int_t n_threads,string inf_name, string opf_name, Bool_t show_cut_r
 
 	im_kskl_proton_z_vertex2->Write();
 	im_kskl_proton_z_vertex2_sb->Write();
+
+	im_kskl_mksp->Write();
+	im_kskl_mksp_sb->Write();
+
+	im_kskl_mklp->Write();
+	im_kskl_mklp_sb->Write();
+
+	im_kskl_mksp_mklp->Write();
+	im_kskl_mksp_mklp_sb->Write();
 
 	im_kskl_beam_energy1->Write();
 	im_kskl_beam_energy1_sb->Write();

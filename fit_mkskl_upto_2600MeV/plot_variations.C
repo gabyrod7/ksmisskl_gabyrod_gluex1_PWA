@@ -49,9 +49,9 @@ void plot_variations() {
     box->SetFillColorAlpha(kGreen, 0.2);
 
     TH1F *frame = new TH1F("frame", "", 10, 0, 10);
-    frame->GetXaxis()->SetBinLabel(1, "pol1");
-    frame->GetXaxis()->SetBinLabel(2, "expo");
-    frame->GetXaxis()->SetBinLabel(3, "spin3");
+    frame->GetXaxis()->SetBinLabel(1, "Bkg: pol1");
+    frame->GetXaxis()->SetBinLabel(2, "Bkg: expo");
+    frame->GetXaxis()->SetBinLabel(3, "BW2: spin3");
     frame->GetXaxis()->SetBinLabel(4, "Fit Range 1.14-2.66 GeV");
     frame->GetXaxis()->SetBinLabel(5, "Fit Range 1.2-2.54 GeV");
     frame->GetXaxis()->SetBinLabel(6, "Fit Range 1.16-2.5 GeV");
@@ -60,10 +60,10 @@ void plot_variations() {
     frame->GetXaxis()->SetBinLabel(9, "22.5 MeV Bins");
     frame->GetXaxis()->SetBinLabel(10, "14.4 MeV Bins");
 
-    double pm1 = 1.539, pm1_err = 0.005;
-    double pm2 = 1.753, pm2_err = 0.002;
-    double pg1 = 0.246, pg1_err = 0.017;
-    double pg2 = 0.127, pg2_err = 0.009;
+    double pm1 = 1.528, pm1_err = 0.005;
+    double pg1 = 0.271, pg1_err = 0.020;
+    double pm2 = 1.754, pm2_err = 0.002;
+    double pg2 = 0.123, pg2_err = 0.008;
 
     int count = 0;
 

@@ -33,7 +33,8 @@ void fit_mkskl_tBins() {
     TH1F *h;
 	double min = 1.16, max = 2.60;
     // vector<double> tBins = {0.2, 0.26, 0.36, 0.6, 1.1};
-    vector<double> tBins = {0.2, 0.25, 0.35, 0.50, 0.7, 1.0};
+    // vector<double> tBins = {0.2, 0.25, 0.35, 0.50, 0.7, 1.0};
+    vector<double> tBins = {0.2, 0.25, 0.35, 0.45, 0.6, 0.75, 1.0};
 	TGraphErrors *m1 = new TGraphErrors(tBins.size()-1),
 		*m2 = new TGraphErrors(tBins.size()-1),
 		*g1 = new TGraphErrors(tBins.size()-1),
@@ -183,6 +184,12 @@ void fit_mkskl_tBins() {
 	box->DrawBox(0.1, 0.118, tBins[tBins.size()-1], 0.136);
 	line->DrawLine(0.1, 0.127, tBins[tBins.size()-1], 0.127);
 	c->SaveAs("tBins/g2.pdf");
+
+	TFile *opf = TFile::Open("rootFiles/tBins_nInterference.root", "RECREATE");
+	m1->Write("m1");
+	g1->Write("g1");
+	m2->Write("m2");
+	g2->Write("g2");
 }
 
 TH2F* getAcceptanceCorrectedHist2D(TString fdata, TString facc, TString fgen, TString hname) {

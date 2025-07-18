@@ -58,11 +58,15 @@ void fit_wInterference_tBins() {
 	fit->SetParameters(50, 1.50, 0.22, 10, 1.78, 0.13, 0.8, 1.71515e+04, -1.92535e+03, -1.80970e+03);
 	fit->SetParNames("N1", "M1", "#Gamma1", "N2", "M2", "#Gamma2", "#Delta#phi", "a0", "a1", "a2");
 	fit->SetParLimits(0, 0, 1000);
-	fit->SetParLimits(1, 1.0, 2.0);
-	fit->SetParLimits(2, 0, 0.5);
+	// fit->SetParLimits(1, 1.0, 2.0);
+	// fit->SetParLimits(2, 0, 0.5);
 	fit->SetParLimits(3, 0, 1000);
-	fit->SetParLimits(4, 1.0, 2.0);
-	fit->SetParLimits(5, 0, 0.5);
+	fit->FixParameter(1, 1.538);
+	fit->FixParameter(2, 0.257);
+	// fit->SetParLimits(4, 1.0, 2.0);
+	// fit->SetParLimits(5, 0, 0.5);
+	fit->FixParameter(4, 1.753);
+	fit->FixParameter(5, 0.125);
 	fit->SetParLimits(6, 0, TMath::Pi());
     fit->SetLineWidth(3);
     fit->SetNpx(1000);
@@ -92,16 +96,17 @@ void fit_wInterference_tBins() {
 		cout << Form("t = (%.2f,%.2f)", tBins[iBin], tBins[iBin+1]) << endl;
         h = (TH1F*)h2->ProjectionX(Form("h_%d", iBin), h2->GetYaxis()->FindBin(tBins[iBin]), h2->GetYaxis()->FindBin(tBins[iBin+1]) - 1);
         h->GetXaxis()->SetRangeUser(min, max);
-		if(tBins[iBin] == 0.5) {
-			fit->SetParameter(0, 36);
-			fit->SetParameter(1, 1.56);
-			fit->SetParameter(2, 0.21);
-			fit->SetParameter(3, 42);
-			fit->SetParameter(4, 1.76);
-			fit->SetParameter(5, 0.11);
-			fit->SetParameter(6, 1);
-			// fit->FixParameter(6, 1);
-		}
+
+		// if(tBins[iBin] == 0.5) {
+		// 	fit->SetParameter(0, 36);
+		// 	fit->SetParameter(1, 1.56);
+		// 	fit->SetParameter(2, 0.21);
+		// 	fit->SetParameter(3, 42);
+		// 	fit->SetParameter(4, 1.76);
+		// 	fit->SetParameter(5, 0.11);
+		// 	fit->SetParameter(6, 1);
+		// 	// fit->FixParameter(6, 1);
+		// }
 		// fit->SetParameters(50, 1.50, 0.22, 10, 1.78, 0.13, 1., 1.71515e+04, -1.92535e+03, -1.80970e+03);
         // fit->SetParameters(10, 1.50, 0.246, 10, 1.78, 0.127, 1, 1, 1);
         // cout bin numbers
@@ -219,6 +224,13 @@ void fit_wInterference_tBins() {
 	box->DrawBox(tBins[0], 0.35, tBins[tBins.size()-1], 0.99);
 	line->DrawLine(tBins[0], 0.67, tBins[tBins.size()-1], 0.67);
 	c->SaveAs("tBinsInterference/phase.pdf");
+
+	TFile *opf = TFile::Open("rootFiles/tBins_wInterference.root", "RECREATE");
+	m1->Write("m1");
+	g1->Write("g1");
+	m2->Write("m2");
+	g2->Write("g2");
+	phase->Write("phase");
 }
 
 TH2F* getAcceptanceCorrectedHist2D(TString fdata, TString facc, TString fgen, TString hname) {

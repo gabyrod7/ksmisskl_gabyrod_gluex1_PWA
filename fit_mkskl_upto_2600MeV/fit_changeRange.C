@@ -137,7 +137,7 @@ vector<double> fit_2bw_no_interference(string hName, double min = 1.16, double m
 	bkg->SetLineWidth(3);
 
 	h->Fit(fit, "RE");
-	h->GetYaxis()->SetRangeUser(0.0, 1.05*h->GetMaximum());
+	h->GetYaxis()->SetRangeUser(0.0, 1.15*h->GetMaximum());
 	sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5));
 	sig->Draw("same");
 	bkg->SetParameters(fit->GetParameter(6), fit->GetParameter(7), fit->GetParameter(8));
@@ -176,6 +176,9 @@ vector<double> fit_2bw_no_interference(string hName, double min = 1.16, double m
 	sprintf(s, "#chi^{2}/ndf = %.0f/%d = %.2f", fit->GetChisquare(), fit->GetNDF(), fit->GetChisquare()/fit->GetNDF());
 	lg->AddEntry((TObject*)0, s, "");
 	lg->Draw();
+
+	TLatex t;
+	t.DrawLatex(1.25, 0.93*h->GetMaximum(), Form("Fit range %.2f-%.2f GeV", min, max));
 
 	c->SaveAs( "pdf_nInterference/"+sName+".pdf" );
 
@@ -228,7 +231,7 @@ vector<double> fit_2bw_with_interference(string hName, double min = 1.16, double
 	h->Fit(fit, "RE");
 	//h->Draw();
 	// fit->Draw("SAME");
-	h->GetYaxis()->SetRangeUser(0.0, 1.05*h->GetMaximum());
+	h->GetYaxis()->SetRangeUser(0.0, 1.1*h->GetMaximum());
 	sig->SetParameters(fit->GetParameter(0), fit->GetParameter(1), fit->GetParameter(2), fit->GetParameter(3), fit->GetParameter(4), fit->GetParameter(5), fit->GetParameter(6));
 	sig->Draw("same");
 	bkg->SetParameters(fit->GetParameter(7), fit->GetParameter(8), fit->GetParameter(9));
